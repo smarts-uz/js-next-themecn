@@ -10,6 +10,7 @@ import { CardsReportIssue } from "@/components/cards/report-issue";
 import { CardsShare } from "@/components/cards/share";
 import { CardsStats } from "@/components/cards/stats";
 import { CardsTeamMembers } from "@/components/cards/team-members";
+import { CardsThemeVariables } from "@/components/cards/theme-variables";
 
 export function CardsDemo() {
   return (
@@ -57,6 +58,11 @@ export function CardsDemo() {
         <div className="xl:hidden">
           <CardsReportIssue />
         </div>
+      </div>
+
+      {/* Theme Variables Section - Full Width */}
+      <div className="lg:col-span-10 xl:col-span-11 mt-8">
+        <CardsThemeVariables />
       </div>
     </div>
   );

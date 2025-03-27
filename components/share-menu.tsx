@@ -1,51 +1,57 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { useThemeStore } from "@/lib/store"
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Copy, Check, Link } from "lucide-react"
-import { toast } from "sonner"
+import { useState } from "react";
+import { useThemeStore } from "@/lib/store";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Copy, Check, Link } from "lucide-react";
+import { toast } from "sonner";
 
 interface ShareMenuProps {
-  open: boolean
-  onOpenChange: (open: boolean) => void
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
 }
 
 export function ShareMenu({ open, onOpenChange }: ShareMenuProps) {
-  const { getShareableUrl } = useThemeStore()
-  const [copied, setCopied] = useState(false)
+  const { getShareableUrl } = useThemeStore();
+  const [copied, setCopied] = useState(false);
 
-  const shareUrl = getShareableUrl()
+  const shareUrl = getShareableUrl();
 
   const handleCopy = () => {
-    navigator.clipboard.writeText(shareUrl)
-    setCopied(true)
+    navigator.clipboard.writeText(shareUrl);
+    setCopied(true);
 
     toast("Copied!", {
       description: `Theme URL copied to clipboard`,
       duration: 2000,
-    })
+    });
 
     setTimeout(() => {
-      setCopied(null)
-    }, 2000)
-  }
+      setCopied(false);
+    }, 2000);
+  };
 
   // Extract color values from URL for display
   const getColorPreview = () => {
-    const state = useThemeStore.getState()
+    const state = useThemeStore.getState();
     return [
       { name: "Background", color: state.getHexColor("background") },
       { name: "Foreground", color: state.getHexColor("foreground") },
       { name: "Primary", color: state.getHexColor("primary") },
       { name: "Secondary", color: state.getHexColor("secondary") },
       { name: "Accent", color: state.getHexColor("accent") },
-    ]
-  }
+    ];
+  };
 
-  const colorPreviews = getColorPreview()
+  const colorPreviews = getColorPreview();
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -56,11 +62,14 @@ export function ShareMenu({ open, onOpenChange }: ShareMenuProps) {
           color: "#1a1a1a",
           borderRadius: "8px",
           border: "1px solid #e5e7eb",
-          boxShadow: "0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)",
+          boxShadow:
+            "0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)",
         }}
       >
         <DialogHeader>
-          <DialogTitle style={{ color: "#1a1a1a", fontWeight: "600" }}>Share Your Theme</DialogTitle>
+          <DialogTitle style={{ color: "#1a1a1a", fontWeight: "600" }}>
+            Share Your Theme
+          </DialogTitle>
           <DialogDescription style={{ color: "#6b7280" }}>
             Copy this link to share your current theme with others.
           </DialogDescription>
@@ -94,7 +103,11 @@ export function ShareMenu({ open, onOpenChange }: ShareMenuProps) {
                 onClick={handleCopy}
                 style={{ color: "#4b5563", borderRadius: "4px" }}
               >
-                {copied ? <Check className="h-4 w-4" /> : <Copy className="h-4 w-4" />}
+                {copied ? (
+                  <Check className="h-4 w-4" />
+                ) : (
+                  <Copy className="h-4 w-4" />
+                )}
               </Button>
             </div>
           </div>
@@ -105,9 +118,14 @@ export function ShareMenu({ open, onOpenChange }: ShareMenuProps) {
               <div key={index} className="flex flex-col items-center">
                 <div
                   className="w-8 h-8 rounded-full mb-1"
-                  style={{ backgroundColor: item.color, border: "1px solid #d1d5db" }}
+                  style={{
+                    backgroundColor: item.color,
+                    border: "1px solid #d1d5db",
+                  }}
                 ></div>
-                <span style={{ fontSize: "0.75rem", color: "#6b7280" }}>{item.name}</span>
+                <span style={{ fontSize: "0.75rem", color: "#6b7280" }}>
+                  {item.name}
+                </span>
               </div>
             ))}
           </div>
@@ -135,9 +153,9 @@ export function ShareMenu({ open, onOpenChange }: ShareMenuProps) {
                       text: "I created this theme with ThemeCN. Check it out!",
                       url: shareUrl,
                     })
-                    .catch(console.error)
+                    .catch(console.error);
                 } else {
-                  handleCopy()
+                  handleCopy();
                 }
               }}
               style={{
@@ -152,6 +170,5 @@ export function ShareMenu({ open, onOpenChange }: ShareMenuProps) {
         </div>
       </DialogContent>
     </Dialog>
-  )
+  );
 }
-

@@ -50,11 +50,11 @@ const data = [
 const chartConfig = {
   today: {
     label: "Today",
-    color: "hsl(var(--primary))",
+    color: "var(--chart-1)",
   },
   average: {
     label: "Average",
-    color: "hsl(var(--primary))",
+    color: "var(--chart-2)",
   },
 } satisfies ChartConfig;
 
@@ -82,21 +82,21 @@ export function CardsMetric() {
               type="monotone"
               strokeWidth={2}
               dataKey="average"
-              stroke="var(--color-average)"
+              stroke="var(--chart-2)"
               strokeOpacity={0.5}
               activeDot={{
                 r: 6,
-                fill: "var(--color-average)",
+                fill: "var(--chart-2)",
               }}
             />
             <Line
               type="monotone"
               dataKey="today"
               strokeWidth={2}
-              stroke="var(--color-today)"
+              stroke="var(--chart-1)"
               activeDot={{
                 r: 8,
-                style: { fill: "var(--color-today)" },
+                style: { fill: "var(--chart-1)" },
               }}
             />
             <ChartTooltip content={<ChartTooltipContent />} />

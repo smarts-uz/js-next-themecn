@@ -77,7 +77,7 @@ export function CardsStats() {
                 type="monotone"
                 strokeWidth={2}
                 dataKey="revenue"
-                stroke="var(--color-revenue)"
+                stroke="var(--chart-1)"
                 activeDot={{
                   r: 6,
                 }}
@@ -97,11 +97,7 @@ export function CardsStats() {
           </p>
           <ChartContainer config={chartConfig} className="mt-2 h-[80px] w-full">
             <BarChart data={data}>
-              <Bar
-                dataKey="subscription"
-                fill="var(--color-subscription)"
-                radius={4}
-              />
+              <Bar dataKey="subscription" fill="var(--chart-1)" radius={4} />
             </BarChart>
           </ChartContainer>
         </CardContent>

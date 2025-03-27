@@ -60,7 +60,7 @@ const data = [
 const chartConfig = {
   goal: {
     label: "Goal",
-    color: "hsl(var(--primary))",
+    color: "var(--chart-1)",
   },
 } satisfies ChartConfig;
 
@@ -112,7 +112,7 @@ export function CardsActivityGoal() {
             className="aspect-auto h-full w-full"
           >
             <BarChart data={data}>
-              <Bar dataKey="goal" radius={4} fill="var(--color-goal)" />
+              <Bar dataKey="goal" radius={4} fill="var(--chart-1)" />
             </BarChart>
           </ChartContainer>
         </div>
