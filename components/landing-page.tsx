@@ -1,26 +1,15 @@
 "use client";
 
 import { useThemeStore } from "@/lib/store";
-import { Button } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ArrowRight as ArrowIcon, Github, ExternalLink } from "lucide-react";
-import { useEffect } from "react";
+
 import { CardsDemo } from "@/components/cards";
+import Link from "next/link";
 
 export default function LandingPage() {
   const { fonts } = useThemeStore();
-
-  useEffect(() => {
-    // Load GitHub buttons script
-    const script = document.createElement("script");
-    script.src = "https://buttons.github.io/buttons.js";
-    script.async = true;
-    document.body.appendChild(script);
-
-    return () => {
-      document.body.removeChild(script);
-    };
-  }, []);
 
   return (
     <div className="min-h-screen pb-32 bg-background">
@@ -39,16 +28,12 @@ export default function LandingPage() {
             </div>
 
             <div className="flex items-center">
-              <a
-                className="github-button"
-                href="https://github.com/jordankimvt/themecn"
-                data-icon="octicon-star"
-                data-size="large"
-                data-show-count="true"
-                aria-label="Star jordankimvt/themecn on GitHub"
+              <Link
+                href="https://github.com/jordanliu/themecn"
+                className={buttonVariants()}
               >
-                Star
-              </a>
+                <Github /> Star
+              </Link>
             </div>
           </div>
         </div>
