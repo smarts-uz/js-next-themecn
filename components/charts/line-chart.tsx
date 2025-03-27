@@ -1,16 +1,16 @@
-"use client"
+"use client";
 
-import { useEffect, useRef, useState } from "react"
-import { useTheme } from "next-themes"
+import { useEffect, useRef, useState } from "react";
+import { useTheme } from "next-themes";
 
 // Import the color utility
-import { getCSSVariableColor } from "./color-utils"
+import { getCSSVariableColor } from "./color-utils";
 
 export function LineChart() {
-  const ref = useRef<HTMLDivElement>(null)
-  const [mounted, setMounted] = useState(false)
-  const { theme } = useTheme()
-  const isDark = theme === "dark"
+  const ref = useRef<HTMLDivElement>(null);
+  const [mounted, setMounted] = useState(false);
+  const { theme } = useTheme();
+  const isDark = theme === "dark";
 
   // Dummy data for the chart
   const data = [
@@ -26,88 +26,79 @@ export function LineChart() {
     { month: "Oct", value: 7000 },
     { month: "Nov", value: 7300 },
     { month: "Dec", value: 7800 },
-  ]
+  ];
 
   // Inside the component, add this:
   const [chartColors, setChartColors] = useState({
     chart1: "hsl(1 84% 63%)",
     background: "hsl(0 0% 100%)",
-  })
+  });
 
   // Update the useEffect to ensure chart colors are updated when theme changes
   useEffect(() => {
-    let isMounted = true
-    let observer: MutationObserver
+    let isMounted = true;
 
-    setMounted(true)
+    setMounted(true);
 
     // Function to update colors when CSS variables change
     const updateColors = () => {
-      if (!isMounted) return
+      if (!isMounted) return;
 
       setChartColors({
         chart1: getCSSVariableColor("--chart-1"),
         background: getCSSVariableColor("--background"),
-      })
-    }
+      });
+    };
 
     // Create an observer to watch for style changes
-    observer = new MutationObserver(updateColors)
+    const observer = new MutationObserver(updateColors);
 
-    // Observe changes to style attribute on document.documentElement
+    // Observe changes to style attribute and class on document.documentElement
     observer.observe(document.documentElement, {
       attributes: true,
       attributeFilter: ["style", "class"],
-    })
+    });
 
     // Initial update
-    updateColors()
+    updateColors();
 
     // Cleanup
     return () => {
-      isMounted = false
+      isMounted = false;
       if (observer) {
-        observer.disconnect()
+        observer.disconnect();
       }
-    }
-  }, [])
+    };
+  }, []);
 
-  if (!mounted) return null
+  if (!mounted) return null;
 
   // Calculate chart dimensions
-  const width = ref.current?.clientWidth || 600
-  const height = ref.current?.clientHeight || 300
-  const padding = { top: 20, right: 20, bottom: 30, left: 40 }
-  const chartWidth = width - padding.left - padding.right
-  const chartHeight = height - padding.top - padding.bottom
+  const width = ref.current?.clientWidth || 600;
+  const height = ref.current?.clientHeight || 300;
+  const padding = { top: 20, right: 20, bottom: 30, left: 40 };
+  const chartWidth = width - padding.left - padding.right;
+  const chartHeight = height - padding.top - padding.bottom;
 
   // Calculate scales
-  const maxValue = Math.max(...data.map((d) => d.value))
-  const yScale = (value: number) => chartHeight - (value / maxValue) * chartHeight
-  const xScale = (index: number) => (index / (data.length - 1)) * chartWidth
+  const maxValue = Math.max(...data.map((d) => d.value));
+  const yScale = (value: number) =>
+    chartHeight - (value / maxValue) * chartHeight;
+  const xScale = (index: number) => (index / (data.length - 1)) * chartWidth;
 
   // Generate path
   const pathData = data
     .map((d, i) => {
-      const x = xScale(i)
-      const y = yScale(d.value)
-      return `${i === 0 ? "M" : "L"} ${x} ${y}`
+      const x = xScale(i);
+      const y = yScale(d.value);
+      return `${i === 0 ? "M" : "L"} ${x} ${y}`;
     })
-    .join(" ")
+    .join(" ");
 
   // Generate area path (for gradient fill)
-  const areaPathData = `${pathData} L ${xScale(data.length - 1)} ${chartHeight} L ${xScale(0)} ${chartHeight} Z`
-
-  // Add a function to get the primary chart color
-  const getChartColor = () => {
-    if (typeof window === "undefined") {
-      return "#e57373" // Fallback color for SSR
-    }
-    return getCSSVariableColor("--chart-1")
-  }
-
-  // Use the color in the chart
-  const chartColor = mounted ? getChartColor() : "#e57373"
+  const areaPathData = `${pathData} L ${xScale(
+    data.length - 1
+  )} ${chartHeight} L ${xScale(0)} ${chartHeight} Z`;
 
   return (
     <div ref={ref} className="w-full h-full">
@@ -116,15 +107,23 @@ export function LineChart() {
           {/* Then update the gradient and paths to use chartColors.chart1 instead of var(--chart-1) */}
           {/* For example: */}
           <linearGradient id="lineGradient" x1="0%" y1="0%" x2="0%" y2="100%">
-            <stop offset="0%" stopColor={chartColors.chart1} stopOpacity="0.5" />
-            <stop offset="100%" stopColor={chartColors.chart1} stopOpacity="0" />
+            <stop
+              offset="0%"
+              stopColor={chartColors.chart1}
+              stopOpacity="0.5"
+            />
+            <stop
+              offset="100%"
+              stopColor={chartColors.chart1}
+              stopOpacity="0"
+            />
           </linearGradient>
         </defs>
 
         <g transform={`translate(${padding.left}, ${padding.top})`}>
           {/* Y-axis grid lines */}
           {[0, 0.25, 0.5, 0.75, 1].map((tick, i) => {
-            const y = chartHeight - tick * chartHeight
+            const y = chartHeight - tick * chartHeight;
             return (
               <g key={i}>
                 <line
@@ -147,7 +146,7 @@ export function LineChart() {
                   ${Math.round(maxValue * tick).toLocaleString()}
                 </text>
               </g>
-            )
+            );
           })}
 
           {/* X-axis labels */}
@@ -194,6 +193,5 @@ export function LineChart() {
         </g>
       </svg>
     </div>
-  )
+  );
 }
-

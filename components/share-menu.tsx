@@ -164,7 +164,7 @@ export function ShareMenu({ open, onOpenChange }: ShareMenuProps) {
                 borderRadius: "6px",
               }}
             >
-              {navigator.share ? "Share" : "Copy Link"}
+              {"Share"}
             </Button>
           </div>
         </div>

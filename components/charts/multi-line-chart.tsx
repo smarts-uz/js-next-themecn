@@ -1,14 +1,14 @@
-"use client"
+"use client";
 
-import { useEffect, useRef, useState } from "react"
-import { useTheme } from "next-themes"
-import { getCSSVariableColor } from "./color-utils"
+import { useEffect, useRef, useState } from "react";
+import { useTheme } from "next-themes";
+import { getCSSVariableColor } from "./color-utils";
 
 export function MultiLineChart() {
-  const ref = useRef<HTMLDivElement>(null)
-  const [mounted, setMounted] = useState(false)
-  const { theme } = useTheme()
-  const isDark = theme === "dark"
+  const ref = useRef<HTMLDivElement>(null);
+  const [mounted, setMounted] = useState(false);
+  const { theme } = useTheme();
+  const isDark = theme === "dark";
 
   // Dummy data for the chart
   const data = [
@@ -24,7 +24,7 @@ export function MultiLineChart() {
     { month: "Oct", users: 2100, revenue: 6200, growth: 3300 },
     { month: "Nov", users: 2300, revenue: 6500, growth: 3500 },
     { month: "Dec", users: 2500, revenue: 6800, growth: 3700 },
-  ]
+  ];
 
   // State for chart colors
   const [chartColors, setChartColors] = useState({
@@ -32,92 +32,94 @@ export function MultiLineChart() {
     chart2: "hsl(173 58% 39%)",
     chart3: "hsl(197 37% 24%)",
     background: "hsl(0 0% 100%)",
-  })
+  });
 
   // Update colors when theme changes
   useEffect(() => {
-    let isMounted = true
-    let observer: MutationObserver
+    let isMounted = true;
 
-    setMounted(true)
+    setMounted(true);
 
     // Function to update colors when CSS variables change
     const updateColors = () => {
-      if (!isMounted) return
+      if (!isMounted) return;
 
       setChartColors({
         chart1: getCSSVariableColor("--chart-1"),
         chart2: getCSSVariableColor("--chart-2"),
         chart3: getCSSVariableColor("--chart-3"),
         background: getCSSVariableColor("--background"),
-      })
-    }
+      });
+    };
 
     // Create an observer to watch for style changes
-    observer = new MutationObserver(updateColors)
+    const observer = new MutationObserver(updateColors);
 
     // Observe changes to style attribute and class on document.documentElement
     observer.observe(document.documentElement, {
       attributes: true,
       attributeFilter: ["style", "class"],
-    })
+    });
 
     // Initial update
-    updateColors()
+    updateColors();
 
     // Cleanup
     return () => {
-      isMounted = false
+      isMounted = false;
       if (observer) {
-        observer.disconnect()
+        observer.disconnect();
       }
-    }
-  }, [])
+    };
+  }, []);
 
-  if (!mounted) return null
+  if (!mounted) return null;
 
   // Calculate chart dimensions
-  const width = ref.current?.clientWidth || 600
-  const height = ref.current?.clientHeight || 250
-  const padding = { top: 20, right: 20, bottom: 30, left: 40 }
-  const chartWidth = width - padding.left - padding.right
-  const chartHeight = height - padding.top - padding.bottom
+  const width = ref.current?.clientWidth || 600;
+  const height = ref.current?.clientHeight || 250;
+  const padding = { top: 20, right: 20, bottom: 30, left: 40 };
+  const chartWidth = width - padding.left - padding.right;
+  const chartHeight = height - padding.top - padding.bottom;
 
   // Calculate scales
-  const maxUsers = Math.max(...data.map((d) => d.users))
-  const maxRevenue = Math.max(...data.map((d) => d.revenue))
-  const maxGrowth = Math.max(...data.map((d) => d.growth))
+  const maxUsers = Math.max(...data.map((d) => d.users));
+  const maxRevenue = Math.max(...data.map((d) => d.revenue));
+  const maxGrowth = Math.max(...data.map((d) => d.growth));
 
-  const yScaleUsers = (value: number) => chartHeight - (value / maxUsers) * chartHeight
-  const yScaleRevenue = (value: number) => chartHeight - (value / maxRevenue) * chartHeight
-  const yScaleGrowth = (value: number) => chartHeight - (value / maxGrowth) * chartHeight
+  const yScaleUsers = (value: number) =>
+    chartHeight - (value / maxUsers) * chartHeight;
+  const yScaleRevenue = (value: number) =>
+    chartHeight - (value / maxRevenue) * chartHeight;
+  const yScaleGrowth = (value: number) =>
+    chartHeight - (value / maxGrowth) * chartHeight;
 
-  const xScale = (index: number) => (index / (data.length - 1)) * chartWidth
+  const xScale = (index: number) => (index / (data.length - 1)) * chartWidth;
 
   // Generate paths
   const usersPathData = data
     .map((d, i) => {
-      const x = xScale(i)
-      const y = yScaleUsers(d.users)
-      return `${i === 0 ? "M" : "L"} ${x} ${y}`
+      const x = xScale(i);
+      const y = yScaleUsers(d.users);
+      return `${i === 0 ? "M" : "L"} ${x} ${y}`;
     })
-    .join(" ")
+    .join(" ");
 
   const revenuePathData = data
     .map((d, i) => {
-      const x = xScale(i)
-      const y = yScaleRevenue(d.revenue)
-      return `${i === 0 ? "M" : "L"} ${x} ${y}`
+      const x = xScale(i);
+      const y = yScaleRevenue(d.revenue);
+      return `${i === 0 ? "M" : "L"} ${x} ${y}`;
     })
-    .join(" ")
+    .join(" ");
 
   const growthPathData = data
     .map((d, i) => {
-      const x = xScale(i)
-      const y = yScaleGrowth(d.growth)
-      return `${i === 0 ? "M" : "L"} ${x} ${y}`
+      const x = xScale(i);
+      const y = yScaleGrowth(d.growth);
+      return `${i === 0 ? "M" : "L"} ${x} ${y}`;
     })
-    .join(" ")
+    .join(" ");
 
   return (
     <div ref={ref} className="w-full h-full">
@@ -125,7 +127,7 @@ export function MultiLineChart() {
         <g transform={`translate(${padding.left}, ${padding.top})`}>
           {/* Y-axis grid lines */}
           {[0, 0.25, 0.5, 0.75, 1].map((tick, i) => {
-            const y = chartHeight - tick * chartHeight
+            const y = chartHeight - tick * chartHeight;
             return (
               <g key={i}>
                 <line
@@ -138,7 +140,7 @@ export function MultiLineChart() {
                   strokeDasharray={i > 0 ? "4 4" : ""}
                 />
               </g>
-            )
+            );
           })}
 
           {/* X-axis labels */}
@@ -155,7 +157,7 @@ export function MultiLineChart() {
                 >
                   {d.month}
                 </text>
-              ),
+              )
           )}
 
           {/* Users line */}
@@ -230,19 +232,40 @@ export function MultiLineChart() {
           {/* Legend */}
           <g transform={`translate(${chartWidth - 150}, 10)`}>
             <g>
-              <line x1={0} y1={0} x2={20} y2={0} stroke={chartColors.chart1} strokeWidth={2} />
+              <line
+                x1={0}
+                y1={0}
+                x2={20}
+                y2={0}
+                stroke={chartColors.chart1}
+                strokeWidth={2}
+              />
               <text x={25} y={4} fontSize={10} fill="hsl(var(--foreground))">
                 Users
               </text>
             </g>
             <g transform="translate(0, 15)">
-              <line x1={0} y1={0} x2={20} y2={0} stroke={chartColors.chart2} strokeWidth={2} />
+              <line
+                x1={0}
+                y1={0}
+                x2={20}
+                y2={0}
+                stroke={chartColors.chart2}
+                strokeWidth={2}
+              />
               <text x={25} y={4} fontSize={10} fill="hsl(var(--foreground))">
                 Revenue
               </text>
             </g>
             <g transform="translate(0, 30)">
-              <line x1={0} y1={0} x2={20} y2={0} stroke={chartColors.chart3} strokeWidth={2} />
+              <line
+                x1={0}
+                y1={0}
+                x2={20}
+                y2={0}
+                stroke={chartColors.chart3}
+                strokeWidth={2}
+              />
               <text x={25} y={4} fontSize={10} fill="hsl(var(--foreground))">
                 Growth
               </text>
@@ -251,6 +274,5 @@ export function MultiLineChart() {
         </g>
       </svg>
     </div>
-  )
+  );
 }
-

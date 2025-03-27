@@ -31,7 +31,6 @@ export function BarChart() {
   // Update the useEffect to ensure chart colors are updated when theme changes
   useEffect(() => {
     let isMounted = true;
-    let observer: MutationObserver;
 
     setMounted(true);
 
@@ -46,7 +45,7 @@ export function BarChart() {
     };
 
     // Create an observer to watch for style changes
-    observer = new MutationObserver(updateColors);
+    const observer = new MutationObserver(updateColors);
 
     // Observe changes to style attribute on document.documentElement
     observer.observe(document.documentElement, {
@@ -83,17 +82,6 @@ export function BarChart() {
   const barSpacing = (chartWidth / data.length) * 0.2;
   const xScale = (index: number) =>
     index * (barWidth + barSpacing) + barSpacing / 2;
-
-  // Add a function to get the chart color
-  const getChartColor = () => {
-    if (typeof window === "undefined") {
-      return "#e773ce"; // Fallback color for SSR
-    }
-    return getCSSVariableColor("--chart-2");
-  };
-
-  // Use the color in the chart
-  const chartColor = mounted ? getChartColor() : "#e773ce";
 
   return (
     <div ref={ref} className="w-full h-full">

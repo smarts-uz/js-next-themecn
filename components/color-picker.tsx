@@ -42,24 +42,6 @@ export function ColorPicker({ color, onChange }: ColorPickerProps) {
     }
   }, [color]);
 
-  // Remove unused functions
-  function isLightColor(hexColor: string): boolean {
-    // Remove the # if present
-    hexColor = hexColor.replace(/^#/, "");
-
-    // Parse the hex values
-    const r = Number.parseInt(hexColor.substring(0, 2), 16);
-    const g = Number.parseInt(hexColor.substring(2, 4), 16);
-    const b = Number.parseInt(hexColor.substring(4, 6), 16);
-
-    // Calculate luminance (perceived brightness)
-    // Using the formula: 0.299*R + 0.587*G + 0.114*B
-    const luminance = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
-
-    // Return true if light, false if dark
-    return luminance > 0.5;
-  }
-
   // Convert hex to HSV
   function hexToHsv(hex: string): { h: number; s: number; v: number } {
     // Remove the # if present
@@ -233,7 +215,15 @@ export function ColorPicker({ color, onChange }: ColorPickerProps) {
       window.removeEventListener("mousemove", handleMouseMove);
       window.removeEventListener("mouseup", handleMouseUp);
     };
-  }, [isDraggingColor, isDraggingHue, hue, position.x, position.y]);
+  }, [
+    isDraggingColor,
+    isDraggingHue,
+    hue,
+    position.x,
+    position.y,
+    commitColorChange,
+    updateInternalColor,
+  ]);
 
   // Handle hex input change
   function handleHexChange(e: React.ChangeEvent<HTMLInputElement>) {
@@ -299,7 +289,7 @@ export function ColorPicker({ color, onChange }: ColorPickerProps) {
     }
 
     try {
-      // @ts-ignore - EyeDropper is not in the TypeScript DOM types yet
+      // @ts-expect-error - EyeDropper is not in the TypeScript DOM types yet
       const eyeDropper = new window.EyeDropper();
       const result = await eyeDropper.open();
       setHexValue(result.sRGBHex);

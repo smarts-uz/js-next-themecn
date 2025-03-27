@@ -71,7 +71,7 @@ export function FontSelector({
         document.head.removeChild(link);
       }
     };
-  }, []);
+  }, [fontOptions]);
 
   // Handle font selection
   const handleFontChange = (value: string) => {

@@ -135,7 +135,7 @@ const ThemeDock = () => {
     return () => {
       document.head.removeChild(link);
     };
-  }, []);
+  }, [fontOptions]);
 
   const handleSaveTheme = () => {
     if (newThemeName.trim()) {

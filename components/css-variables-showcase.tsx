@@ -11,7 +11,6 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { useThemeStore } from "@/lib/store";
 import { Copy, Check, Palette } from "lucide-react";
-import { toast } from "@/components/ui/sonner";
 
 interface CSSVariable {
   name: string;
@@ -119,8 +118,6 @@ export function CSSVariablesShowcase() {
     const textToCopy = `var(--${variable.name})`;
     navigator.clipboard.writeText(textToCopy);
     setCopied(variable.name);
-
-    toast(`${textToCopy} copied to clipboard`);
 
     setTimeout(() => {
       setCopied(null);
