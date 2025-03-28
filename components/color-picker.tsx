@@ -2,7 +2,7 @@
 
 import type React from "react";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useCallback } from "react";
 import { Button } from "@/components/ui/button";
 import { Copy, Pipette } from "lucide-react";
 import { toast } from "sonner";
@@ -131,7 +131,7 @@ export function ColorPicker({ color, onChange }: ColorPickerProps) {
   }
 
   // Update internal color based on position and hue
-  function updateInternalColor(x: number, y: number, h: number) {
+  const updateInternalColor = useCallback((x: number, y: number, h: number) => {
     if (!colorPanelRef.current) return;
 
     const width = colorPanelRef.current.clientWidth;
@@ -152,12 +152,12 @@ export function ColorPicker({ color, onChange }: ColorPickerProps) {
 
     // Update position
     setPosition({ x: clampedX, y: clampedY });
-  }
+  }, []);
 
   // Commit the color change to the parent component
-  function commitColorChange() {
+  const commitColorChange = useCallback(() => {
     onChange(internalColor);
-  }
+  }, [onChange, internalColor]);
 
   // Handle color panel mouse/touch events
   function handleColorPanelMouseDown(e: React.MouseEvent<HTMLDivElement>) {

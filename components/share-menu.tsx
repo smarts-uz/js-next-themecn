@@ -149,8 +149,8 @@ export function ShareMenu({ open, onOpenChange }: ShareMenuProps) {
                 if (navigator.share) {
                   navigator
                     .share({
-                      title: "Check out my ThemeCN theme",
-                      text: "I created this theme with ThemeCN. Check it out!",
+                      title: "Check out my themecn theme",
+                      text: "I created this theme with themecn. Check it out!",
                       url: shareUrl,
                     })
                     .catch(console.error);

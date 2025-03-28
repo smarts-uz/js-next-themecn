@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useMemo } from "react";
 import { useThemeStore } from "@/lib/store";
 import { Button } from "@/components/ui/button";
 import {
@@ -111,29 +111,32 @@ const ThemeDock = () => {
   }, []);
 
   // Font options
-  const fontOptions = [
-    "Geist",
-    "Inter",
-    "Roboto",
-    "Open Sans",
-    "Lato",
-    "Montserrat",
-    "Poppins",
-    "Raleway",
-    "Oswald",
-    "Merriweather",
-    "Playfair Display",
-    "Source Sans Pro",
-    "Ubuntu",
-    "Nunito",
-    "Rubik",
-    "Work Sans",
-    "PT Sans",
-    "Mulish",
-    "Quicksand",
-    "Fira Sans",
-    "Cabin",
-  ];
+  const fontOptions = useMemo(
+    () => [
+      "Geist",
+      "Inter",
+      "Roboto",
+      "Open Sans",
+      "Lato",
+      "Montserrat",
+      "Poppins",
+      "Raleway",
+      "Oswald",
+      "Merriweather",
+      "Playfair Display",
+      "Source Sans Pro",
+      "Ubuntu",
+      "Nunito",
+      "Rubik",
+      "Work Sans",
+      "PT Sans",
+      "Mulish",
+      "Quicksand",
+      "Fira Sans",
+      "Cabin",
+    ],
+    []
+  );
 
   // Load Google Fonts
   useEffect(() => {

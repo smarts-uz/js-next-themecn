@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { Label } from "@/components/ui/label";
 import {
   Select,
@@ -32,29 +32,32 @@ export function FontSelector({
   }, [currentFont]);
 
   // List of popular Google Fonts
-  const fontOptions = [
-    "Geist",
-    "Inter",
-    "Roboto",
-    "Open Sans",
-    "Lato",
-    "Montserrat",
-    "Poppins",
-    "Raleway",
-    "Oswald",
-    "Merriweather",
-    "Playfair Display",
-    "Source Sans Pro",
-    "Ubuntu",
-    "Nunito",
-    "Rubik",
-    "Work Sans",
-    "PT Sans",
-    "Mulish",
-    "Quicksand",
-    "Fira Sans",
-    "Cabin",
-  ];
+  const fontOptions = useMemo(
+    () => [
+      "Geist",
+      "Inter",
+      "Roboto",
+      "Open Sans",
+      "Lato",
+      "Montserrat",
+      "Poppins",
+      "Raleway",
+      "Oswald",
+      "Merriweather",
+      "Playfair Display",
+      "Source Sans Pro",
+      "Ubuntu",
+      "Nunito",
+      "Rubik",
+      "Work Sans",
+      "PT Sans",
+      "Mulish",
+      "Quicksand",
+      "Fira Sans",
+      "Cabin",
+    ],
+    []
+  );
 
   // Load Google Fonts
   useEffect(() => {

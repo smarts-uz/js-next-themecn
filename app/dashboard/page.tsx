@@ -212,7 +212,7 @@ export default function Dashboard() {
         <div className="w-full flex justify-between">
           <div className="flex items-center gap-2">
             <div className="w-8 h-8 rounded-full bg-primary"></div>
-            <span className="font-bold text-xl text-foreground">ThemeCN</span>
+            <span className="font-bold text-xl text-foreground">themecn</span>
           </div>
           <div className="flex items-center gap-4">
             <form className="hidden md:flex">
@@ -248,7 +248,7 @@ export default function Dashboard() {
             <div className="h-full py-6 px-4">
               <div className="space-y-6">
                 <div className="px-3 py-2">
-                  <h2 className="mb-6 px-4 text-lg font-semibold">ThemeCN</h2>
+                  <h2 className="mb-6 px-4 text-lg font-semibold">themecn</h2>
 
                   <div className="space-y-1">
                     <nav className="grid gap-2">

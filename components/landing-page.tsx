@@ -23,7 +23,7 @@ export default function LandingPage() {
                 className="font-bold text-xl text-foreground"
                 style={{ fontFamily: fonts.heading }}
               >
-                ThemeCN
+                themecn
               </span>
             </div>
 
@@ -56,7 +56,7 @@ export default function LandingPage() {
                 className="text-lg text-muted-foreground mb-8"
                 style={{ fontFamily: fonts.body }}
               >
-                ThemeCN makes it easy to create, visualize, and export custom
+                themecn makes it easy to create, visualize, and export custom
                 themes for your shadcn/ui projects. Create your perfect theme in
                 real-time with our intuitive interface.
               </p>
@@ -139,7 +139,7 @@ export default function LandingPage() {
                   className="font-bold text-xl text-foreground"
                   style={{ fontFamily: fonts.heading }}
                 >
-                  ThemeCN
+                  themecn
                 </span>
               </div>
               <p className="text-sm text-muted-foreground mb-4">
@@ -294,7 +294,7 @@ export default function LandingPage() {
 
           <div className="border-t border-border pt-8 flex flex-col md:flex-row justify-between items-center">
             <p className="text-sm text-muted-foreground mb-4 md:mb-0">
-              © {new Date().getFullYear()} ThemeCN. All rights reserved.
+              © {new Date().getFullYear()} themecn. All rights reserved.
             </p>
             <div className="flex flex-wrap gap-6">
               <a
