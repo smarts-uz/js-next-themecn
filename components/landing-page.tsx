@@ -33,12 +33,14 @@ export default function LandingPage() {
 
             <div className="flex items-center gap-3">
               <NavigationCombobox />
-              <Link
-                href="https://github.com/jordanliu/themecn"
-                className={buttonVariants()}
-              >
-                <Icons.gitHub /> Star
-              </Link>
+              <div className="hidden lg:block">
+                <Link
+                  href="https://github.com/jordanliu/themecn"
+                  className={buttonVariants()}
+                >
+                  <Icons.gitHub /> Star
+                </Link>
+              </div>
             </div>
           </div>
         </div>

@@ -1181,12 +1181,8 @@ export const useThemeStore = create<ThemeStore>()(
         const s = Number.parseInt(sStr.replace("%", ""), 10);
         const l = Number.parseInt(lStr.replace("%", ""), 10);
 
-        // Randomize border radius - select one from the specified values
-        const borderRadiusOptions = [0, 0.25, 0.5, 0.75, 1.0];
-        const randomBorderRadius =
-          borderRadiusOptions[
-            Math.floor(Math.random() * borderRadiusOptions.length)
-          ];
+        // Get the current border radius (don't randomize it)
+        const currentBorderRadius = get().borderRadius;
 
         // LIGHT MODE COLORS
         // -----------------
@@ -1368,13 +1364,13 @@ export const useThemeStore = create<ThemeStore>()(
 
           // Apply the appropriate CSS variables based on current mode
           const colors = isDarkMode ? darkColors : lightColors;
-          applyCSSVariables(colors, randomBorderRadius, state.fonts);
+          applyCSSVariables(colors, currentBorderRadius, state.fonts);
 
           const newState = {
             ...state,
             colors: lightColors,
             darkColors: darkColors,
-            borderRadius: randomBorderRadius,
+            borderRadius: currentBorderRadius,
           };
 
           // Update URL with new theme
