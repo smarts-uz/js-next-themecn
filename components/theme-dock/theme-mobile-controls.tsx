@@ -4,175 +4,111 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
-import {
-  Droplet,
-  Square,
-  Palette,
-  Sun,
-  Moon,
-  Download,
-  Type,
-} from "lucide-react";
-import { useThemeStore } from "@/lib/store";
+import { Palette, Type, MoreVertical, Ruler } from "lucide-react";
 
-interface MobileMoreProps {
+export interface MobileMoreProps {
   isOpen: boolean;
   onOpenChange: (open: boolean) => void;
-
   onBorderRadiusClick: () => void;
   onHarmonyClick: () => void;
-  onThemesClick: () => void;
-  onTypographyClick?: () => void;
+  onTypographyClick: () => void;
 }
 
 export const ThemeMobileMore = ({
   isOpen,
   onOpenChange,
-
   onBorderRadiusClick,
   onHarmonyClick,
-  onThemesClick,
   onTypographyClick,
 }: MobileMoreProps) => {
-  const { isDarkMode, toggleDarkMode, setExportMenuOpen } = useThemeStore();
-
   return (
-    <Tooltip>
-      <TooltipTrigger asChild>
-        <div>
-          <Popover open={isOpen} onOpenChange={onOpenChange}>
-            <PopoverTrigger asChild>
-              <Button
-                variant="ghost"
-                className="flex items-center justify-center h-10 w-10 p-0 rounded-full hover:bg-gray-100 hover:text-gray-900 text-gray-700 transition-all duration-200"
-              >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="18"
-                  height="18"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                >
-                  <circle cx="12" cy="12" r="1" />
-                  <circle cx="19" cy="12" r="1" />
-                  <circle cx="5" cy="12" r="1" />
-                </svg>
-                <span className="sr-only">More</span>
-              </Button>
-            </PopoverTrigger>
-            <PopoverContent
-              className="w-80 p-2"
-              side="top"
-              align="end"
-              sideOffset={16}
-              style={{
-                backgroundColor: "white",
-                border: "1px solid #e5e7eb",
-                borderRadius: "0.5rem",
-                boxShadow:
-                  "0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)",
-                color: "#1a1a1a",
-              }}
-            >
-              <div className="grid grid-cols-3 gap-2 w-full">
-                {/* Border Radius */}
-                <Button
-                  variant="ghost"
-                  className="flex flex-col items-center justify-center space-y-1 h-20 rounded-md hover:bg-gray-100"
-                  onClick={() => {
-                    onOpenChange(false);
-                    onBorderRadiusClick();
-                  }}
-                >
-                  <Square size={20} />
-                  <span className="text-xs">Border Radius</span>
-                </Button>
-
-                {/* Color Harmony */}
-                <Button
-                  variant="ghost"
-                  className="flex flex-col items-center justify-center space-y-1 h-20 rounded-md hover:bg-gray-100"
-                  onClick={() => {
-                    onOpenChange(false);
-                    onHarmonyClick();
-                  }}
-                >
-                  <Droplet size={20} />
-                  <span className="text-xs">Color Harmony</span>
-                </Button>
-
-                {/* Themes */}
-                <Button
-                  variant="ghost"
-                  className="flex flex-col items-center justify-center space-y-1 h-20 rounded-md hover:bg-gray-100"
-                  onClick={() => {
-                    onOpenChange(false);
-                    onThemesClick();
-                  }}
-                >
-                  <Palette size={20} />
-                  <span className="text-xs">Themes</span>
-                </Button>
-
-                {/* Typography */}
-                {onTypographyClick && (
-                  <Button
-                    variant="ghost"
-                    className="flex flex-col items-center justify-center space-y-1 h-20 rounded-md hover:bg-gray-100"
-                    onClick={() => {
-                      onOpenChange(false);
-                      onTypographyClick();
-                    }}
-                  >
-                    <Type size={20} />
-                    <span className="text-xs">Typography</span>
-                  </Button>
-                )}
-
-                {/* Dark Mode */}
-                <Button
-                  variant="ghost"
-                  className="flex flex-col items-center justify-center space-y-1 h-20 rounded-md hover:bg-gray-100"
-                  onClick={() => {
-                    toggleDarkMode();
-                    onOpenChange(false);
-                  }}
-                >
-                  {isDarkMode ? <Sun size={20} /> : <Moon size={20} />}
-                  <span className="text-xs">
-                    {isDarkMode ? "Light Mode" : "Dark Mode"}
-                  </span>
-                </Button>
-
-                {/* Export */}
-                <Button
-                  variant="ghost"
-                  className="flex flex-col items-center justify-center space-y-1 h-20 rounded-md hover:bg-gray-100"
-                  onClick={() => {
-                    setExportMenuOpen(true);
-                    onOpenChange(false);
-                  }}
-                >
-                  <Download size={20} />
-                  <span className="text-xs">Export</span>
-                </Button>
-              </div>
-            </PopoverContent>
-          </Popover>
+    <Popover open={isOpen} onOpenChange={onOpenChange}>
+      <PopoverTrigger asChild>
+        <Button
+          variant="ghost"
+          className="flex items-center justify-center h-10 w-10 p-0 rounded-full hover:bg-gray-100 hover:text-gray-900 text-gray-700 transition-all duration-200"
+        >
+          <MoreVertical size={18} />
+          <span className="sr-only">More options</span>
+        </Button>
+      </PopoverTrigger>
+      <PopoverContent
+        className="w-56 p-0"
+        side="top"
+        align="center"
+        sideOffset={16}
+        style={{
+          backgroundColor: "white",
+          border: "1px solid #e5e7eb",
+          borderRadius: "0.5rem",
+          boxShadow:
+            "0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)",
+          color: "#1a1a1a",
+        }}
+      >
+        <div
+          className="p-2 flex items-center justify-between"
+          style={{
+            borderBottom: "1px solid #e5e7eb",
+            color: "#1a1a1a",
+          }}
+        >
+          <span className="font-medium">More Options</span>
         </div>
-      </TooltipTrigger>
-      <TooltipContent side="top" className="bg-gray-900 text-white border-none">
-        More Options
-      </TooltipContent>
-    </Tooltip>
+        <div className="py-1">
+          <Button
+            variant="ghost"
+            className="w-full justify-start text-left h-9 px-2 relative hover:bg-gray-100 hover:text-gray-900"
+            onClick={() => {
+              onBorderRadiusClick();
+              onOpenChange(false);
+            }}
+            style={{
+              color: "#374151",
+              borderRadius: "0",
+            }}
+          >
+            <div className="flex items-center gap-2">
+              <Ruler size={16} />
+              <span>Border Radius</span>
+            </div>
+          </Button>
+          <Button
+            variant="ghost"
+            className="w-full justify-start text-left h-9 px-2 relative hover:bg-gray-100 hover:text-gray-900"
+            onClick={() => {
+              onHarmonyClick();
+              onOpenChange(false);
+            }}
+            style={{
+              color: "#374151",
+              borderRadius: "0",
+            }}
+          >
+            <div className="flex items-center gap-2">
+              <Palette size={16} />
+              <span>Color Harmony</span>
+            </div>
+          </Button>
+          <Button
+            variant="ghost"
+            className="w-full justify-start text-left h-9 px-2 relative hover:bg-gray-100 hover:text-gray-900"
+            onClick={() => {
+              onTypographyClick();
+              onOpenChange(false);
+            }}
+            style={{
+              color: "#374151",
+              borderRadius: "0",
+            }}
+          >
+            <div className="flex items-center gap-2">
+              <Type size={16} />
+              <span>Typography</span>
+            </div>
+          </Button>
+        </div>
+      </PopoverContent>
+    </Popover>
   );
 };

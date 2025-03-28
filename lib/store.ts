@@ -1576,75 +1576,79 @@ export const useThemeStore = create<ThemeStore>()(
 
         return `
 :root {
---background: ${colors.background};
---foreground: ${colors.foreground};
---card: ${colors.card};
---card-foreground: ${colors.cardForeground};
---popover: ${colors.popover};
---popover-foreground: ${colors.popoverForeground};
---primary: ${colors.primary};
---primary-foreground: ${colors.primaryForeground};
---secondary: ${colors.secondary};
---secondary-foreground: ${colors.secondaryForeground};
---muted: ${colors.muted};
---muted-foreground: ${colors.mutedForeground};
---accent: ${colors.accent};
---accent-foreground: ${colors.accentForeground};
---destructive: ${colors.destructive};
---destructive-foreground: ${colors.destructiveForeground};
---border: ${colors.border};
---input: ${colors.input};
---ring: ${colors.ring};
---chart-1: ${colors.chart1};
---chart-2: ${colors.chart2};
---chart-3: ${colors.chart3};
---chart-4: ${colors.chart4};
---chart-5: ${colors.chart5};
+--background: ${formatToOklch(colors.background)};
+--foreground: ${formatToOklch(colors.foreground)};
+--card: ${formatToOklch(colors.card)};
+--card-foreground: ${formatToOklch(colors.cardForeground)};
+--popover: ${formatToOklch(colors.popover)};
+--popover-foreground: ${formatToOklch(colors.popoverForeground)};
+--primary: ${formatToOklch(colors.primary)};
+--primary-foreground: ${formatToOklch(colors.primaryForeground)};
+--secondary: ${formatToOklch(colors.secondary)};
+--secondary-foreground: ${formatToOklch(colors.secondaryForeground)};
+--muted: ${formatToOklch(colors.muted)};
+--muted-foreground: ${formatToOklch(colors.mutedForeground)};
+--accent: ${formatToOklch(colors.accent)};
+--accent-foreground: ${formatToOklch(colors.accentForeground)};
+--destructive: ${formatToOklch(colors.destructive)};
+--destructive-foreground: ${formatToOklch(colors.destructiveForeground)};
+--border: ${formatToOklch(colors.border)};
+--input: ${formatToOklch(colors.input)};
+--ring: ${formatToOklch(colors.ring)};
+--chart-1: ${formatToOklch(colors.chart1)};
+--chart-2: ${formatToOklch(colors.chart2)};
+--chart-3: ${formatToOklch(colors.chart3)};
+--chart-4: ${formatToOklch(colors.chart4)};
+--chart-5: ${formatToOklch(colors.chart5)};
 --radius: ${borderRadius / 16}rem;
---sidebar: ${colors.sidebar};
---sidebar-foreground: ${colors.sidebarForeground};
---sidebar-primary: ${colors.sidebarPrimary};
---sidebar-primary-foreground: ${colors.sidebarPrimaryForeground};
---sidebar-accent: ${colors.sidebarAccent};
---sidebar-accent-foreground: ${darkColors.sidebarAccentForeground};
---sidebar-border: ${colors.sidebarBorder};
---sidebar-ring: ${colors.sidebarRing};
+--sidebar: ${formatToOklch(colors.sidebar)};
+--sidebar-foreground: ${formatToOklch(colors.sidebarForeground)};
+--sidebar-primary: ${formatToOklch(colors.sidebarPrimary)};
+--sidebar-primary-foreground: ${formatToOklch(colors.sidebarPrimaryForeground)};
+--sidebar-accent: ${formatToOklch(colors.sidebarAccent)};
+--sidebar-accent-foreground: ${formatToOklch(colors.sidebarAccentForeground)};
+--sidebar-border: ${formatToOklch(colors.sidebarBorder)};
+--sidebar-ring: ${formatToOklch(colors.sidebarRing)};
 }
 
 .dark {
---background: ${darkColors.background};
---foreground: ${darkColors.foreground};
---card: ${darkColors.card};
---card-foreground: ${darkColors.cardForeground};
---popover: ${darkColors.popover};
---popover-foreground: ${darkColors.popoverForeground};
---primary: ${darkColors.primary};
---primary-foreground: ${darkColors.primaryForeground};
---secondary: ${darkColors.secondary};
---secondary-foreground: ${darkColors.secondaryForeground};
---muted: ${darkColors.muted};
---muted-foreground: ${darkColors.mutedForeground};
---accent: ${darkColors.accent};
---accent-foreground: ${darkColors.accentForeground};
---destructive: ${darkColors.destructive};
---destructive-foreground: ${darkColors.destructiveForeground};
---border: ${darkColors.border};
---input: ${darkColors.input};
---ring: ${darkColors.ring};
---chart-1: ${darkColors.chart1};
---chart-2: ${darkColors.chart2};
---chart-3: ${darkColors.chart3};
---chart-4: ${darkColors.chart4};
---chart-5: ${darkColors.chart5};
+--background: ${formatToOklch(darkColors.background)};
+--foreground: ${formatToOklch(darkColors.foreground)};
+--card: ${formatToOklch(darkColors.card)};
+--card-foreground: ${formatToOklch(darkColors.cardForeground)};
+--popover: ${formatToOklch(darkColors.popover)};
+--popover-foreground: ${formatToOklch(darkColors.popoverForeground)};
+--primary: ${formatToOklch(darkColors.primary)};
+--primary-foreground: ${formatToOklch(darkColors.primaryForeground)};
+--secondary: ${formatToOklch(darkColors.secondary)};
+--secondary-foreground: ${formatToOklch(darkColors.secondaryForeground)};
+--muted: ${formatToOklch(darkColors.muted)};
+--muted-foreground: ${formatToOklch(darkColors.mutedForeground)};
+--accent: ${formatToOklch(darkColors.accent)};
+--accent-foreground: ${formatToOklch(darkColors.accentForeground)};
+--destructive: ${formatToOklch(darkColors.destructive)};
+--destructive-foreground: ${formatToOklch(darkColors.destructiveForeground)};
+--border: ${formatToOklch(darkColors.border)};
+--input: ${formatToOklch(darkColors.input)};
+--ring: ${formatToOklch(darkColors.ring)};
+--chart-1: ${formatToOklch(darkColors.chart1)};
+--chart-2: ${formatToOklch(darkColors.chart2)};
+--chart-3: ${formatToOklch(darkColors.chart3)};
+--chart-4: ${formatToOklch(darkColors.chart4)};
+--chart-5: ${formatToOklch(darkColors.chart5)};
 --radius: ${borderRadius / 16}rem;
---sidebar: ${darkColors.sidebar};
---sidebar-foreground: ${darkColors.sidebarForeground};
---sidebar-primary: ${darkColors.sidebarPrimary};
---sidebar-primary-foreground: ${darkColors.sidebarPrimaryForeground};
---sidebar-accent: ${darkColors.sidebarAccent};
---sidebar-accent-foreground: ${darkColors.sidebarAccentForeground};
---sidebar-border: ${darkColors.sidebarBorder};
---sidebar-ring: ${darkColors.sidebarRing};
+--sidebar: ${formatToOklch(darkColors.sidebar)};
+--sidebar-foreground: ${formatToOklch(darkColors.sidebarForeground)};
+--sidebar-primary: ${formatToOklch(darkColors.sidebarPrimary)};
+--sidebar-primary-foreground: ${formatToOklch(
+          darkColors.sidebarPrimaryForeground
+        )};
+--sidebar-accent: ${formatToOklch(darkColors.sidebarAccent)};
+--sidebar-accent-foreground: ${formatToOklch(
+          darkColors.sidebarAccentForeground
+        )};
+--sidebar-border: ${formatToOklch(darkColors.sidebarBorder)};
+--sidebar-ring: ${formatToOklch(darkColors.sidebarRing)};
 }
 `.trim();
       },
@@ -1656,55 +1660,55 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        border: "hsl(var(--border))",
-        input: "hsl(var(--input))",
-        ring: "hsl(var(--ring))",
-        background: "hsl(var(--background))",
-        foreground: "hsl(var(--foreground))",
+        border: "oklch(var(--border))",
+        input: "oklch(var(--input))",
+        ring: "oklch(var(--ring))",
+        background: "oklch(var(--background))",
+        foreground: "oklch(var(--foreground))",
         primary: {
-          DEFAULT: "hsl(var(--primary))",
-          foreground: "hsl(var(--primary-foreground))",
+          DEFAULT: "oklch(var(--primary))",
+          foreground: "oklch(var(--primary-foreground))",
         },
         secondary: {
-          DEFAULT: "hsl(var(--secondary))",
-          foreground: "hsl(var(--secondary-foreground))",
+          DEFAULT: "oklch(var(--secondary))",
+          foreground: "oklch(var(--secondary-foreground))",
         },
         destructive: {
-          DEFAULT: "hsl(var(--destructive))",
-          foreground: "hsl(var(--destructive-foreground))",
+          DEFAULT: "oklch(var(--destructive))",
+          foreground: "oklch(var(--destructive-foreground))",
         },
         muted: {
-          DEFAULT: "hsl(var(--muted))",
-          foreground: "hsl(var(--muted-foreground))",
+          DEFAULT: "oklch(var(--muted))",
+          foreground: "oklch(var(--muted-foreground))",
         },
         accent: {
-          DEFAULT: "hsl(var(--accent))",
-          foreground: "hsl(var(--accent-foreground))",
+          DEFAULT: "oklch(var(--accent))",
+          foreground: "oklch(var(--accent-foreground))",
         },
         popover: {
-          DEFAULT: "hsl(var(--popover))",
-          foreground: "hsl(var(--popover-foreground))",
+          DEFAULT: "oklch(var(--popover))",
+          foreground: "oklch(var(--popover-foreground))",
         },
         card: {
-          DEFAULT: "hsl(var(--card))",
-          foreground: "hsl(var(--card-foreground))",
+          DEFAULT: "oklch(var(--card))",
+          foreground: "oklch(var(--card-foreground))",
         },
         sidebar: {
-          DEFAULT: "hsl(var(--sidebar))",
-          foreground: "hsl(var(--sidebar-foreground))",
-          primary: "hsl(var(--sidebar-primary))",
-          "primary-foreground": "hsl(var(--sidebar-primary-foreground))",
-          accent: "hsl(var(--sidebar-accent))",
-          "accent-foreground": "hsl(var(--sidebar-accent-foreground))",
-          border: "hsl(var(--sidebar-border))",
-          ring: "hsl(var(--sidebar-ring))",
+          DEFAULT: "oklch(var(--sidebar))",
+          foreground: "oklch(var(--sidebar-foreground))",
+          primary: "oklch(var(--sidebar-primary))",
+          "primary-foreground": "oklch(var(--sidebar-primary-foreground))",
+          accent: "oklch(var(--sidebar-accent))",
+          "accent-foreground": "oklch(var(--sidebar-accent-foreground))",
+          border: "oklch(var(--sidebar-border))",
+          ring: "oklch(var(--sidebar-ring))",
         },
         chart: {
-          1: "hsl(var(--chart-1))",
-          2: "hsl(var(--chart-2))",
-          3: "hsl(var(--chart-3))",
-          4: "hsl(var(--chart-4))",
-          5: "hsl(var(--chart-5))",
+          1: "oklch(var(--chart-1))",
+          2: "oklch(var(--chart-2))",
+          3: "oklch(var(--chart-3))",
+          4: "oklch(var(--chart-4))",
+          5: "oklch(var(--chart-5))",
         },
       },
       borderRadius: {
@@ -1726,7 +1730,9 @@ module.exports = {
           theme: {
             light: {
               colors: Object.entries(colors).reduce((acc, [key, value]) => {
-                acc[key.replace(/([A-Z])/g, "-$1").toLowerCase()] = value;
+                // Convert HSL value to OKLCH
+                acc[key.replace(/([A-Z])/g, "-$1").toLowerCase()] =
+                  formatToOklch(value);
                 return acc;
               }, {} as Record<string, string>),
               borderRadius,
@@ -1734,7 +1740,9 @@ module.exports = {
             },
             dark: {
               colors: Object.entries(darkColors).reduce((acc, [key, value]) => {
-                acc[key.replace(/([A-Z])/g, "-$1").toLowerCase()] = value;
+                // Convert HSL value to OKLCH
+                acc[key.replace(/([A-Z])/g, "-$1").toLowerCase()] =
+                  formatToOklch(value);
                 return acc;
               }, {} as Record<string, string>),
               borderRadius,

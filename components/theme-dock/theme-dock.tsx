@@ -30,12 +30,10 @@ import {
 } from "@/components/ui/light-drawer";
 import { ThemeColorPickers } from "@/components/theme-dock/theme-color-pickers";
 import { ThemeTypography } from "@/components/theme-dock/theme-typography";
-import { ThemePresets } from "@/components/theme-dock/theme-presets";
 import { ThemeHarmonies } from "@/components/theme-dock/theme-harmonies";
 import { ThemeBorderRadius } from "@/components/theme-dock/theme-border-radius";
 import { ThemeUtilityControls } from "@/components/theme-dock/theme-utility-controls";
 import { ThemeMobileMore } from "@/components/theme-dock/theme-mobile-controls";
-import { ThemeSaveDialog } from "@/components/theme-dock/theme-save-dialog";
 
 type FontKey = "heading" | "body";
 
@@ -49,21 +47,16 @@ const ThemeDock = () => {
     setExportMenuOpen,
     shareMenuOpen,
     setShareMenuOpen,
-    predefinedThemes,
-    currentTheme,
-    setCurrentTheme,
   } = useThemeStore();
 
   const isMobile = useIsMobile();
   const [dockVisible, setDockVisible] = useState(true);
-  const [saveThemeDialogOpen, setSaveThemeDialogOpen] = useState(false);
   const dockRef = useRef<HTMLDivElement>(null);
   const [fontsLocked, setFontsLocked] = useState(false);
   const [mobileMoreOpen, setMobileMoreOpen] = useState(false);
 
   const [mobileBorderRadiusOpen, setMobileBorderRadiusOpen] = useState(false);
   const [mobileHarmonyOpen, setMobileHarmonyOpen] = useState(false);
-  const [mobileThemesOpen, setMobileThemesOpen] = useState(false);
   const [mobileTypographyOpen, setMobileTypographyOpen] = useState(false);
 
   // Toggle dock visibility with keyboard shortcut (Shift + D)
@@ -139,20 +132,10 @@ const ThemeDock = () => {
 
   // Add an effect to ensure popover is closed when any drawer is open
   useEffect(() => {
-    if (
-      mobileBorderRadiusOpen ||
-      mobileHarmonyOpen ||
-      mobileThemesOpen ||
-      mobileTypographyOpen
-    ) {
+    if (mobileBorderRadiusOpen || mobileHarmonyOpen || mobileTypographyOpen) {
       setMobileMoreOpen(false);
     }
-  }, [
-    mobileBorderRadiusOpen,
-    mobileHarmonyOpen,
-    mobileThemesOpen,
-    mobileTypographyOpen,
-  ]);
+  }, [mobileBorderRadiusOpen, mobileHarmonyOpen, mobileTypographyOpen]);
 
   if (!dockVisible) {
     return (
@@ -195,10 +178,6 @@ const ThemeDock = () => {
     <>
       <ExportMenu />
       <ShareMenu open={shareMenuOpen} onOpenChange={setShareMenuOpen} />
-      <ThemeSaveDialog
-        open={saveThemeDialogOpen}
-        onOpenChange={setSaveThemeDialogOpen}
-      />
 
       {/* Mobile drawers */}
       {isMobile && (
@@ -241,76 +220,6 @@ const ThemeDock = () => {
                     >
                       <span>{harmony.name}</span>
                       {selectedHarmony === harmony.value && (
-                        <Check
-                          size={16}
-                          className="absolute right-3 top-1/2 transform -translate-y-1/2"
-                        />
-                      )}
-                    </Button>
-                  ))}
-                </div>
-              </div>
-            </LightDrawerContent>
-          </LightDrawer>
-
-          {/* Themes Drawer */}
-          <LightDrawer
-            open={mobileThemesOpen}
-            onOpenChange={(open) => setMobileThemesOpen(open)}
-          >
-            <LightDrawerContent className="bg-white border-t border-gray-200">
-              <LightDrawerHeader>
-                <LightDrawerTitle>Theme Presets</LightDrawerTitle>
-              </LightDrawerHeader>
-              <div className="px-4 pb-6">
-                <div className="mb-4 flex justify-end">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className="h-9 px-3 flex items-center gap-1 hover:bg-gray-100"
-                    onClick={() => {
-                      setSaveThemeDialogOpen(true);
-                      setMobileThemesOpen(false);
-                    }}
-                  >
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      width="16"
-                      height="16"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    >
-                      <path d="M5 12h14" />
-                      <path d="M12 5v14" />
-                    </svg>
-                    <span>Save Current Theme</span>
-                  </Button>
-                </div>
-                <div className="py-1">
-                  {predefinedThemes.map((theme) => (
-                    <Button
-                      key={theme.name}
-                      variant="ghost"
-                      className="w-full justify-start text-left h-12 px-3 mb-1 relative hover:bg-gray-100 hover:text-gray-900 rounded-md"
-                      onClick={() => {
-                        setCurrentTheme(theme.name);
-                        setMobileThemesOpen(false);
-                      }}
-                    >
-                      <div className="flex items-center gap-2">
-                        <div
-                          className="w-5 h-5 rounded-full"
-                          style={{
-                            backgroundColor: theme.colors.primary,
-                          }}
-                        />
-                        <span>{theme.name}</span>
-                      </div>
-                      {currentTheme === theme.name && (
                         <Check
                           size={16}
                           className="absolute right-3 top-1/2 transform -translate-y-1/2"
@@ -459,21 +368,22 @@ const ThemeDock = () => {
       )}
 
       {/* Main dock container */}
-      <div className="fixed bottom-10 left-1/2 -translate-x-1/2 z-50 px-4 sm:px-6 md:px-8">
+      <div className="fixed bottom-4 left-0 right-0 z-50">
         <div
           ref={dockRef}
-          className="bg-[#f5f5f5] backdrop-blur-xl border border-gray-200 rounded-full shadow-lg mx-auto overflow-visible"
-          style={{ padding: isMobile ? "8px 20px" : "8px 12px" }}
+          className={`mx-auto max-w-fit px-4 transition-all duration-300 ${
+            dockVisible ? "translate-y-0" : "translate-y-full"
+          }`}
         >
-          <TooltipProvider delayDuration={0}>
-            <div className="flex items-center justify-center overflow-x-auto py-1 px-1 scrollbar-hide">
+          <TooltipProvider>
+            <div className="bg-[#f5f5f5] backdrop-blur-xl border border-gray-200 rounded-full shadow-lg p-1.5 flex items-center gap-2">
               {isMobile ? (
                 // Mobile layout
                 <>
                   {/* All main color pickers */}
                   <ThemeColorPickers />
 
-                  <div className="h-6 w-px bg-gray-200 mx-3"></div>
+                  <div className="h-5 w-px bg-gray-200" />
 
                   {/* Randomize button */}
                   <ThemeUtilityControls
@@ -481,12 +391,11 @@ const ThemeDock = () => {
                     showRandomizeOnly={true}
                   />
 
-                  <div className="h-6 w-px bg-gray-200 mx-3"></div>
+                  <div className="h-5 w-px bg-gray-200"></div>
 
                   {/* More options menu */}
                   {!mobileBorderRadiusOpen &&
                   !mobileHarmonyOpen &&
-                  !mobileThemesOpen &&
                   !mobileTypographyOpen ? (
                     <ThemeMobileMore
                       isOpen={mobileMoreOpen}
@@ -495,7 +404,6 @@ const ThemeDock = () => {
                         setMobileBorderRadiusOpen(true)
                       }
                       onHarmonyClick={() => setMobileHarmonyOpen(true)}
-                      onThemesClick={() => setMobileThemesOpen(true)}
                       onTypographyClick={() => setMobileTypographyOpen(true)}
                     />
                   ) : (
@@ -504,7 +412,6 @@ const ThemeDock = () => {
                         setMobileMoreOpen(false);
                         setMobileBorderRadiusOpen(false);
                         setMobileHarmonyOpen(false);
-                        setMobileThemesOpen(false);
                         setMobileTypographyOpen(false);
                       }}
                     />
@@ -516,15 +423,10 @@ const ThemeDock = () => {
                   {/* Color pickers */}
                   <ThemeColorPickers />
 
-                  <div className="h-6 w-px bg-gray-200 mx-2"></div>
+                  <div className="h-5 w-px bg-gray-200"></div>
 
                   {/* Color Harmony Selector */}
                   <ThemeHarmonies />
-
-                  {/* Theme Selector */}
-                  <ThemePresets
-                    onSaveThemeClick={() => setSaveThemeDialogOpen(true)}
-                  />
 
                   {/* Border Radius */}
                   <ThemeBorderRadius />

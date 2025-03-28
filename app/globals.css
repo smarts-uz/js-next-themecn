@@ -167,6 +167,32 @@
   [data-radix-popper-content-wrapper] * {
     border-radius: 0.5rem !important;
   }
+
+  /* Light scrollbar styling */
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: oklch(0.8 0 0) transparent;
+  }
+
+  /* Webkit scrollbar styling */
+  *::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+
+  *::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  *::-webkit-scrollbar-thumb {
+    background-color: oklch(0.8 0 0);
+    border-radius: 20px;
+    border: 2px solid transparent;
+  }
+
+  *::-webkit-scrollbar-thumb:hover {
+    background-color: oklch(0.75 0 0);
+  }
 }
 
 /* Add a test component to verify border radius is working */
