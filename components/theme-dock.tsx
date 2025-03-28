@@ -52,6 +52,12 @@ import {
 } from "@/components/ui/dialog";
 import { useRouter, usePathname } from "next/navigation";
 import dynamic from "next/dynamic";
+import {
+  LightDrawer,
+  LightDrawerContent,
+  LightDrawerHeader,
+  LightDrawerTitle,
+} from "@/components/ui/light-drawer";
 
 type FontKey = "heading" | "body";
 
@@ -78,13 +84,19 @@ const ThemeDock = () => {
 
   const router = useRouter();
   const pathname = usePathname();
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const isMobile = useMobile();
   const [dockVisible, setDockVisible] = useState(true);
   const [saveThemeDialogOpen, setSaveThemeDialogOpen] = useState(false);
   const [newThemeName, setNewThemeName] = useState("");
   const dockRef = useRef<HTMLDivElement>(null);
   const [fontsLocked, setFontsLocked] = useState(false);
+  const [mobileMoreOpen, setMobileMoreOpen] = useState(false);
+
+  // Mobile state for popovers
+  const [mobileTemplatesOpen, setMobileTemplatesOpen] = useState(false);
+  const [mobileBorderRadiusOpen, setMobileBorderRadiusOpen] = useState(false);
+  const [mobileHarmonyOpen, setMobileHarmonyOpen] = useState(false);
+  const [mobileThemesOpen, setMobileThemesOpen] = useState(false);
 
   // Toggle dock visibility with keyboard shortcut (Shift + D)
   useEffect(() => {
@@ -186,6 +198,23 @@ const ThemeDock = () => {
     { name: "Monochromatic", value: "monochromatic" as const },
   ];
 
+  // Add an effect to ensure popover is closed when any drawer is open
+  useEffect(() => {
+    if (
+      mobileTemplatesOpen ||
+      mobileBorderRadiusOpen ||
+      mobileHarmonyOpen ||
+      mobileThemesOpen
+    ) {
+      setMobileMoreOpen(false);
+    }
+  }, [
+    mobileTemplatesOpen,
+    mobileBorderRadiusOpen,
+    mobileHarmonyOpen,
+    mobileThemesOpen,
+  ]);
+
   if (!dockVisible) {
     return (
       <Button
@@ -196,6 +225,286 @@ const ThemeDock = () => {
       </Button>
     );
   }
+
+  // Mobile color pickers component
+  const ColorPickers = () => (
+    <>
+      {/* Foreground Color */}
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <div>
+            <Popover>
+              <PopoverTrigger asChild>
+                <Button
+                  variant="ghost"
+                  className="flex items-center justify-center h-10 w-10 p-0 rounded-full hover:bg-gray-100 hover:text-gray-900 text-gray-700 transition-all duration-200"
+                >
+                  <div
+                    className="w-7 h-7 rounded-full border border-border/50"
+                    style={{
+                      backgroundColor: getHexColor("foreground"),
+                    }}
+                  />
+                  <span className="sr-only">Foreground</span>
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent
+                className="w-80 p-0"
+                side="top"
+                align="center"
+                sideOffset={16}
+                style={{
+                  backgroundColor: "white",
+                  border: "1px solid #e5e7eb",
+                  borderRadius: "0.5rem",
+                  boxShadow:
+                    "0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)",
+                  color: "#1a1a1a",
+                }}
+              >
+                <div
+                  className="p-2 flex items-center"
+                  style={{
+                    borderBottom: "1px solid #e5e7eb",
+                    color: "#1a1a1a",
+                  }}
+                >
+                  <span className="font-medium">Foreground Color</span>
+                </div>
+                <ColorPicker
+                  color={getHexColor("foreground")}
+                  onChange={(color) => updateThemeColor("foreground", color)}
+                />
+              </PopoverContent>
+            </Popover>
+          </div>
+        </TooltipTrigger>
+        <TooltipContent
+          side="top"
+          className="bg-gray-900 text-white border-none"
+        >
+          Foreground Color
+        </TooltipContent>
+      </Tooltip>
+
+      {/* Background Color */}
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <div>
+            <Popover>
+              <PopoverTrigger asChild>
+                <Button
+                  variant="ghost"
+                  className="flex items-center justify-center h-10 w-10 p-0 rounded-full hover:bg-gray-100 hover:text-gray-900 text-gray-700 transition-all duration-200"
+                >
+                  <div
+                    className="w-7 h-7 rounded-full border border-border/50"
+                    style={{
+                      backgroundColor: getHexColor("background"),
+                    }}
+                  />
+                  <span className="sr-only">Background</span>
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent
+                className="w-80 p-0"
+                side="top"
+                align="center"
+                sideOffset={16}
+                style={{
+                  backgroundColor: "white",
+                  border: "1px solid #e5e7eb",
+                  borderRadius: "0.5rem",
+                  boxShadow:
+                    "0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)",
+                  color: "#1a1a1a",
+                }}
+              >
+                <div
+                  className="p-2 flex items-center"
+                  style={{
+                    borderBottom: "1px solid #e5e7eb",
+                    color: "#1a1a1a",
+                  }}
+                >
+                  <span className="font-medium">Background Color</span>
+                </div>
+                <ColorPicker
+                  color={getHexColor("background")}
+                  onChange={(color) => updateThemeColor("background", color)}
+                />
+              </PopoverContent>
+            </Popover>
+          </div>
+        </TooltipTrigger>
+        <TooltipContent
+          side="top"
+          className="bg-gray-900 text-white border-none"
+        >
+          Background Color
+        </TooltipContent>
+      </Tooltip>
+
+      {/* Primary Color */}
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <div>
+            <Popover>
+              <PopoverTrigger asChild>
+                <Button
+                  variant="ghost"
+                  className="flex items-center justify-center h-10 w-10 p-0 rounded-full hover:bg-gray-100 hover:text-gray-900 text-gray-700 transition-all duration-200"
+                >
+                  <div className="w-7 h-7 rounded-full bg-primary" />
+                  <span className="sr-only">Primary</span>
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent
+                className="w-80 p-0"
+                side="top"
+                align="center"
+                sideOffset={16}
+                style={{
+                  backgroundColor: "white",
+                  border: "1px solid #e5e7eb",
+                  borderRadius: "0.5rem",
+                  boxShadow:
+                    "0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)",
+                  color: "#1a1a1a",
+                }}
+              >
+                <div
+                  className="p-2 flex items-center"
+                  style={{
+                    borderBottom: "1px solid #e5e7eb",
+                    color: "#1a1a1a",
+                  }}
+                >
+                  <span className="font-medium">Primary Color</span>
+                </div>
+                <ColorPicker
+                  color={getHexColor("primary")}
+                  onChange={(color) => updateThemeColor("primary", color)}
+                />
+              </PopoverContent>
+            </Popover>
+          </div>
+        </TooltipTrigger>
+        <TooltipContent
+          side="top"
+          className="bg-gray-900 text-white border-none"
+        >
+          Primary Color
+        </TooltipContent>
+      </Tooltip>
+
+      {/* Secondary Color */}
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <div>
+            <Popover>
+              <PopoverTrigger asChild>
+                <Button
+                  variant="ghost"
+                  className="flex items-center justify-center h-10 w-10 p-0 rounded-full hover:bg-gray-100 hover:text-gray-900 text-gray-700 transition-all duration-200"
+                >
+                  <div className="w-7 h-7 rounded-full bg-secondary" />
+                  <span className="sr-only">Secondary</span>
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent
+                className="w-80 p-0"
+                side="top"
+                align="center"
+                sideOffset={16}
+                style={{
+                  backgroundColor: "white",
+                  border: "1px solid #e5e7eb",
+                  borderRadius: "0.5rem",
+                  boxShadow:
+                    "0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)",
+                  color: "#1a1a1a",
+                }}
+              >
+                <div
+                  className="p-2 flex items-center"
+                  style={{
+                    borderBottom: "1px solid #e5e7eb",
+                    color: "#1a1a1a",
+                  }}
+                >
+                  <span className="font-medium">Secondary Color</span>
+                </div>
+                <ColorPicker
+                  color={getHexColor("secondary")}
+                  onChange={(color) => updateThemeColor("secondary", color)}
+                />
+              </PopoverContent>
+            </Popover>
+          </div>
+        </TooltipTrigger>
+        <TooltipContent
+          side="top"
+          className="bg-gray-900 text-white border-none"
+        >
+          Secondary Color
+        </TooltipContent>
+      </Tooltip>
+
+      {/* Accent Color */}
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <div>
+            <Popover>
+              <PopoverTrigger asChild>
+                <Button
+                  variant="ghost"
+                  className="flex items-center justify-center h-10 w-10 p-0 rounded-full hover:bg-gray-100 hover:text-gray-900 text-gray-700 transition-all duration-200"
+                >
+                  <div className="w-7 h-7 rounded-full bg-accent" />
+                  <span className="sr-only">Accent</span>
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent
+                className="w-80 p-0"
+                side="top"
+                align="center"
+                sideOffset={16}
+                style={{
+                  backgroundColor: "white",
+                  border: "1px solid #e5e7eb",
+                  borderRadius: "0.5rem",
+                  boxShadow:
+                    "0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)",
+                  color: "#1a1a1a",
+                }}
+              >
+                <div
+                  className="p-2 flex items-center"
+                  style={{
+                    borderBottom: "1px solid #e5e7eb",
+                    color: "#1a1a1a",
+                  }}
+                >
+                  <span className="font-medium">Accent Color</span>
+                </div>
+                <ColorPicker
+                  color={getHexColor("accent")}
+                  onChange={(color) => updateThemeColor("accent", color)}
+                />
+              </PopoverContent>
+            </Popover>
+          </div>
+        </TooltipTrigger>
+        <TooltipContent
+          side="top"
+          className="bg-gray-900 text-white border-none"
+        >
+          Accent Color
+        </TooltipContent>
+      </Tooltip>
+    </>
+  );
 
   return (
     <>
@@ -271,805 +580,1382 @@ const ThemeDock = () => {
         </DialogContent>
       </Dialog>
 
+      {/* Mobile drawers */}
+      {isMobile && (
+        <>
+          {/* Templates Drawer */}
+          <LightDrawer
+            open={mobileTemplatesOpen}
+            onOpenChange={(open) => {
+              setMobileTemplatesOpen(open);
+              if (open) setMobileMoreOpen(false);
+            }}
+          >
+            <LightDrawerContent className="bg-white border-t border-gray-200">
+              <LightDrawerHeader>
+                <LightDrawerTitle>Templates</LightDrawerTitle>
+              </LightDrawerHeader>
+              <div className="px-4 pb-6">
+                <div className="py-1">
+                  {templates.map((template) => (
+                    <Button
+                      key={template.path}
+                      variant="ghost"
+                      className="w-full justify-start text-left h-12 px-3 mb-1 relative hover:bg-gray-100 hover:text-gray-900 rounded-md"
+                      onClick={() => {
+                        navigateToTemplate(template.path);
+                        setMobileTemplatesOpen(false);
+                      }}
+                    >
+                      <span>{template.name}</span>
+                      {pathname === template.path && (
+                        <Check
+                          size={16}
+                          className="absolute right-3 top-1/2 transform -translate-y-1/2"
+                        />
+                      )}
+                    </Button>
+                  ))}
+                </div>
+              </div>
+            </LightDrawerContent>
+          </LightDrawer>
+
+          {/* Border Radius Drawer */}
+          <LightDrawer
+            open={mobileBorderRadiusOpen}
+            onOpenChange={(open) => {
+              setMobileBorderRadiusOpen(open);
+              if (open) setMobileMoreOpen(false);
+            }}
+          >
+            <LightDrawerContent className="bg-white border-t border-gray-200">
+              <LightDrawerHeader>
+                <LightDrawerTitle>Border Radius</LightDrawerTitle>
+              </LightDrawerHeader>
+              <div className="px-4 pb-6">
+                <BorderRadiusControl />
+              </div>
+            </LightDrawerContent>
+          </LightDrawer>
+
+          {/* Color Harmony Drawer */}
+          <LightDrawer
+            open={mobileHarmonyOpen}
+            onOpenChange={(open) => {
+              setMobileHarmonyOpen(open);
+              if (open) setMobileMoreOpen(false);
+            }}
+          >
+            <LightDrawerContent className="bg-white border-t border-gray-200">
+              <LightDrawerHeader>
+                <LightDrawerTitle>Color Harmony</LightDrawerTitle>
+              </LightDrawerHeader>
+              <div className="px-4 pb-6">
+                <div className="py-1">
+                  {harmonyOptions.map((harmony) => (
+                    <Button
+                      key={harmony.value}
+                      variant="ghost"
+                      className="w-full justify-start text-left h-12 px-3 mb-1 relative hover:bg-gray-100 hover:text-gray-900 rounded-md"
+                      onClick={() => {
+                        setSelectedHarmony(harmony.value);
+                        setMobileHarmonyOpen(false);
+                      }}
+                    >
+                      <span>{harmony.name}</span>
+                      {selectedHarmony === harmony.value && (
+                        <Check
+                          size={16}
+                          className="absolute right-3 top-1/2 transform -translate-y-1/2"
+                        />
+                      )}
+                    </Button>
+                  ))}
+                </div>
+              </div>
+            </LightDrawerContent>
+          </LightDrawer>
+
+          {/* Themes Drawer */}
+          <LightDrawer
+            open={mobileThemesOpen}
+            onOpenChange={(open) => {
+              setMobileThemesOpen(open);
+              if (open) setMobileMoreOpen(false);
+            }}
+          >
+            <LightDrawerContent className="bg-white border-t border-gray-200">
+              <LightDrawerHeader>
+                <LightDrawerTitle>Theme Presets</LightDrawerTitle>
+              </LightDrawerHeader>
+              <div className="px-4 pb-6">
+                <div className="mb-4 flex justify-end">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="h-9 px-3 flex items-center gap-1 hover:bg-gray-100"
+                    onClick={() => {
+                      setSaveThemeDialogOpen(true);
+                      setMobileThemesOpen(false);
+                    }}
+                  >
+                    <Plus size={16} />
+                    <span>Save Current Theme</span>
+                  </Button>
+                </div>
+                <div className="py-1">
+                  {predefinedThemes.map((theme) => (
+                    <Button
+                      key={theme.name}
+                      variant="ghost"
+                      className="w-full justify-start text-left h-12 px-3 mb-1 relative hover:bg-gray-100 hover:text-gray-900 rounded-md"
+                      onClick={() => {
+                        setCurrentTheme(theme.name);
+                        setMobileThemesOpen(false);
+                      }}
+                    >
+                      <div className="flex items-center gap-2">
+                        <div
+                          className="w-5 h-5 rounded-full"
+                          style={{
+                            backgroundColor: theme.colors.primary,
+                          }}
+                        />
+                        <span>{theme.name}</span>
+                      </div>
+                      {currentTheme === theme.name && (
+                        <Check
+                          size={16}
+                          className="absolute right-3 top-1/2 transform -translate-y-1/2"
+                        />
+                      )}
+                    </Button>
+                  ))}
+                </div>
+              </div>
+            </LightDrawerContent>
+          </LightDrawer>
+        </>
+      )}
+
       {/* Main dock container */}
       <div className="fixed bottom-10 left-1/2 -translate-x-1/2 z-50 px-4 sm:px-6 md:px-8">
         <div
           ref={dockRef}
-          className="bg-white backdrop-blur-xl border border-gray-200 rounded-full shadow-lg mx-auto overflow-visible"
+          className="bg-[#f5f5f5] backdrop-blur-xl border border-gray-200 rounded-full shadow-lg mx-auto overflow-visible"
           style={{ padding: "8px 12px" }}
         >
           <TooltipProvider delayDuration={0}>
             <div className="flex items-center justify-center overflow-x-auto py-1 px-1 scrollbar-hide">
-              {/* Foreground Color */}
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <div>
-                    <Popover>
-                      <PopoverTrigger asChild>
-                        <Button
-                          variant="ghost"
-                          className="flex items-center justify-center h-10 w-10 p-0 rounded-full hover:bg-gray-100 hover:text-gray-900 text-gray-700 transition-all duration-200"
-                        >
-                          <div
-                            className="w-7 h-7 rounded-full border border-border/50"
-                            style={{
-                              backgroundColor: getHexColor("foreground"),
-                            }}
-                          />
-                          <span className="sr-only">Foreground</span>
-                        </Button>
-                      </PopoverTrigger>
-                      <PopoverContent
-                        className="w-80 p-0"
-                        side="top"
-                        align="center"
-                        sideOffset={16}
-                        style={{
-                          backgroundColor: "white",
-                          border: "1px solid #e5e7eb",
-                          borderRadius: "0.5rem",
-                          boxShadow:
-                            "0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)",
-                          color: "#1a1a1a",
-                        }}
-                      >
-                        <div
-                          className="p-2 flex items-center"
-                          style={{
-                            borderBottom: "1px solid #e5e7eb",
-                            color: "#1a1a1a",
-                          }}
-                        >
-                          <span className="font-medium">Foreground Color</span>
-                        </div>
-                        <ColorPicker
-                          color={getHexColor("foreground")}
-                          onChange={(color) =>
-                            updateThemeColor("foreground", color)
-                          }
-                        />
-                      </PopoverContent>
-                    </Popover>
-                  </div>
-                </TooltipTrigger>
-                <TooltipContent
-                  side="top"
-                  className="bg-gray-900 text-white border-none"
-                >
-                  Foreground Color
-                </TooltipContent>
-              </Tooltip>
+              {isMobile ? (
+                // Mobile layout
+                <>
+                  {/* Color pickers */}
+                  <ColorPickers />
 
-              {/* Background Color */}
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <div>
-                    <Popover>
-                      <PopoverTrigger asChild>
-                        <Button
-                          variant="ghost"
-                          className="flex items-center justify-center h-10 w-10 p-0 rounded-full hover:bg-gray-100 hover:text-gray-900 text-gray-700 transition-all duration-200"
-                        >
-                          <div
-                            className="w-7 h-7 rounded-full border border-border/50"
-                            style={{
-                              backgroundColor: getHexColor("background"),
-                            }}
-                          />
-                          <span className="sr-only">Background</span>
-                        </Button>
-                      </PopoverTrigger>
-                      <PopoverContent
-                        className="w-80 p-0"
-                        side="top"
-                        align="center"
-                        sideOffset={16}
-                        style={{
-                          backgroundColor: "white",
-                          border: "1px solid #e5e7eb",
-                          borderRadius: "0.5rem",
-                          boxShadow:
-                            "0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)",
-                          color: "#1a1a1a",
-                        }}
-                      >
-                        <div
-                          className="p-2 flex items-center"
-                          style={{
-                            borderBottom: "1px solid #e5e7eb",
-                            color: "#1a1a1a",
-                          }}
-                        >
-                          <span className="font-medium">Background Color</span>
-                        </div>
-                        <ColorPicker
-                          color={getHexColor("background")}
-                          onChange={(color) =>
-                            updateThemeColor("background", color)
-                          }
-                        />
-                      </PopoverContent>
-                    </Popover>
-                  </div>
-                </TooltipTrigger>
-                <TooltipContent
-                  side="top"
-                  className="bg-gray-900 text-white border-none"
-                >
-                  Background Color
-                </TooltipContent>
-              </Tooltip>
+                  <div className="h-6 w-px bg-gray-200 mx-2"></div>
 
-              {/* Primary Color */}
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <div>
-                    <Popover>
-                      <PopoverTrigger asChild>
-                        <Button
-                          variant="ghost"
-                          className="flex items-center justify-center h-10 w-10 p-0 rounded-full hover:bg-gray-100 hover:text-gray-900 text-gray-700 transition-all duration-200"
-                        >
-                          <div className="w-7 h-7 rounded-full bg-primary" />
-                          <span className="sr-only">Primary</span>
-                        </Button>
-                      </PopoverTrigger>
-                      <PopoverContent
-                        className="w-80 p-0"
-                        side="top"
-                        align="center"
-                        sideOffset={16}
-                        style={{
-                          backgroundColor: "white",
-                          border: "1px solid #e5e7eb",
-                          borderRadius: "0.5rem",
-                          boxShadow:
-                            "0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)",
-                          color: "#1a1a1a",
-                        }}
+                  {/* Randomize Colors */}
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Button
+                        variant="ghost"
+                        className="flex items-center justify-center h-10 w-10 p-0 rounded-full hover:bg-gray-100 hover:text-gray-900 text-gray-700 transition-all duration-200"
+                        onClick={generateHarmonyColors}
                       >
-                        <div
-                          className="p-2 flex items-center"
-                          style={{
-                            borderBottom: "1px solid #e5e7eb",
-                            color: "#1a1a1a",
-                          }}
-                        >
-                          <span className="font-medium">Primary Color</span>
-                        </div>
-                        <ColorPicker
-                          color={getHexColor("primary")}
-                          onChange={(color) =>
-                            updateThemeColor("primary", color)
-                          }
-                        />
-                      </PopoverContent>
-                    </Popover>
-                  </div>
-                </TooltipTrigger>
-                <TooltipContent
-                  side="top"
-                  className="bg-gray-900 text-white border-none"
-                >
-                  Primary Color
-                </TooltipContent>
-              </Tooltip>
+                        <Shuffle size={18} />
+                        <span className="sr-only">Randomize</span>
+                      </Button>
+                    </TooltipTrigger>
+                    <TooltipContent
+                      side="top"
+                      className="bg-gray-900 text-white border-none"
+                    >
+                      Randomize Colors
+                    </TooltipContent>
+                  </Tooltip>
 
-              {/* Secondary Color */}
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <div>
-                    <Popover>
-                      <PopoverTrigger asChild>
-                        <Button
-                          variant="ghost"
-                          className="flex items-center justify-center h-10 w-10 p-0 rounded-full hover:bg-gray-100 hover:text-gray-900 text-gray-700 transition-all duration-200"
-                        >
-                          <div className="w-7 h-7 rounded-full bg-secondary" />
-                          <span className="sr-only">Secondary</span>
-                        </Button>
-                      </PopoverTrigger>
-                      <PopoverContent
-                        className="w-80 p-0"
-                        side="top"
-                        align="center"
-                        sideOffset={16}
-                        style={{
-                          backgroundColor: "white",
-                          border: "1px solid #e5e7eb",
-                          borderRadius: "0.5rem",
-                          boxShadow:
-                            "0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)",
-                          color: "#1a1a1a",
-                        }}
-                      >
-                        <div
-                          className="p-2 flex items-center"
-                          style={{
-                            borderBottom: "1px solid #e5e7eb",
-                            color: "#1a1a1a",
-                          }}
-                        >
-                          <span className="font-medium">Secondary Color</span>
-                        </div>
-                        <ColorPicker
-                          color={getHexColor("secondary")}
-                          onChange={(color) =>
-                            updateThemeColor("secondary", color)
-                          }
-                        />
-                      </PopoverContent>
-                    </Popover>
-                  </div>
-                </TooltipTrigger>
-                <TooltipContent
-                  side="top"
-                  className="bg-gray-900 text-white border-none"
-                >
-                  Secondary Color
-                </TooltipContent>
-              </Tooltip>
-
-              {/* Accent Color */}
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <div>
-                    <Popover>
-                      <PopoverTrigger asChild>
-                        <Button
-                          variant="ghost"
-                          className="flex items-center justify-center h-10 w-10 p-0 rounded-full hover:bg-gray-100 hover:text-gray-900 text-gray-700 transition-all duration-200"
-                        >
-                          <div className="w-7 h-7 rounded-full bg-accent" />
-                          <span className="sr-only">Accent</span>
-                        </Button>
-                      </PopoverTrigger>
-                      <PopoverContent
-                        className="w-80 p-0"
-                        side="top"
-                        align="center"
-                        sideOffset={16}
-                        style={{
-                          backgroundColor: "white",
-                          border: "1px solid #e5e7eb",
-                          borderRadius: "0.5rem",
-                          boxShadow:
-                            "0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)",
-                          color: "#1a1a1a",
-                        }}
-                      >
-                        <div
-                          className="p-2 flex items-center"
-                          style={{
-                            borderBottom: "1px solid #e5e7eb",
-                            color: "#1a1a1a",
-                          }}
-                        >
-                          <span className="font-medium">Accent Color</span>
-                        </div>
-                        <ColorPicker
-                          color={getHexColor("accent")}
-                          onChange={(color) =>
-                            updateThemeColor("accent", color)
-                          }
-                        />
-                      </PopoverContent>
-                    </Popover>
-                  </div>
-                </TooltipTrigger>
-                <TooltipContent
-                  side="top"
-                  className="bg-gray-900 text-white border-none"
-                >
-                  Accent Color
-                </TooltipContent>
-              </Tooltip>
-
-              <div className="h-6 w-px bg-gray-200 mx-2"></div>
-
-              {/* Templates Selector */}
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <div>
-                    <Popover>
-                      <PopoverTrigger asChild>
-                        <Button
-                          variant="ghost"
-                          className="flex items-center justify-center h-10 w-10 p-0 rounded-full hover:bg-gray-100 hover:text-gray-900 text-gray-700 transition-all duration-200"
-                        >
-                          <LayoutTemplate size={18} />
-                          <span className="sr-only">Templates</span>
-                        </Button>
-                      </PopoverTrigger>
-                      <PopoverContent
-                        className="w-56 p-0"
-                        side="top"
-                        align="center"
-                        sideOffset={16}
-                        style={{
-                          backgroundColor: "white",
-                          border: "1px solid #e5e7eb",
-                          borderRadius: "0.5rem",
-                          boxShadow:
-                            "0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)",
-                          color: "#1a1a1a",
-                        }}
-                      >
-                        <div
-                          className="p-2 flex items-center"
-                          style={{
-                            borderBottom: "1px solid #e5e7eb",
-                            color: "#1a1a1a",
-                          }}
-                        ></div>
-                        <div className="py-1">
-                          {templates.map((template) => (
+                  {/* Typography */}
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <div>
+                        <Popover>
+                          <PopoverTrigger asChild>
                             <Button
-                              key={template.path}
                               variant="ghost"
-                              className="w-full justify-start text-left h-9 px-2 relative hover:bg-gray-100 hover:text-gray-900"
-                              onClick={() => navigateToTemplate(template.path)}
-                              style={{ color: "#374151", borderRadius: "0" }}
+                              className="flex items-center justify-center h-10 w-10 p-0 rounded-full hover:bg-gray-100 hover:text-gray-900 text-gray-700 transition-all duration-200"
                             >
-                              <span>{template.name}</span>
-                              {pathname === template.path && (
-                                <Check
-                                  size={16}
-                                  className="absolute right-2 top-1/2 transform -translate-y-1/2"
-                                />
-                              )}
+                              <Type size={18} />
+                              <span className="sr-only">Fonts</span>
                             </Button>
-                          ))}
-                        </div>
-                      </PopoverContent>
-                    </Popover>
-                  </div>
-                </TooltipTrigger>
-                <TooltipContent
-                  side="top"
-                  className="bg-gray-900 text-white border-none"
-                >
-                  Templates
-                </TooltipContent>
-              </Tooltip>
-
-              {/* Color Harmony Selector */}
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <div>
-                    <Popover>
-                      <PopoverTrigger asChild>
-                        <Button
-                          variant="ghost"
-                          className="flex items-center justify-center h-10 w-10 p-0 rounded-full hover:bg-gray-100 hover:text-gray-900 text-gray-700 transition-all duration-200"
-                        >
-                          <Droplet size={18} />
-                          <span className="sr-only">Color Harmony</span>
-                        </Button>
-                      </PopoverTrigger>
-                      <PopoverContent
-                        className="w-56 p-0"
-                        side="top"
-                        align="center"
-                        sideOffset={16}
-                        style={{
-                          backgroundColor: "white",
-                          border: "1px solid #e5e7eb",
-                          borderRadius: "0.5rem",
-                          boxShadow:
-                            "0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)",
-                          color: "#1a1a1a",
-                        }}
-                      >
-                        <div
-                          className="p-2 flex items-center"
-                          style={{
-                            borderBottom: "1px solid #e5e7eb",
-                            color: "#1a1a1a",
-                          }}
-                        >
-                          <span className="font-medium">Color Harmony</span>
-                        </div>
-                        <div className="py-1">
-                          {harmonyOptions.map((harmony) => (
-                            <Button
-                              key={harmony.value}
-                              variant="ghost"
-                              className="w-full justify-start text-left h-9 px-2 relative hover:bg-gray-100 hover:text-gray-900"
-                              onClick={() => setSelectedHarmony(harmony.value)}
-                              style={{ color: "#374151", borderRadius: "0" }}
-                            >
-                              <span>{harmony.name}</span>
-                              {selectedHarmony === harmony.value && (
-                                <Check
-                                  size={16}
-                                  className="absolute right-2 top-1/2 transform -translate-y-1/2"
-                                />
-                              )}
-                            </Button>
-                          ))}
-                        </div>
-                      </PopoverContent>
-                    </Popover>
-                  </div>
-                </TooltipTrigger>
-                <TooltipContent
-                  side="top"
-                  className="bg-gray-900 text-white border-none"
-                >
-                  Color Harmony
-                </TooltipContent>
-              </Tooltip>
-
-              {/* Theme Selector */}
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <div>
-                    <Popover>
-                      <PopoverTrigger asChild>
-                        <Button
-                          variant="ghost"
-                          className="flex items-center justify-center h-10 w-10 p-0 rounded-full hover:bg-gray-100 hover:text-gray-900 text-gray-700 transition-all duration-200"
-                        >
-                          <Palette size={18} />
-                          <span className="sr-only">Themes</span>
-                        </Button>
-                      </PopoverTrigger>
-                      <PopoverContent
-                        className="w-56 p-0"
-                        side="top"
-                        align="center"
-                        sideOffset={16}
-                        style={{
-                          backgroundColor: "white",
-                          border: "1px solid #e5e7eb",
-                          borderRadius: "0.5rem",
-                          boxShadow:
-                            "0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)",
-                          color: "#1a1a1a",
-                        }}
-                      >
-                        <div
-                          className="p-2 flex items-center justify-between"
-                          style={{
-                            borderBottom: "1px solid #e5e7eb",
-                            color: "#1a1a1a",
-                          }}
-                        >
-                          <span className="font-medium">Theme Presets</span>
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            className="h-8 w-8 p-0 hover:bg-gray-100 hover:text-gray-900"
-                            onClick={() => setSaveThemeDialogOpen(true)}
-                            style={{ borderRadius: "4px" }}
+                          </PopoverTrigger>
+                          <PopoverContent
+                            className="w-80 p-4"
+                            side="top"
+                            align="center"
+                            sideOffset={16}
+                            style={{
+                              backgroundColor: "white",
+                              border: "1px solid #e5e7eb",
+                              borderRadius: "0.5rem",
+                              boxShadow:
+                                "0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)",
+                              color: "#1a1a1a",
+                            }}
                           >
-                            <Plus size={16} />
-                            <span className="sr-only">Save Current Theme</span>
-                          </Button>
-                        </div>
-                        <div className="py-1">
-                          {predefinedThemes.map((theme) => (
-                            <Button
-                              key={theme.name}
-                              variant="ghost"
-                              className="w-full justify-start text-left h-9 px-2 relative hover:bg-gray-100 hover:text-gray-900"
-                              onClick={() => setCurrentTheme(theme.name)}
-                              style={{ color: "#374151", borderRadius: "0" }}
-                            >
-                              <div className="flex items-center gap-2">
-                                <div
-                                  className="w-5 h-5 rounded-full"
-                                  style={{
-                                    backgroundColor: theme.colors.primary,
-                                  }}
-                                />
-                                <span>{theme.name}</span>
+                            <div className="mb-2 flex items-center justify-between">
+                              <span
+                                className="font-medium"
+                                style={{ color: "#1a1a1a" }}
+                              >
+                                Typography
+                              </span>
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={() => setFontsLocked(!fontsLocked)}
+                                className={`h-8 px-2 flex items-center gap-1 ${
+                                  fontsLocked ? "bg-primary/10" : ""
+                                }`}
+                                style={{
+                                  borderRadius: "4px",
+                                  border: "1px solid #d1d5db",
+                                  backgroundColor: fontsLocked
+                                    ? "rgba(79, 70, 229, 0.1)"
+                                    : "white",
+                                  color: "#4b5563",
+                                }}
+                              >
+                                {fontsLocked ? (
+                                  <>
+                                    <LockClosedIcon className="h-3.5 w-3.5" />
+                                    <span>Locked</span>
+                                  </>
+                                ) : (
+                                  <>
+                                    <LockOpenIcon className="h-3.5 w-3.5" />
+                                    <span>Unlocked</span>
+                                  </>
+                                )}
+                              </Button>
+                            </div>
+                            <div className="grid gap-6">
+                              <div>
+                                <label
+                                  className="block text-sm font-medium mb-2"
+                                  style={{ color: "#374151" }}
+                                >
+                                  Heading Font
+                                </label>
+                                <Select
+                                  value={fonts.heading}
+                                  onValueChange={(value) =>
+                                    handleFontChange("heading", value)
+                                  }
+                                >
+                                  <SelectTrigger
+                                    className="w-full"
+                                    style={{
+                                      backgroundColor: "white",
+                                      border: "1px solid #d1d5db",
+                                      color: "#1f2937",
+                                      borderRadius: "6px",
+                                    }}
+                                  >
+                                    <SelectValue placeholder="Select font" />
+                                  </SelectTrigger>
+                                  <SelectContent
+                                    style={{
+                                      backgroundColor: "white",
+                                      border: "1px solid #e5e7eb",
+                                      borderRadius: "6px",
+                                      color: "#1a1a1a",
+                                    }}
+                                  >
+                                    {fontOptions.map((font) => (
+                                      <SelectItem
+                                        key={font}
+                                        value={font}
+                                        style={{
+                                          fontFamily: font,
+                                          color: "#374151",
+                                        }}
+                                      >
+                                        {font}
+                                      </SelectItem>
+                                    ))}
+                                  </SelectContent>
+                                </Select>
                               </div>
-                              {currentTheme === theme.name && (
-                                <Check
-                                  size={16}
-                                  className="absolute right-2 top-1/2 transform -translate-y-1/2"
-                                />
-                              )}
-                            </Button>
-                          ))}
-                        </div>
-                      </PopoverContent>
-                    </Popover>
-                  </div>
-                </TooltipTrigger>
-                <TooltipContent
-                  side="top"
-                  className="bg-gray-900 text-white border-none"
-                >
-                  Theme Presets
-                </TooltipContent>
-              </Tooltip>
 
-              {/* Border Radius */}
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <div>
-                    <Popover>
-                      <PopoverTrigger asChild>
-                        <Button
-                          variant="ghost"
-                          className="flex items-center justify-center h-10 w-10 p-0 rounded-full hover:bg-gray-100 hover:text-gray-900 text-gray-700 transition-all duration-200"
-                        >
-                          <Square size={18} />
-                          <span className="sr-only">Radius</span>
-                        </Button>
-                      </PopoverTrigger>
-                      <PopoverContent
-                        className="w-80 p-4"
-                        side="top"
-                        align="center"
-                        sideOffset={16}
-                        style={{
-                          backgroundColor: "white",
-                          border: "1px solid #e5e7eb",
-                          borderRadius: "0.5rem",
-                          boxShadow:
-                            "0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)",
-                          color: "#1a1a1a",
-                        }}
-                      >
-                        <div
-                          className="mb-2 font-medium"
-                          style={{ color: "#1a1a1a" }}
-                        >
-                          Border Radius
-                        </div>
-                        <BorderRadiusControl />
-                      </PopoverContent>
-                    </Popover>
-                  </div>
-                </TooltipTrigger>
-                <TooltipContent
-                  side="top"
-                  className="bg-gray-900 text-white border-none"
-                >
-                  Border Radius
-                </TooltipContent>
-              </Tooltip>
+                              <div>
+                                <label
+                                  className="block text-sm font-medium mb-2"
+                                  style={{ color: "#374151" }}
+                                >
+                                  Body Font
+                                </label>
+                                <Select
+                                  value={fonts.body}
+                                  onValueChange={(value) =>
+                                    handleFontChange("body", value)
+                                  }
+                                >
+                                  <SelectTrigger
+                                    className="w-full"
+                                    style={{
+                                      backgroundColor: "white",
+                                      border: "1px solid #d1d5db",
+                                      color: "#1f2937",
+                                      borderRadius: "6px",
+                                    }}
+                                  >
+                                    <SelectValue placeholder="Select font" />
+                                  </SelectTrigger>
+                                  <SelectContent
+                                    style={{
+                                      backgroundColor: "white",
+                                      border: "1px solid #e5e7eb",
+                                      borderRadius: "6px",
+                                      color: "#1a1a1a",
+                                    }}
+                                  >
+                                    {fontOptions.map((font) => (
+                                      <SelectItem
+                                        key={font}
+                                        value={font}
+                                        style={{
+                                          fontFamily: font,
+                                          color: "#374151",
+                                        }}
+                                      >
+                                        {font}
+                                      </SelectItem>
+                                    ))}
+                                  </SelectContent>
+                                </Select>
+                              </div>
+                            </div>
+                          </PopoverContent>
+                        </Popover>
+                      </div>
+                    </TooltipTrigger>
+                    <TooltipContent
+                      side="top"
+                      className="bg-gray-900 text-white border-none"
+                    >
+                      Typography
+                    </TooltipContent>
+                  </Tooltip>
 
-              {/* Fonts */}
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <div>
-                    <Popover>
-                      <PopoverTrigger asChild>
-                        <Button
-                          variant="ghost"
-                          className="flex items-center justify-center h-10 w-10 p-0 rounded-full hover:bg-gray-100 hover:text-gray-900 text-gray-700 transition-all duration-200"
-                        >
-                          <Type size={18} />
-                          <span className="sr-only">Fonts</span>
-                        </Button>
-                      </PopoverTrigger>
-                      <PopoverContent
-                        className="w-80 p-4"
-                        side="top"
-                        align="center"
-                        sideOffset={16}
-                        style={{
-                          backgroundColor: "white",
-                          border: "1px solid #e5e7eb",
-                          borderRadius: "0.5rem",
-                          boxShadow:
-                            "0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)",
-                          color: "#1a1a1a",
-                        }}
-                      >
-                        <div className="mb-2 flex items-center justify-between">
-                          <span
-                            className="font-medium"
-                            style={{ color: "#1a1a1a" }}
-                          >
-                            Typography
-                          </span>
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={() => setFontsLocked(!fontsLocked)}
-                            className={`h-8 px-2 flex items-center gap-1 ${
-                              fontsLocked ? "bg-primary/10" : ""
-                            }`}
-                            style={{
-                              borderRadius: "4px",
-                              border: "1px solid #d1d5db",
-                              backgroundColor: fontsLocked
-                                ? "rgba(79, 70, 229, 0.1)"
-                                : "white",
-                              color: "#4b5563",
+                  {/* More Menu */}
+                  {!mobileTemplatesOpen &&
+                  !mobileBorderRadiusOpen &&
+                  !mobileHarmonyOpen &&
+                  !mobileThemesOpen ? (
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <div>
+                          <Popover
+                            open={mobileMoreOpen}
+                            onOpenChange={(open) => {
+                              setMobileMoreOpen(open);
+                              // Close all drawers when opening the More menu
+                              if (open) {
+                                setMobileTemplatesOpen(false);
+                                setMobileBorderRadiusOpen(false);
+                                setMobileHarmonyOpen(false);
+                                setMobileThemesOpen(false);
+                              }
                             }}
                           >
-                            {fontsLocked ? (
-                              <>
-                                <LockClosedIcon className="h-3.5 w-3.5" />
-                                <span>Locked</span>
-                              </>
-                            ) : (
-                              <>
-                                <LockOpenIcon className="h-3.5 w-3.5" />
-                                <span>Unlocked</span>
-                              </>
-                            )}
-                          </Button>
+                            <PopoverTrigger asChild>
+                              <Button
+                                variant="ghost"
+                                className="flex items-center justify-center h-10 w-10 p-0 rounded-full hover:bg-gray-100 hover:text-gray-900 text-gray-700 transition-all duration-200"
+                              >
+                                <svg
+                                  xmlns="http://www.w3.org/2000/svg"
+                                  width="18"
+                                  height="18"
+                                  viewBox="0 0 24 24"
+                                  fill="none"
+                                  stroke="currentColor"
+                                  strokeWidth="2"
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
+                                >
+                                  <circle cx="12" cy="12" r="1" />
+                                  <circle cx="19" cy="12" r="1" />
+                                  <circle cx="5" cy="12" r="1" />
+                                </svg>
+                                <span className="sr-only">More</span>
+                              </Button>
+                            </PopoverTrigger>
+                            <PopoverContent
+                              className="w-80 p-2"
+                              side="top"
+                              align="end"
+                              sideOffset={16}
+                              style={{
+                                backgroundColor: "white",
+                                border: "1px solid #e5e7eb",
+                                borderRadius: "0.5rem",
+                                boxShadow:
+                                  "0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)",
+                                color: "#1a1a1a",
+                              }}
+                            >
+                              <div className="grid grid-cols-3 gap-2 w-full">
+                                {/* Templates */}
+                                <Button
+                                  variant="ghost"
+                                  className="flex flex-col items-center justify-center space-y-1 h-20 rounded-md hover:bg-gray-100"
+                                  onClick={() => {
+                                    setMobileMoreOpen(false);
+                                    setMobileTemplatesOpen(true);
+                                  }}
+                                >
+                                  <LayoutTemplate size={20} />
+                                  <span className="text-xs">Templates</span>
+                                </Button>
+
+                                {/* Border Radius */}
+                                <Button
+                                  variant="ghost"
+                                  className="flex flex-col items-center justify-center space-y-1 h-20 rounded-md hover:bg-gray-100"
+                                  onClick={() => {
+                                    setMobileMoreOpen(false);
+                                    setMobileBorderRadiusOpen(true);
+                                  }}
+                                >
+                                  <Square size={20} />
+                                  <span className="text-xs">Border Radius</span>
+                                </Button>
+
+                                {/* Color Harmony */}
+                                <Button
+                                  variant="ghost"
+                                  className="flex flex-col items-center justify-center space-y-1 h-20 rounded-md hover:bg-gray-100"
+                                  onClick={() => {
+                                    setMobileMoreOpen(false);
+                                    setMobileHarmonyOpen(true);
+                                  }}
+                                >
+                                  <Droplet size={20} />
+                                  <span className="text-xs">Color Harmony</span>
+                                </Button>
+
+                                {/* Themes */}
+                                <Button
+                                  variant="ghost"
+                                  className="flex flex-col items-center justify-center space-y-1 h-20 rounded-md hover:bg-gray-100"
+                                  onClick={() => {
+                                    setMobileMoreOpen(false);
+                                    setMobileThemesOpen(true);
+                                  }}
+                                >
+                                  <Palette size={20} />
+                                  <span className="text-xs">Themes</span>
+                                </Button>
+
+                                {/* Dark Mode */}
+                                <Button
+                                  variant="ghost"
+                                  className="flex flex-col items-center justify-center space-y-1 h-20 rounded-md hover:bg-gray-100"
+                                  onClick={() => {
+                                    toggleDarkMode();
+                                    setMobileMoreOpen(false);
+                                  }}
+                                >
+                                  {isDarkMode ? (
+                                    <Sun size={20} />
+                                  ) : (
+                                    <Moon size={20} />
+                                  )}
+                                  <span className="text-xs">
+                                    {isDarkMode ? "Light Mode" : "Dark Mode"}
+                                  </span>
+                                </Button>
+
+                                {/* Export */}
+                                <Button
+                                  variant="ghost"
+                                  className="flex flex-col items-center justify-center space-y-1 h-20 rounded-md hover:bg-gray-100"
+                                  onClick={() => {
+                                    setExportMenuOpen(true);
+                                    setMobileMoreOpen(false);
+                                  }}
+                                >
+                                  <Download size={20} />
+                                  <span className="text-xs">Export</span>
+                                </Button>
+                              </div>
+                            </PopoverContent>
+                          </Popover>
                         </div>
-                        <div className="grid gap-6">
-                          <div>
-                            <label
-                              className="block text-sm font-medium mb-2"
-                              style={{ color: "#374151" }}
+                      </TooltipTrigger>
+                      <TooltipContent
+                        side="top"
+                        className="bg-gray-900 text-white border-none"
+                      >
+                        More Options
+                      </TooltipContent>
+                    </Tooltip>
+                  ) : (
+                    <div>
+                      <Button
+                        variant="ghost"
+                        className="flex items-center justify-center h-10 w-10 p-0 rounded-full hover:bg-gray-100 hover:text-gray-900 text-gray-700 transition-all duration-200"
+                        onClick={() => {
+                          setMobileMoreOpen(false);
+                          setMobileTemplatesOpen(false);
+                          setMobileBorderRadiusOpen(false);
+                          setMobileHarmonyOpen(false);
+                          setMobileThemesOpen(false);
+                        }}
+                      >
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          width="18"
+                          height="18"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          strokeWidth="2"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        >
+                          <circle cx="12" cy="12" r="1" />
+                          <circle cx="19" cy="12" r="1" />
+                          <circle cx="5" cy="12" r="1" />
+                        </svg>
+                        <span className="sr-only">More</span>
+                      </Button>
+                    </div>
+                  )}
+                </>
+              ) : (
+                // Desktop layout (existing code)
+                <>
+                  {/* Foreground Color */}
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <div>
+                        <Popover>
+                          <PopoverTrigger asChild>
+                            <Button
+                              variant="ghost"
+                              className="flex items-center justify-center h-10 w-10 p-0 rounded-full hover:bg-gray-100 hover:text-gray-900 text-gray-700 transition-all duration-200"
                             >
-                              Heading Font
-                            </label>
-                            <Select
-                              value={fonts.heading}
-                              onValueChange={(value) =>
-                                handleFontChange("heading", value)
+                              <div
+                                className="w-7 h-7 rounded-full border border-border/50"
+                                style={{
+                                  backgroundColor: getHexColor("foreground"),
+                                }}
+                              />
+                              <span className="sr-only">Foreground</span>
+                            </Button>
+                          </PopoverTrigger>
+                          <PopoverContent
+                            className="w-80 p-0"
+                            side="top"
+                            align="center"
+                            sideOffset={16}
+                            style={{
+                              backgroundColor: "white",
+                              border: "1px solid #e5e7eb",
+                              borderRadius: "0.5rem",
+                              boxShadow:
+                                "0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)",
+                              color: "#1a1a1a",
+                            }}
+                          >
+                            <div
+                              className="p-2 flex items-center"
+                              style={{
+                                borderBottom: "1px solid #e5e7eb",
+                                color: "#1a1a1a",
+                              }}
+                            >
+                              <span className="font-medium">
+                                Foreground Color
+                              </span>
+                            </div>
+                            <ColorPicker
+                              color={getHexColor("foreground")}
+                              onChange={(color) =>
+                                updateThemeColor("foreground", color)
                               }
+                            />
+                          </PopoverContent>
+                        </Popover>
+                      </div>
+                    </TooltipTrigger>
+                    <TooltipContent
+                      side="top"
+                      className="bg-gray-900 text-white border-none"
+                    >
+                      Foreground Color
+                    </TooltipContent>
+                  </Tooltip>
+
+                  {/* Background Color */}
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <div>
+                        <Popover>
+                          <PopoverTrigger asChild>
+                            <Button
+                              variant="ghost"
+                              className="flex items-center justify-center h-10 w-10 p-0 rounded-full hover:bg-gray-100 hover:text-gray-900 text-gray-700 transition-all duration-200"
                             >
-                              <SelectTrigger
-                                className="w-full"
+                              <div
+                                className="w-7 h-7 rounded-full border border-border/50"
                                 style={{
-                                  backgroundColor: "white",
+                                  backgroundColor: getHexColor("background"),
+                                }}
+                              />
+                              <span className="sr-only">Background</span>
+                            </Button>
+                          </PopoverTrigger>
+                          <PopoverContent
+                            className="w-80 p-0"
+                            side="top"
+                            align="center"
+                            sideOffset={16}
+                            style={{
+                              backgroundColor: "white",
+                              border: "1px solid #e5e7eb",
+                              borderRadius: "0.5rem",
+                              boxShadow:
+                                "0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)",
+                              color: "#1a1a1a",
+                            }}
+                          >
+                            <div
+                              className="p-2 flex items-center"
+                              style={{
+                                borderBottom: "1px solid #e5e7eb",
+                                color: "#1a1a1a",
+                              }}
+                            >
+                              <span className="font-medium">
+                                Background Color
+                              </span>
+                            </div>
+                            <ColorPicker
+                              color={getHexColor("background")}
+                              onChange={(color) =>
+                                updateThemeColor("background", color)
+                              }
+                            />
+                          </PopoverContent>
+                        </Popover>
+                      </div>
+                    </TooltipTrigger>
+                    <TooltipContent
+                      side="top"
+                      className="bg-gray-900 text-white border-none"
+                    >
+                      Background Color
+                    </TooltipContent>
+                  </Tooltip>
+
+                  {/* Primary Color */}
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <div>
+                        <Popover>
+                          <PopoverTrigger asChild>
+                            <Button
+                              variant="ghost"
+                              className="flex items-center justify-center h-10 w-10 p-0 rounded-full hover:bg-gray-100 hover:text-gray-900 text-gray-700 transition-all duration-200"
+                            >
+                              <div className="w-7 h-7 rounded-full bg-primary" />
+                              <span className="sr-only">Primary</span>
+                            </Button>
+                          </PopoverTrigger>
+                          <PopoverContent
+                            className="w-80 p-0"
+                            side="top"
+                            align="center"
+                            sideOffset={16}
+                            style={{
+                              backgroundColor: "white",
+                              border: "1px solid #e5e7eb",
+                              borderRadius: "0.5rem",
+                              boxShadow:
+                                "0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)",
+                              color: "#1a1a1a",
+                            }}
+                          >
+                            <div
+                              className="p-2 flex items-center"
+                              style={{
+                                borderBottom: "1px solid #e5e7eb",
+                                color: "#1a1a1a",
+                              }}
+                            >
+                              <span className="font-medium">Primary Color</span>
+                            </div>
+                            <ColorPicker
+                              color={getHexColor("primary")}
+                              onChange={(color) =>
+                                updateThemeColor("primary", color)
+                              }
+                            />
+                          </PopoverContent>
+                        </Popover>
+                      </div>
+                    </TooltipTrigger>
+                    <TooltipContent
+                      side="top"
+                      className="bg-gray-900 text-white border-none"
+                    >
+                      Primary Color
+                    </TooltipContent>
+                  </Tooltip>
+
+                  {/* Secondary Color */}
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <div>
+                        <Popover>
+                          <PopoverTrigger asChild>
+                            <Button
+                              variant="ghost"
+                              className="flex items-center justify-center h-10 w-10 p-0 rounded-full hover:bg-gray-100 hover:text-gray-900 text-gray-700 transition-all duration-200"
+                            >
+                              <div className="w-7 h-7 rounded-full bg-secondary" />
+                              <span className="sr-only">Secondary</span>
+                            </Button>
+                          </PopoverTrigger>
+                          <PopoverContent
+                            className="w-80 p-0"
+                            side="top"
+                            align="center"
+                            sideOffset={16}
+                            style={{
+                              backgroundColor: "white",
+                              border: "1px solid #e5e7eb",
+                              borderRadius: "0.5rem",
+                              boxShadow:
+                                "0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)",
+                              color: "#1a1a1a",
+                            }}
+                          >
+                            <div
+                              className="p-2 flex items-center"
+                              style={{
+                                borderBottom: "1px solid #e5e7eb",
+                                color: "#1a1a1a",
+                              }}
+                            >
+                              <span className="font-medium">
+                                Secondary Color
+                              </span>
+                            </div>
+                            <ColorPicker
+                              color={getHexColor("secondary")}
+                              onChange={(color) =>
+                                updateThemeColor("secondary", color)
+                              }
+                            />
+                          </PopoverContent>
+                        </Popover>
+                      </div>
+                    </TooltipTrigger>
+                    <TooltipContent
+                      side="top"
+                      className="bg-gray-900 text-white border-none"
+                    >
+                      Secondary Color
+                    </TooltipContent>
+                  </Tooltip>
+
+                  {/* Accent Color */}
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <div>
+                        <Popover>
+                          <PopoverTrigger asChild>
+                            <Button
+                              variant="ghost"
+                              className="flex items-center justify-center h-10 w-10 p-0 rounded-full hover:bg-gray-100 hover:text-gray-900 text-gray-700 transition-all duration-200"
+                            >
+                              <div className="w-7 h-7 rounded-full bg-accent" />
+                              <span className="sr-only">Accent</span>
+                            </Button>
+                          </PopoverTrigger>
+                          <PopoverContent
+                            className="w-80 p-0"
+                            side="top"
+                            align="center"
+                            sideOffset={16}
+                            style={{
+                              backgroundColor: "white",
+                              border: "1px solid #e5e7eb",
+                              borderRadius: "0.5rem",
+                              boxShadow:
+                                "0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)",
+                              color: "#1a1a1a",
+                            }}
+                          >
+                            <div
+                              className="p-2 flex items-center"
+                              style={{
+                                borderBottom: "1px solid #e5e7eb",
+                                color: "#1a1a1a",
+                              }}
+                            >
+                              <span className="font-medium">Accent Color</span>
+                            </div>
+                            <ColorPicker
+                              color={getHexColor("accent")}
+                              onChange={(color) =>
+                                updateThemeColor("accent", color)
+                              }
+                            />
+                          </PopoverContent>
+                        </Popover>
+                      </div>
+                    </TooltipTrigger>
+                    <TooltipContent
+                      side="top"
+                      className="bg-gray-900 text-white border-none"
+                    >
+                      Accent Color
+                    </TooltipContent>
+                  </Tooltip>
+
+                  <div className="h-6 w-px bg-gray-200 mx-2"></div>
+
+                  {/* Templates Selector */}
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <div>
+                        <Popover>
+                          <PopoverTrigger asChild>
+                            <Button
+                              variant="ghost"
+                              className="flex items-center justify-center h-10 w-10 p-0 rounded-full hover:bg-gray-100 hover:text-gray-900 text-gray-700 transition-all duration-200"
+                              data-template-button="true"
+                            >
+                              <LayoutTemplate size={18} />
+                              <span className="sr-only">Templates</span>
+                            </Button>
+                          </PopoverTrigger>
+                          <PopoverContent
+                            className="w-56 p-0"
+                            side="top"
+                            align="center"
+                            sideOffset={16}
+                            style={{
+                              backgroundColor: "white",
+                              border: "1px solid #e5e7eb",
+                              borderRadius: "0.5rem",
+                              boxShadow:
+                                "0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)",
+                              color: "#1a1a1a",
+                            }}
+                          >
+                            <div
+                              className="p-2 flex items-center"
+                              style={{
+                                borderBottom: "1px solid #e5e7eb",
+                                color: "#1a1a1a",
+                              }}
+                            ></div>
+                            <div className="py-1">
+                              {templates.map((template) => (
+                                <Button
+                                  key={template.path}
+                                  variant="ghost"
+                                  className="w-full justify-start text-left h-9 px-2 relative hover:bg-gray-100 hover:text-gray-900"
+                                  onClick={() =>
+                                    navigateToTemplate(template.path)
+                                  }
+                                  style={{
+                                    color: "#374151",
+                                    borderRadius: "0",
+                                  }}
+                                >
+                                  <span>{template.name}</span>
+                                  {pathname === template.path && (
+                                    <Check
+                                      size={16}
+                                      className="absolute right-2 top-1/2 transform -translate-y-1/2"
+                                    />
+                                  )}
+                                </Button>
+                              ))}
+                            </div>
+                          </PopoverContent>
+                        </Popover>
+                      </div>
+                    </TooltipTrigger>
+                    <TooltipContent
+                      side="top"
+                      className="bg-gray-900 text-white border-none"
+                    >
+                      Templates
+                    </TooltipContent>
+                  </Tooltip>
+
+                  {/* Color Harmony Selector */}
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <div>
+                        <Popover>
+                          <PopoverTrigger asChild>
+                            <Button
+                              variant="ghost"
+                              className="flex items-center justify-center h-10 w-10 p-0 rounded-full hover:bg-gray-100 hover:text-gray-900 text-gray-700 transition-all duration-200"
+                              data-harmony-button="true"
+                            >
+                              <Droplet size={18} />
+                              <span className="sr-only">Color Harmony</span>
+                            </Button>
+                          </PopoverTrigger>
+                          <PopoverContent
+                            className="w-56 p-0"
+                            side="top"
+                            align="center"
+                            sideOffset={16}
+                            style={{
+                              backgroundColor: "white",
+                              border: "1px solid #e5e7eb",
+                              borderRadius: "0.5rem",
+                              boxShadow:
+                                "0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)",
+                              color: "#1a1a1a",
+                            }}
+                          >
+                            <div
+                              className="p-2 flex items-center"
+                              style={{
+                                borderBottom: "1px solid #e5e7eb",
+                                color: "#1a1a1a",
+                              }}
+                            >
+                              <span className="font-medium">Color Harmony</span>
+                            </div>
+                            <div className="py-1">
+                              {harmonyOptions.map((harmony) => (
+                                <Button
+                                  key={harmony.value}
+                                  variant="ghost"
+                                  className="w-full justify-start text-left h-9 px-2 relative hover:bg-gray-100 hover:text-gray-900"
+                                  onClick={() =>
+                                    setSelectedHarmony(harmony.value)
+                                  }
+                                  style={{
+                                    color: "#374151",
+                                    borderRadius: "0",
+                                  }}
+                                >
+                                  <span>{harmony.name}</span>
+                                  {selectedHarmony === harmony.value && (
+                                    <Check
+                                      size={16}
+                                      className="absolute right-2 top-1/2 transform -translate-y-1/2"
+                                    />
+                                  )}
+                                </Button>
+                              ))}
+                            </div>
+                          </PopoverContent>
+                        </Popover>
+                      </div>
+                    </TooltipTrigger>
+                    <TooltipContent
+                      side="top"
+                      className="bg-gray-900 text-white border-none"
+                    >
+                      Color Harmony
+                    </TooltipContent>
+                  </Tooltip>
+
+                  {/* Theme Selector */}
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <div>
+                        <Popover>
+                          <PopoverTrigger asChild>
+                            <Button
+                              variant="ghost"
+                              className="flex items-center justify-center h-10 w-10 p-0 rounded-full hover:bg-gray-100 hover:text-gray-900 text-gray-700 transition-all duration-200"
+                              data-themes-button="true"
+                            >
+                              <Palette size={18} />
+                              <span className="sr-only">Themes</span>
+                            </Button>
+                          </PopoverTrigger>
+                          <PopoverContent
+                            className="w-56 p-0"
+                            side="top"
+                            align="center"
+                            sideOffset={16}
+                            style={{
+                              backgroundColor: "white",
+                              border: "1px solid #e5e7eb",
+                              borderRadius: "0.5rem",
+                              boxShadow:
+                                "0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)",
+                              color: "#1a1a1a",
+                            }}
+                          >
+                            <div
+                              className="p-2 flex items-center justify-between"
+                              style={{
+                                borderBottom: "1px solid #e5e7eb",
+                                color: "#1a1a1a",
+                              }}
+                            >
+                              <span className="font-medium">Theme Presets</span>
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                className="h-8 w-8 p-0 hover:bg-gray-100 hover:text-gray-900"
+                                onClick={() => setSaveThemeDialogOpen(true)}
+                                style={{ borderRadius: "4px" }}
+                              >
+                                <Plus size={16} />
+                                <span className="sr-only">
+                                  Save Current Theme
+                                </span>
+                              </Button>
+                            </div>
+                            <div className="py-1">
+                              {predefinedThemes.map((theme) => (
+                                <Button
+                                  key={theme.name}
+                                  variant="ghost"
+                                  className="w-full justify-start text-left h-9 px-2 relative hover:bg-gray-100 hover:text-gray-900"
+                                  onClick={() => setCurrentTheme(theme.name)}
+                                  style={{
+                                    color: "#374151",
+                                    borderRadius: "0",
+                                  }}
+                                >
+                                  <div className="flex items-center gap-2">
+                                    <div
+                                      className="w-5 h-5 rounded-full"
+                                      style={{
+                                        backgroundColor: theme.colors.primary,
+                                      }}
+                                    />
+                                    <span>{theme.name}</span>
+                                  </div>
+                                  {currentTheme === theme.name && (
+                                    <Check
+                                      size={16}
+                                      className="absolute right-2 top-1/2 transform -translate-y-1/2"
+                                    />
+                                  )}
+                                </Button>
+                              ))}
+                            </div>
+                          </PopoverContent>
+                        </Popover>
+                      </div>
+                    </TooltipTrigger>
+                    <TooltipContent
+                      side="top"
+                      className="bg-gray-900 text-white border-none"
+                    >
+                      Theme Presets
+                    </TooltipContent>
+                  </Tooltip>
+
+                  {/* Border Radius */}
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <div>
+                        <Popover>
+                          <PopoverTrigger asChild>
+                            <Button
+                              variant="ghost"
+                              className="flex items-center justify-center h-10 w-10 p-0 rounded-full hover:bg-gray-100 hover:text-gray-900 text-gray-700 transition-all duration-200"
+                              data-border-radius-button="true"
+                            >
+                              <Square size={18} />
+                              <span className="sr-only">Radius</span>
+                            </Button>
+                          </PopoverTrigger>
+                          <PopoverContent
+                            className="w-80 p-4"
+                            side="top"
+                            align="center"
+                            sideOffset={16}
+                            style={{
+                              backgroundColor: "white",
+                              border: "1px solid #e5e7eb",
+                              borderRadius: "0.5rem",
+                              boxShadow:
+                                "0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)",
+                              color: "#1a1a1a",
+                            }}
+                          >
+                            <div
+                              className="mb-2 font-medium"
+                              style={{ color: "#1a1a1a" }}
+                            >
+                              Border Radius
+                            </div>
+                            <BorderRadiusControl />
+                          </PopoverContent>
+                        </Popover>
+                      </div>
+                    </TooltipTrigger>
+                    <TooltipContent
+                      side="top"
+                      className="bg-gray-900 text-white border-none"
+                    >
+                      Border Radius
+                    </TooltipContent>
+                  </Tooltip>
+
+                  {/* Fonts */}
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <div>
+                        <Popover>
+                          <PopoverTrigger asChild>
+                            <Button
+                              variant="ghost"
+                              className="flex items-center justify-center h-10 w-10 p-0 rounded-full hover:bg-gray-100 hover:text-gray-900 text-gray-700 transition-all duration-200"
+                            >
+                              <Type size={18} />
+                              <span className="sr-only">Fonts</span>
+                            </Button>
+                          </PopoverTrigger>
+                          <PopoverContent
+                            className="w-80 p-4"
+                            side="top"
+                            align="center"
+                            sideOffset={16}
+                            style={{
+                              backgroundColor: "white",
+                              border: "1px solid #e5e7eb",
+                              borderRadius: "0.5rem",
+                              boxShadow:
+                                "0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)",
+                              color: "#1a1a1a",
+                            }}
+                          >
+                            <div className="mb-2 flex items-center justify-between">
+                              <span
+                                className="font-medium"
+                                style={{ color: "#1a1a1a" }}
+                              >
+                                Typography
+                              </span>
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={() => setFontsLocked(!fontsLocked)}
+                                className={`h-8 px-2 flex items-center gap-1 ${
+                                  fontsLocked ? "bg-primary/10" : ""
+                                }`}
+                                style={{
+                                  borderRadius: "4px",
                                   border: "1px solid #d1d5db",
-                                  color: "#1f2937",
-                                  borderRadius: "6px",
+                                  backgroundColor: fontsLocked
+                                    ? "rgba(79, 70, 229, 0.1)"
+                                    : "white",
+                                  color: "#4b5563",
                                 }}
                               >
-                                <SelectValue placeholder="Select font" />
-                              </SelectTrigger>
-                              <SelectContent
-                                style={{
-                                  backgroundColor: "white",
-                                  border: "1px solid #e5e7eb",
-                                  borderRadius: "6px",
-                                  color: "#1a1a1a",
-                                }}
-                              >
-                                {fontOptions.map((font) => (
-                                  <SelectItem
-                                    key={font}
-                                    value={font}
+                                {fontsLocked ? (
+                                  <>
+                                    <LockClosedIcon className="h-3.5 w-3.5" />
+                                    <span>Locked</span>
+                                  </>
+                                ) : (
+                                  <>
+                                    <LockOpenIcon className="h-3.5 w-3.5" />
+                                    <span>Unlocked</span>
+                                  </>
+                                )}
+                              </Button>
+                            </div>
+                            <div className="grid gap-6">
+                              <div>
+                                <label
+                                  className="block text-sm font-medium mb-2"
+                                  style={{ color: "#374151" }}
+                                >
+                                  Heading Font
+                                </label>
+                                <Select
+                                  value={fonts.heading}
+                                  onValueChange={(value) =>
+                                    handleFontChange("heading", value)
+                                  }
+                                >
+                                  <SelectTrigger
+                                    className="w-full"
                                     style={{
-                                      fontFamily: font,
-                                      color: "#374151",
+                                      backgroundColor: "white",
+                                      border: "1px solid #d1d5db",
+                                      color: "#1f2937",
+                                      borderRadius: "6px",
                                     }}
                                   >
-                                    {font}
-                                  </SelectItem>
-                                ))}
-                              </SelectContent>
-                            </Select>
-                          </div>
-
-                          <div>
-                            <label
-                              className="block text-sm font-medium mb-2"
-                              style={{ color: "#374151" }}
-                            >
-                              Body Font
-                            </label>
-                            <Select
-                              value={fonts.body}
-                              onValueChange={(value) =>
-                                handleFontChange("body", value)
-                              }
-                            >
-                              <SelectTrigger
-                                className="w-full"
-                                style={{
-                                  backgroundColor: "white",
-                                  border: "1px solid #d1d5db",
-                                  color: "#1f2937",
-                                  borderRadius: "6px",
-                                }}
-                              >
-                                <SelectValue placeholder="Select font" />
-                              </SelectTrigger>
-                              <SelectContent
-                                style={{
-                                  backgroundColor: "white",
-                                  border: "1px solid #e5e7eb",
-                                  borderRadius: "6px",
-                                  color: "#1a1a1a",
-                                }}
-                              >
-                                {fontOptions.map((font) => (
-                                  <SelectItem
-                                    key={font}
-                                    value={font}
+                                    <SelectValue placeholder="Select font" />
+                                  </SelectTrigger>
+                                  <SelectContent
                                     style={{
-                                      fontFamily: font,
-                                      color: "#374151",
+                                      backgroundColor: "white",
+                                      border: "1px solid #e5e7eb",
+                                      borderRadius: "6px",
+                                      color: "#1a1a1a",
                                     }}
                                   >
-                                    {font}
-                                  </SelectItem>
-                                ))}
-                              </SelectContent>
-                            </Select>
-                          </div>
-                        </div>
-                      </PopoverContent>
-                    </Popover>
-                  </div>
-                </TooltipTrigger>
-                <TooltipContent
-                  side="top"
-                  className="bg-gray-900 text-white border-none"
-                >
-                  Typography
-                </TooltipContent>
-              </Tooltip>
+                                    {fontOptions.map((font) => (
+                                      <SelectItem
+                                        key={font}
+                                        value={font}
+                                        style={{
+                                          fontFamily: font,
+                                          color: "#374151",
+                                        }}
+                                      >
+                                        {font}
+                                      </SelectItem>
+                                    ))}
+                                  </SelectContent>
+                                </Select>
+                              </div>
 
-              {/* Randomize Colors */}
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <Button
-                    variant="ghost"
-                    className="flex items-center justify-center h-10 w-10 p-0 rounded-full hover:bg-gray-100 hover:text-gray-900 text-gray-700 transition-all duration-200"
-                    onClick={generateHarmonyColors}
-                  >
-                    <Shuffle size={18} />
-                    <span className="sr-only">Randomize</span>
-                  </Button>
-                </TooltipTrigger>
-                <TooltipContent
-                  side="top"
-                  className="bg-gray-900 text-white border-none"
-                >
-                  Randomize Colors
-                </TooltipContent>
-              </Tooltip>
+                              <div>
+                                <label
+                                  className="block text-sm font-medium mb-2"
+                                  style={{ color: "#374151" }}
+                                >
+                                  Body Font
+                                </label>
+                                <Select
+                                  value={fonts.body}
+                                  onValueChange={(value) =>
+                                    handleFontChange("body", value)
+                                  }
+                                >
+                                  <SelectTrigger
+                                    className="w-full"
+                                    style={{
+                                      backgroundColor: "white",
+                                      border: "1px solid #d1d5db",
+                                      color: "#1f2937",
+                                      borderRadius: "6px",
+                                    }}
+                                  >
+                                    <SelectValue placeholder="Select font" />
+                                  </SelectTrigger>
+                                  <SelectContent
+                                    style={{
+                                      backgroundColor: "white",
+                                      border: "1px solid #e5e7eb",
+                                      borderRadius: "6px",
+                                      color: "#1a1a1a",
+                                    }}
+                                  >
+                                    {fontOptions.map((font) => (
+                                      <SelectItem
+                                        key={font}
+                                        value={font}
+                                        style={{
+                                          fontFamily: font,
+                                          color: "#374151",
+                                        }}
+                                      >
+                                        {font}
+                                      </SelectItem>
+                                    ))}
+                                  </SelectContent>
+                                </Select>
+                              </div>
+                            </div>
+                          </PopoverContent>
+                        </Popover>
+                      </div>
+                    </TooltipTrigger>
+                    <TooltipContent
+                      side="top"
+                      className="bg-gray-900 text-white border-none"
+                    >
+                      Typography
+                    </TooltipContent>
+                  </Tooltip>
 
-              {/* Dark Mode Toggle */}
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    onClick={toggleDarkMode}
-                    className="flex items-center justify-center h-10 w-10 p-0 rounded-full hover:bg-gray-100 hover:text-gray-900 text-gray-700 transition-all duration-200"
-                  >
-                    {isDarkMode ? <Sun size={18} /> : <Moon size={18} />}
-                    <span className="sr-only">
+                  {/* Randomize Colors */}
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Button
+                        variant="ghost"
+                        className="flex items-center justify-center h-10 w-10 p-0 rounded-full hover:bg-gray-100 hover:text-gray-900 text-gray-700 transition-all duration-200"
+                        onClick={generateHarmonyColors}
+                      >
+                        <Shuffle size={18} />
+                        <span className="sr-only">Randomize</span>
+                      </Button>
+                    </TooltipTrigger>
+                    <TooltipContent
+                      side="top"
+                      className="bg-gray-900 text-white border-none"
+                    >
+                      Randomize Colors
+                    </TooltipContent>
+                  </Tooltip>
+
+                  {/* Dark Mode Toggle */}
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={toggleDarkMode}
+                        className="flex items-center justify-center h-10 w-10 p-0 rounded-full hover:bg-gray-100 hover:text-gray-900 text-gray-700 transition-all duration-200"
+                      >
+                        {isDarkMode ? <Sun size={18} /> : <Moon size={18} />}
+                        <span className="sr-only">
+                          {isDarkMode ? "Light Mode" : "Dark Mode"}
+                        </span>
+                      </Button>
+                    </TooltipTrigger>
+                    <TooltipContent
+                      side="top"
+                      className="bg-gray-900 text-white border-none"
+                    >
                       {isDarkMode ? "Light Mode" : "Dark Mode"}
-                    </span>
-                  </Button>
-                </TooltipTrigger>
-                <TooltipContent
-                  side="top"
-                  className="bg-gray-900 text-white border-none"
-                >
-                  {isDarkMode ? "Light Mode" : "Dark Mode"}
-                </TooltipContent>
-              </Tooltip>
+                    </TooltipContent>
+                  </Tooltip>
 
-              {/* Export Theme */}
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    onClick={() => setExportMenuOpen(true)}
-                    className="flex items-center justify-center h-10 w-10 p-0 rounded-full hover:bg-gray-100 hover:text-gray-900 text-gray-700 transition-all duration-200"
-                  >
-                    <Download size={18} />
-                    <span className="sr-only">Export Theme</span>
-                  </Button>
-                </TooltipTrigger>
-                <TooltipContent
-                  side="top"
-                  className="bg-gray-900 text-white border-none"
-                >
-                  Export Theme
-                </TooltipContent>
-              </Tooltip>
+                  {/* Export Theme */}
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => setExportMenuOpen(true)}
+                        className="flex items-center justify-center h-10 w-10 p-0 rounded-full hover:bg-gray-100 hover:text-gray-900 text-gray-700 transition-all duration-200"
+                      >
+                        <Download size={18} />
+                        <span className="sr-only">Export Theme</span>
+                      </Button>
+                    </TooltipTrigger>
+                    <TooltipContent
+                      side="top"
+                      className="bg-gray-900 text-white border-none"
+                    >
+                      Export Theme
+                    </TooltipContent>
+                  </Tooltip>
+                </>
+              )}
             </div>
           </TooltipProvider>
         </div>
