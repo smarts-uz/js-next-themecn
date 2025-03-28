@@ -21,7 +21,6 @@ import { BorderRadiusControl } from "@/components/border-radius-control";
 import { ExportMenu } from "@/components/export-menu";
 import { ShareMenu } from "@/components/share-menu";
 import { useIsMobile } from "@/hooks/use-mobile";
-import { useRouter, usePathname } from "next/navigation";
 import dynamic from "next/dynamic";
 import {
   LightDrawer,
@@ -29,11 +28,8 @@ import {
   LightDrawerHeader,
   LightDrawerTitle,
 } from "@/components/ui/light-drawer";
-
-// Import modular components
 import { ThemeColorPickers } from "@/components/theme-dock/theme-color-pickers";
 import { ThemeTypography } from "@/components/theme-dock/theme-typography";
-import { ThemeTemplates } from "@/components/theme-dock/theme-templates";
 import { ThemePresets } from "@/components/theme-dock/theme-presets";
 import { ThemeHarmonies } from "@/components/theme-dock/theme-harmonies";
 import { ThemeBorderRadius } from "@/components/theme-dock/theme-border-radius";
@@ -58,8 +54,6 @@ const ThemeDock = () => {
     setCurrentTheme,
   } = useThemeStore();
 
-  const router = useRouter();
-  const pathname = usePathname();
   const isMobile = useIsMobile();
   const [dockVisible, setDockVisible] = useState(true);
   const [saveThemeDialogOpen, setSaveThemeDialogOpen] = useState(false);
@@ -67,8 +61,6 @@ const ThemeDock = () => {
   const [fontsLocked, setFontsLocked] = useState(false);
   const [mobileMoreOpen, setMobileMoreOpen] = useState(false);
 
-  // Mobile state for popovers and drawers
-  const [mobileTemplatesOpen, setMobileTemplatesOpen] = useState(false);
   const [mobileBorderRadiusOpen, setMobileBorderRadiusOpen] = useState(false);
   const [mobileHarmonyOpen, setMobileHarmonyOpen] = useState(false);
   const [mobileThemesOpen, setMobileThemesOpen] = useState(false);
@@ -148,7 +140,6 @@ const ThemeDock = () => {
   // Add an effect to ensure popover is closed when any drawer is open
   useEffect(() => {
     if (
-      mobileTemplatesOpen ||
       mobileBorderRadiusOpen ||
       mobileHarmonyOpen ||
       mobileThemesOpen ||
@@ -157,7 +148,6 @@ const ThemeDock = () => {
       setMobileMoreOpen(false);
     }
   }, [
-    mobileTemplatesOpen,
     mobileBorderRadiusOpen,
     mobileHarmonyOpen,
     mobileThemesOpen,
@@ -201,23 +191,6 @@ const ThemeDock = () => {
     </Button>
   );
 
-  // Template navigation
-  const templates = [
-    { name: "Landing Page", path: "/" },
-    { name: "Dashboard", path: "/dashboard" },
-  ];
-
-  const navigateToTemplate = (path: string) => {
-    // Get the current theme parameter from the URL
-    const params = new URLSearchParams(window.location.search);
-    const themeParam = params.get("theme");
-
-    // Append the theme parameter to the path if it exists
-    const newPath = themeParam ? `${path}?theme=${themeParam}` : path;
-
-    router.push(newPath);
-  };
-
   return (
     <>
       <ExportMenu />
@@ -230,41 +203,6 @@ const ThemeDock = () => {
       {/* Mobile drawers */}
       {isMobile && (
         <>
-          {/* Templates Drawer */}
-          <LightDrawer
-            open={mobileTemplatesOpen}
-            onOpenChange={(open) => setMobileTemplatesOpen(open)}
-          >
-            <LightDrawerContent className="bg-white border-t border-gray-200">
-              <LightDrawerHeader>
-                <LightDrawerTitle>Templates</LightDrawerTitle>
-              </LightDrawerHeader>
-              <div className="px-4 pb-6">
-                <div className="py-1">
-                  {templates.map((template) => (
-                    <Button
-                      key={template.path}
-                      variant="ghost"
-                      className="w-full justify-start text-left h-12 px-3 mb-1 relative hover:bg-gray-100 hover:text-gray-900 rounded-md"
-                      onClick={() => {
-                        navigateToTemplate(template.path);
-                        setMobileTemplatesOpen(false);
-                      }}
-                    >
-                      <span>{template.name}</span>
-                      {pathname === template.path && (
-                        <Check
-                          size={16}
-                          className="absolute right-3 top-1/2 transform -translate-y-1/2"
-                        />
-                      )}
-                    </Button>
-                  ))}
-                </div>
-              </div>
-            </LightDrawerContent>
-          </LightDrawer>
-
           {/* Border Radius Drawer */}
           <LightDrawer
             open={mobileBorderRadiusOpen}
@@ -525,36 +463,34 @@ const ThemeDock = () => {
         <div
           ref={dockRef}
           className="bg-[#f5f5f5] backdrop-blur-xl border border-gray-200 rounded-full shadow-lg mx-auto overflow-visible"
-          style={{ padding: "8px 12px" }}
+          style={{ padding: isMobile ? "8px 20px" : "8px 12px" }}
         >
           <TooltipProvider delayDuration={0}>
             <div className="flex items-center justify-center overflow-x-auto py-1 px-1 scrollbar-hide">
               {isMobile ? (
                 // Mobile layout
                 <>
-                  {/* Color pickers */}
+                  {/* All main color pickers */}
                   <ThemeColorPickers />
 
-                  <div className="h-6 w-px bg-gray-200 mx-2"></div>
+                  <div className="h-6 w-px bg-gray-200 mx-3"></div>
 
-                  {/* Utility controls for mobile */}
+                  {/* Randomize button */}
                   <ThemeUtilityControls
                     onExportClick={() => setExportMenuOpen(true)}
+                    showRandomizeOnly={true}
                   />
 
-                  {/* Typography */}
-                  <ThemeTypography fontOptions={fontOptions} />
+                  <div className="h-6 w-px bg-gray-200 mx-3"></div>
 
-                  {/* More Menu for mobile */}
-                  {!mobileTemplatesOpen &&
-                  !mobileBorderRadiusOpen &&
+                  {/* More options menu */}
+                  {!mobileBorderRadiusOpen &&
                   !mobileHarmonyOpen &&
                   !mobileThemesOpen &&
                   !mobileTypographyOpen ? (
                     <ThemeMobileMore
                       isOpen={mobileMoreOpen}
                       onOpenChange={setMobileMoreOpen}
-                      onTemplatesClick={() => setMobileTemplatesOpen(true)}
                       onBorderRadiusClick={() =>
                         setMobileBorderRadiusOpen(true)
                       }
@@ -566,7 +502,6 @@ const ThemeDock = () => {
                     <MobileCloseButton
                       onClick={() => {
                         setMobileMoreOpen(false);
-                        setMobileTemplatesOpen(false);
                         setMobileBorderRadiusOpen(false);
                         setMobileHarmonyOpen(false);
                         setMobileThemesOpen(false);
@@ -582,9 +517,6 @@ const ThemeDock = () => {
                   <ThemeColorPickers />
 
                   <div className="h-6 w-px bg-gray-200 mx-2"></div>
-
-                  {/* Templates Selector */}
-                  <ThemeTemplates />
 
                   {/* Color Harmony Selector */}
                   <ThemeHarmonies />

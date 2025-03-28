@@ -8,9 +8,7 @@ import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import {
   Command,
-  CommandEmpty,
   CommandGroup,
-  CommandInput,
   CommandItem,
   CommandList,
 } from "@/components/ui/command";
@@ -63,9 +61,7 @@ export function NavigationCombobox() {
       </PopoverTrigger>
       <PopoverContent className="w-[160px] p-0">
         <Command>
-          <CommandInput placeholder="Search pages..." />
           <CommandList>
-            <CommandEmpty>No page found.</CommandEmpty>
             <CommandGroup>
               {navigationOptions.map((option) => (
                 <CommandItem

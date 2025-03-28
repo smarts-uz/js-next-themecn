@@ -4,7 +4,7 @@ import * as React from "react";
 import { Check, Plus, Send } from "lucide-react";
 
 import { cn } from "@/lib/utils";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -40,27 +40,22 @@ const users = [
   {
     name: "Olivia Martin",
     email: "m@example.com",
-    avatar: "/avatars/01.png",
   },
   {
     name: "Isabella Nguyen",
     email: "isabella.nguyen@email.com",
-    avatar: "/avatars/03.png",
   },
   {
     name: "Emma Wilson",
     email: "emma@example.com",
-    avatar: "/avatars/05.png",
   },
   {
     name: "Jackson Lee",
     email: "lee@example.com",
-    avatar: "/avatars/02.png",
   },
   {
     name: "William Kim",
     email: "will@email.com",
-    avatar: "/avatars/04.png",
   },
 ] as const;
 
@@ -97,7 +92,6 @@ export function CardsChat() {
         <CardHeader className="flex flex-row items-center">
           <div className="flex items-center space-x-4">
             <Avatar>
-              <AvatarImage src="/avatars/01.png" alt="Image" />
               <AvatarFallback>OM</AvatarFallback>
             </Avatar>
             <div>
@@ -205,7 +199,6 @@ export function CardsChat() {
                     }}
                   >
                     <Avatar>
-                      <AvatarImage src={user.avatar} alt="Image" />
                       <AvatarFallback>{user.name[0]}</AvatarFallback>
                     </Avatar>
                     <div className="ml-2">
@@ -232,7 +225,6 @@ export function CardsChat() {
                     key={user.email}
                     className="inline-block border-2 border-background"
                   >
-                    <AvatarImage src={user.avatar} />
                     <AvatarFallback>{user.name[0]}</AvatarFallback>
                   </Avatar>
                 ))}

@@ -13,6 +13,7 @@ interface ColorVariable {
   name: string;
   value: string;
   hexValue: string;
+  category: string;
 }
 
 function oklchToHex(oklchValue: string): string {
@@ -47,52 +48,68 @@ export function CardsThemeVariables() {
 
   useEffect(() => {
     const rootStyles = getComputedStyle(document.documentElement);
-    const variableNames = [
-      "--background",
-      "--foreground",
-      "--card",
-      "--card-foreground",
-      "--popover",
-      "--popover-foreground",
-      "--primary",
-      "--primary-foreground",
-      "--secondary",
-      "--secondary-foreground",
-      "--muted",
-      "--muted-foreground",
-      "--accent",
-      "--accent-foreground",
-      "--destructive",
-      "--destructive-foreground",
-      "--border",
-      "--input",
-      "--ring",
-      "--chart-1",
-      "--chart-2",
-      "--chart-3",
-      "--chart-4",
-      "--chart-5",
-      "--sidebar",
-      "--sidebar-foreground",
-      "--sidebar-primary",
-      "--sidebar-primary-foreground",
-      "--sidebar-accent",
-      "--sidebar-accent-foreground",
-      "--sidebar-border",
-      "--sidebar-ring",
-    ];
+    const variableGroups: Record<string, string[]> = {
+      "Base Colors": [
+        "--background",
+        "--foreground",
+        "--card",
+        "--card-foreground",
+        "--popover",
+        "--popover-foreground",
+      ],
+      "Primary & Secondary": [
+        "--primary",
+        "--primary-foreground",
+        "--secondary",
+        "--secondary-foreground",
+      ],
+      "States & Feedback": [
+        "--muted",
+        "--muted-foreground",
+        "--accent",
+        "--accent-foreground",
+        "--destructive",
+        "--destructive-foreground",
+        "--border",
+        "--input",
+        "--ring",
+      ],
+      Charts: ["--chart-1", "--chart-2", "--chart-3", "--chart-4", "--chart-5"],
+      Sidebar: [
+        "--sidebar",
+        "--sidebar-foreground",
+        "--sidebar-primary",
+        "--sidebar-primary-foreground",
+        "--sidebar-accent",
+        "--sidebar-accent-foreground",
+        "--sidebar-border",
+        "--sidebar-ring",
+      ],
+    };
 
-    const variables = variableNames.map((name) => {
-      const value = rootStyles.getPropertyValue(name).trim();
-      return {
-        name,
-        value,
-        hexValue: oklchToHex(value),
-      };
-    });
+    const variables = Object.entries(variableGroups).flatMap(
+      ([category, names]) =>
+        names.map((name) => {
+          const value = rootStyles.getPropertyValue(name).trim();
+          return {
+            name,
+            value,
+            hexValue: oklchToHex(value),
+            category,
+          };
+        })
+    );
 
     setColorVariables(variables);
   }, []);
+
+  const groupedVariables = colorVariables.reduce((acc, variable) => {
+    if (!acc[variable.category]) {
+      acc[variable.category] = [];
+    }
+    acc[variable.category].push(variable);
+    return acc;
+  }, {} as Record<string, ColorVariable[]>);
 
   return (
     <Card>
@@ -103,27 +120,29 @@ export function CardsThemeVariables() {
         </CardDescription>
       </CardHeader>
       <CardContent>
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
-          {colorVariables.map((variable) => (
-            <div
-              key={variable.name}
-              className="flex flex-col bg-background rounded-md overflow-hidden shadow-sm"
-            >
-              <div
-                className="h-20 w-full"
-                style={{ backgroundColor: `var(${variable.name})` }}
-              />
-              <div className="p-2 bg-background">
-                <div className="text-xs font-bold">
-                  {variable.name.replace("--", "")}
+        {Object.entries(groupedVariables).map(([category, variables]) => (
+          <div key={category} className="mb-8">
+            <h3 className="text-lg font-semibold mb-4">{category}</h3>
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
+              {variables.map((variable) => (
+                <div
+                  key={variable.name}
+                  className="flex flex-col bg-background rounded-md overflow-hidden shadow-sm"
+                >
+                  <div
+                    className="h-20 w-full"
+                    style={{ backgroundColor: `var(${variable.name})` }}
+                  />
+                  <div className="p-2 bg-background">
+                    <div className="text-xs font-bold">
+                      {variable.name.replace("--", "")}
+                    </div>
+                  </div>
                 </div>
-                <div className="text-xs font-medium text-muted-foreground">
-                  {variable.hexValue}
-                </div>
-              </div>
+              ))}
             </div>
-          ))}
-        </div>
+          </div>
+        ))}
       </CardContent>
     </Card>
   );

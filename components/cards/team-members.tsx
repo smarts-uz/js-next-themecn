@@ -2,7 +2,7 @@
 
 import { ChevronDown } from "lucide-react";
 
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -38,7 +38,6 @@ export function CardsTeamMembers() {
         <div className="flex items-center justify-between space-x-4">
           <div className="flex items-center space-x-4">
             <Avatar className="h-8 w-8">
-              <AvatarImage src="/avatars/01.png" alt="Image" />
               <AvatarFallback>OM</AvatarFallback>
             </Avatar>
             <div>
@@ -91,7 +90,6 @@ export function CardsTeamMembers() {
         <div className="flex items-center justify-between space-x-4">
           <div className="flex items-center space-x-4">
             <Avatar className="h-8 w-8">
-              <AvatarImage src="/avatars/02.png" alt="Image" />
               <AvatarFallback>JL</AvatarFallback>
             </Avatar>
             <div>
@@ -144,7 +142,6 @@ export function CardsTeamMembers() {
         <div className="flex items-center justify-between space-x-4">
           <div className="flex items-center space-x-4">
             <Avatar className="h-8 w-8">
-              <AvatarImage src="/avatars/03.png" alt="Image" />
               <AvatarFallback>IN</AvatarFallback>
             </Avatar>
             <div>

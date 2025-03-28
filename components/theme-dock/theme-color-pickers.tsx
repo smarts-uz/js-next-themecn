@@ -12,8 +12,71 @@ import {
 import { ColorPicker } from "@/components/color-picker";
 import { useThemeStore } from "@/lib/store";
 
-export const ThemeColorPickers = () => {
+interface ThemeColorPickersProps {
+  showPrimaryOnly?: boolean;
+}
+
+export const ThemeColorPickers = ({
+  showPrimaryOnly = false,
+}: ThemeColorPickersProps) => {
   const { updateThemeColor, getHexColor } = useThemeStore();
+
+  // If showPrimaryOnly is true, only render the Primary Color picker
+  if (showPrimaryOnly) {
+    return (
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <div>
+            <Popover>
+              <PopoverTrigger asChild>
+                <Button
+                  variant="ghost"
+                  className="flex items-center justify-center h-10 w-10 p-0 rounded-full hover:bg-gray-100 hover:text-gray-900 text-gray-700 transition-all duration-200"
+                >
+                  <div className="w-7 h-7 rounded-full bg-primary" />
+                  <span className="sr-only">Primary</span>
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent
+                className="w-80 p-0"
+                side="top"
+                align="center"
+                sideOffset={16}
+                style={{
+                  backgroundColor: "white",
+                  border: "1px solid #e5e7eb",
+                  borderRadius: "0.5rem",
+                  boxShadow:
+                    "0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)",
+                  color: "#1a1a1a",
+                }}
+              >
+                <div
+                  className="p-2 flex items-center"
+                  style={{
+                    borderBottom: "1px solid #e5e7eb",
+                    color: "#1a1a1a",
+                  }}
+                >
+                  <span className="font-medium">Primary Color</span>
+                </div>
+                <ColorPicker
+                  color={getHexColor("primary")}
+                  onChange={(color) => updateThemeColor("primary", color)}
+                />
+              </PopoverContent>
+            </Popover>
+          </div>
+        </TooltipTrigger>
+        <TooltipContent
+          side="top"
+          className="bg-gray-900 text-white border-none"
+        >
+          Primary Color
+        </TooltipContent>
+      </Tooltip>
+    );
+  }
 
   return (
     <>

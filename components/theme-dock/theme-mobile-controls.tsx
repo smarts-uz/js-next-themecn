@@ -11,7 +11,6 @@ import {
 } from "@/components/ui/tooltip";
 import {
   Droplet,
-  LayoutTemplate,
   Square,
   Palette,
   Sun,
@@ -24,7 +23,7 @@ import { useThemeStore } from "@/lib/store";
 interface MobileMoreProps {
   isOpen: boolean;
   onOpenChange: (open: boolean) => void;
-  onTemplatesClick: () => void;
+
   onBorderRadiusClick: () => void;
   onHarmonyClick: () => void;
   onThemesClick: () => void;
@@ -34,7 +33,7 @@ interface MobileMoreProps {
 export const ThemeMobileMore = ({
   isOpen,
   onOpenChange,
-  onTemplatesClick,
+
   onBorderRadiusClick,
   onHarmonyClick,
   onThemesClick,
@@ -85,19 +84,6 @@ export const ThemeMobileMore = ({
               }}
             >
               <div className="grid grid-cols-3 gap-2 w-full">
-                {/* Templates */}
-                <Button
-                  variant="ghost"
-                  className="flex flex-col items-center justify-center space-y-1 h-20 rounded-md hover:bg-gray-100"
-                  onClick={() => {
-                    onOpenChange(false);
-                    onTemplatesClick();
-                  }}
-                >
-                  <LayoutTemplate size={20} />
-                  <span className="text-xs">Templates</span>
-                </Button>
-
                 {/* Border Radius */}
                 <Button
                   variant="ghost"

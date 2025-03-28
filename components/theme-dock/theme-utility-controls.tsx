@@ -9,10 +9,38 @@ import { useThemeStore } from "@/lib/store";
 
 interface Props {
   onExportClick: () => void;
+  showRandomizeOnly?: boolean;
 }
 
-export const ThemeUtilityControls = ({ onExportClick }: Props) => {
+export const ThemeUtilityControls = ({
+  onExportClick,
+  showRandomizeOnly = false,
+}: Props) => {
   const { isDarkMode, toggleDarkMode, generateHarmonyColors } = useThemeStore();
+
+  // If showRandomizeOnly is true, only render the Randomize button
+  if (showRandomizeOnly) {
+    return (
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <Button
+            variant="ghost"
+            className="flex items-center justify-center h-10 w-10 p-0 rounded-full hover:bg-gray-100 hover:text-gray-900 text-gray-700 transition-all duration-200"
+            onClick={generateHarmonyColors}
+          >
+            <Shuffle size={18} />
+            <span className="sr-only">Randomize</span>
+          </Button>
+        </TooltipTrigger>
+        <TooltipContent
+          side="top"
+          className="bg-gray-900 text-white border-none"
+        >
+          Randomize Colors
+        </TooltipContent>
+      </Tooltip>
+    );
+  }
 
   return (
     <>
