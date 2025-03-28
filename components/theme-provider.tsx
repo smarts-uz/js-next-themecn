@@ -3,11 +3,11 @@ import {
   ThemeProvider as NextThemesProvider,
   type ThemeProviderProps,
 } from "next-themes";
-import { useEffect } from "react";
+import { useEffect, Suspense } from "react";
 import { getThemeFromUrl } from "@/lib/theme-url";
 import { useThemeStore } from "@/lib/store";
 
-export function ThemeProvider({ children, ...props }: ThemeProviderProps) {
+function ThemeProviderContent({ children, ...props }: ThemeProviderProps) {
   useEffect(() => {
     const urlTheme = getThemeFromUrl();
 
@@ -29,5 +29,13 @@ export function ThemeProvider({ children, ...props }: ThemeProviderProps) {
     <NextThemesProvider defaultTheme="light" {...props}>
       {children}
     </NextThemesProvider>
+  );
+}
+
+export function ThemeProvider(props: ThemeProviderProps) {
+  return (
+    <Suspense>
+      <ThemeProviderContent {...props} />
+    </Suspense>
   );
 }
