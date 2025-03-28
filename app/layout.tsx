@@ -14,7 +14,7 @@ export const metadata = {
   description:
     "themecn makes it easy to create, visualize, and export custom themes for your shadcn/ui projects. Create your perfect theme in real-time with our intuitive interface.",
   openGraph: {
-    title: "themecn",
+    title: "themecn - Theme Builder for shadcn/ui",
     description:
       "themecn makes it easy to create, visualize, and export custom themes for your shadcn/ui projects. Create your perfect theme in real-time with our intuitive interface.",
     images: ["/og.png"],
@@ -34,7 +34,7 @@ export default function RootLayout({
       <body>
         <ThemeProvider
           attribute="class"
-          defaultTheme="system"
+          defaultTheme="light"
           enableSystem
           disableTransitionOnChange
         >

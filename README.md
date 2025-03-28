@@ -1,4 +1,4 @@
-# ThemeCN
+# themecn
 
 themecn streamlines your design workflow with powerful, intuitive theme creation for shadcn/ui. Experiment with colors, typography, and more—all with instant visual feedback. No more guesswork.
 
@@ -20,13 +20,8 @@ themecn streamlines your design workflow with powerful, intuitive theme creation
 First, run the development server:
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
+pnpm i
 pnpm dev
-# or
-bun dev
 ```
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
