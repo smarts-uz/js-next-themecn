@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useThemeStore } from "@/lib/store";
-import ThemeDock from "@/components/theme-dock";
+import ThemeDock from "@/components/theme-dock/theme-dock";
 import { getThemeFromUrl } from "@/lib/theme-url";
 import {
   Card,

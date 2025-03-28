@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import LandingPage from "@/components/landing-page";
-import ThemeDock from "@/components/theme-dock";
+import ThemeDock from "@/components/theme-dock/theme-dock";
 import { useThemeStore } from "@/lib/store";
 import { getThemeFromUrl } from "@/lib/theme-url";
 
@@ -11,20 +11,6 @@ export default function Home() {
   // Apply theme from URL on client-side navigation
   useEffect(() => {
     let isMounted = true; // Track if component is mounted
-
-    // Apply default OKLCH values immediately to prevent flash
-    document.documentElement.style.setProperty(
-      "--background",
-      "oklch(0.985 0 0)"
-    );
-    document.documentElement.style.setProperty(
-      "--foreground",
-      "oklch(0.145 0 0)"
-    );
-    document.documentElement.style.setProperty(
-      "--primary",
-      "oklch(0.4 0.175 250)"
-    );
 
     try {
       // Get theme from URL
@@ -51,11 +37,7 @@ export default function Home() {
       }
 
       // Allow a brief delay for theme to be applied
-      setTimeout(() => {
-        if (isMounted) {
-          setThemeLoaded(true);
-        }
-      }, 100);
+      setThemeLoaded(true);
     } catch (error) {
       console.error("Error applying theme from URL:", error);
       setThemeLoaded(true);
