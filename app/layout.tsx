@@ -10,11 +10,13 @@ const geist = Geist({
 });
 
 export const metadata = {
-  title: "themecn",
-  description: "Interactive color theme generator",
+  title: "themecn - Theme Builder for shadcn/ui",
+  description:
+    "themecn makes it easy to create, visualize, and export custom themes for your shadcn/ui projects. Create your perfect theme in real-time with our intuitive interface.",
   openGraph: {
     title: "themecn",
-    description: "Interactive color theme generator",
+    description:
+      "themecn makes it easy to create, visualize, and export custom themes for your shadcn/ui projects. Create your perfect theme in real-time with our intuitive interface.",
     images: ["/og.png"],
     url: "https://themecn.dev",
     type: "website",
