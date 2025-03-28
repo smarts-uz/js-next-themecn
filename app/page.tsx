@@ -24,10 +24,6 @@ export default function Home() {
         } else {
           document.documentElement.classList.remove("dark");
         }
-      } else {
-        // No theme in URL, explicitly apply the default theme
-        console.log("No theme in URL, applying default theme");
-        store.resetTheme();
       }
     } catch (error) {
       console.error("Error applying theme from URL:", error);

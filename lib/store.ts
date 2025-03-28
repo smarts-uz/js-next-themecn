@@ -1120,9 +1120,6 @@ export const useThemeStore = create<ThemeStore>()(
           document.documentElement.classList.remove("dark");
         }
 
-        // Update URL with default theme
-        updateThemeUrl(defaultTheme);
-
         // Set current theme to "Default"
         set((state) => ({
           ...state,

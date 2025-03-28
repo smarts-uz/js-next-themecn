@@ -3,32 +3,27 @@ import {
   ThemeProvider as NextThemesProvider,
   type ThemeProviderProps,
 } from "next-themes";
-import { useState, useEffect } from "react";
-import { ThemeLoading } from "./theme-loading";
+import { useEffect } from "react";
 import { getThemeFromUrl } from "@/lib/theme-url";
+import { useThemeStore } from "@/lib/store";
 
 export function ThemeProvider({ children, ...props }: ThemeProviderProps) {
-  const [isLoading, setIsLoading] = useState(true); // Start with loading true
-
   useEffect(() => {
-    // Check if there's a theme in the URL
     const urlTheme = getThemeFromUrl();
 
-    // Apply theme and hide loader after a minimum delay
-    const timer = setTimeout(
-      () => {
-        setIsLoading(false);
-      },
-      urlTheme ? 1000 : 500
-    ); // Longer delay if loading from URL
+    if (urlTheme) {
+      const store = useThemeStore.getState();
+      // Apply theme from URL
+      store.applyThemeState(urlTheme);
 
-    return () => clearTimeout(timer);
+      // Explicitly handle dark mode class
+      if (urlTheme.isDarkMode) {
+        document.documentElement.classList.add("dark");
+      } else {
+        document.documentElement.classList.remove("dark");
+      }
+    }
   }, []);
-
-  // Show only the loading indicator until theme is ready
-  if (isLoading) {
-    return <ThemeLoading />;
-  }
 
   return (
     <NextThemesProvider defaultTheme="light" {...props}>
