@@ -167,7 +167,7 @@ export default function LandingPage() {
               </span>
             </div>
             <p className="text-sm text-muted-foreground mb-4 md:mb-0">
-              themecn is an open-source project built with ❤️ by{" "}
+              themecn is an open-source project built by{" "}
               <a
                 href="https://x.com/jordanxliu"
                 target="_blank"
@@ -194,7 +194,7 @@ export default function LandingPage() {
               >
                 @juxtopposed
               </a>
-              . Contributions welcome!
+              .
             </p>
             <div className="flex items-center gap-2 mt-4">
               <Link
