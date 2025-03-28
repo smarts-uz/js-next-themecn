@@ -1,14 +1,16 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { decodeThemeState } from "@/lib/theme-url";
 import { formatToOklch } from "@/lib/color-utils";
 
-export async function GET(
-  _request: Request,
-  { params }: { params: { id: string } }
-) {
-  const { id } = params;
+export async function GET(request: NextRequest) {
+  const { pathname } = request.nextUrl;
+  const id = pathname.split("/").pop();
+
   if (!id) {
-    return new NextResponse("Theme parameter is required", { status: 400 });
+    return NextResponse.json(
+      { error: "ID parameter is missing" },
+      { status: 400 }
+    );
   }
 
   // Decode theme state
