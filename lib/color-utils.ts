@@ -209,3 +209,24 @@ export function generateSplitComplementaryColors(baseColor: string): string[] {
 
   return colors.map((c) => rgbToHex(c.r, c.g, c.b));
 }
+
+// Convert HSL values to OKLCH for CSS variables
+export function formatToOklch(hslValue: string): string {
+  // This is a simplified mapping - in production you'd use proper color space conversion
+  const parts = hslValue.split(" ");
+  const h = parseInt(parts[0] || "0");
+  const s = parseInt((parts[1] || "0%").replace("%", "")) / 100;
+  const l = parseInt((parts[2] || "0%").replace("%", "")) / 100;
+
+  // Simple mapping for now
+  // 1. For lightness in OKLCH, map directly but keep in 0-1 range
+  const oklchL = l.toFixed(3);
+
+  // 2. For chroma, derive from saturation (0-0.3 range in OKLCH)
+  const oklchC = (s * 0.3).toFixed(3);
+
+  // 3. Hue can be directly mapped (both use degrees)
+  const oklchH = h;
+
+  return `oklch(${oklchL} ${oklchC} ${oklchH})`;
+}

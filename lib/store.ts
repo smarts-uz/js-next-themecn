@@ -8,6 +8,8 @@ import type {
   ColorHarmony,
   ThemePreset,
 } from "@/types/theme";
+import { formatToOklch } from "./color-utils";
+import { getRegistryUrl } from "./theme-url";
 
 // Convert RGB to OKLCH
 function rgbToOklch(
@@ -580,27 +582,6 @@ function applyCSSVariables(
   root.style.setProperty("--font-body", fonts.body);
 }
 
-// Convert HSL values to OKLCH for CSS variables
-function formatToOklch(hslValue: string): string {
-  // This is a simplified mapping - in production you'd use proper color space conversion
-  const parts = hslValue.split(" ");
-  const h = parseInt(parts[0] || "0");
-  const s = parseInt((parts[1] || "0%").replace("%", "")) / 100;
-  const l = parseInt((parts[2] || "0%").replace("%", "")) / 100;
-
-  // Simple mapping for now
-  // 1. For lightness in OKLCH, map directly but keep in 0-1 range
-  const oklchL = l.toFixed(3);
-
-  // 2. For chroma, derive from saturation (0-0.3 range in OKLCH)
-  const oklchC = (s * 0.3).toFixed(3);
-
-  // 3. Hue can be directly mapped (both use degrees)
-  const oklchH = h;
-
-  return `oklch(${oklchL} ${oklchC} ${oklchH})`;
-}
-
 // Find the defaultTheme object and replace the colors with these new values:
 
 // Also update the defaultTheme to match the examples more closely:
@@ -750,6 +731,7 @@ export type ThemeStore = ThemeState & {
   getHexColor: (colorKey: ThemeColorKey) => string;
   generateCSSVariables: () => string;
   getShareableUrl: () => string;
+  getRegistryUrl: () => string;
   applyThemeState: (themeState: Partial<ThemeState>) => void;
   setCurrentTheme: (themeName: string) => void;
   addCustomTheme: (theme: ThemePreset) => void;
@@ -1414,6 +1396,11 @@ export const useThemeStore = create<ThemeStore>()(
       getShareableUrl: () => {
         const state = get();
         return getShareableUrl(state);
+      },
+
+      getRegistryUrl: () => {
+        const state = get();
+        return getRegistryUrl(state);
       },
 
       generateCSSVariables: () => {

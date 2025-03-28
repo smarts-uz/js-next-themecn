@@ -234,6 +234,31 @@ export function getShareableUrl(theme: ThemeState): string {
   }
 }
 
+/**
+ * Generates a shareable URL with the current theme
+ */
+export function getRegistryUrl(theme: ThemeState): string {
+  if (typeof window === "undefined") return "";
+
+  try {
+    // Create a base URL with just the origin and pathname
+    const baseUrl = window.location.origin;
+
+    // Encode the theme state
+    const encodedTheme = encodeThemeState(theme);
+    if (!encodedTheme) {
+      console.error("Failed to encode theme state");
+      return baseUrl;
+    }
+
+    // Create the shareable URL with only the theme parameter
+    return `${baseUrl}/api/registry/${encodedTheme}`;
+  } catch (error) {
+    console.error("Error generating shareable URL:", error);
+    return window.location.origin + window.location.pathname;
+  }
+}
+
 // Update the deriveCompleteColorSet function to use the monochromatic chart color generation
 function deriveCompleteColorSet(
   baseColors: BaseColors,
