@@ -9,7 +9,6 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 
 export function CardsCookieSettings() {
@@ -20,33 +19,33 @@ export function CardsCookieSettings() {
         <CardDescription>Manage your cookie settings here.</CardDescription>
       </CardHeader>
       <CardContent className="grid gap-6">
-        <div className="flex items-center justify-between space-x-4">
-          <Label htmlFor="necessary" className="flex flex-col space-y-1">
-            <span>Strictly Necessary</span>
-            <span className="text-xs font-normal leading-snug text-muted-foreground">
+        <div className="flex items-start gap-8">
+          <div className="flex-1">
+            <p className="font-medium">Strictly Necessary</p>
+            <p className="text-sm text-muted-foreground mt-1">
               These cookies are essential in order to use the website and use
               its features.
-            </span>
-          </Label>
+            </p>
+          </div>
           <Switch id="necessary" defaultChecked aria-label="Necessary" />
         </div>
-        <div className="flex items-center justify-between space-x-4">
-          <Label htmlFor="functional" className="flex flex-col space-y-1">
-            <span>Functional Cookies</span>
-            <span className="text-xs font-normal leading-snug text-muted-foreground">
+        <div className="flex items-start gap-8">
+          <div className="flex-1">
+            <p className="font-medium">Functional Cookies</p>
+            <p className="text-sm text-muted-foreground mt-1">
               These cookies allow the website to provide personalized
               functionality.
-            </span>
-          </Label>
+            </p>
+          </div>
           <Switch id="functional" aria-label="Functional" />
         </div>
-        <div className="flex items-center justify-between space-x-4">
-          <Label htmlFor="performance" className="flex flex-col space-y-1">
-            <span>Performance Cookies</span>
-            <span className="text-xs font-normal leading-snug text-muted-foreground">
+        <div className="flex items-start gap-8">
+          <div className="flex-1">
+            <p className="font-medium">Performance Cookies</p>
+            <p className="text-sm text-muted-foreground mt-1">
               These cookies help to improve the performance of the website.
-            </span>
-          </Label>
+            </p>
+          </div>
           <Switch id="performance" aria-label="Performance" />
         </div>
       </CardContent>

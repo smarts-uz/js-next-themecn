@@ -33,7 +33,7 @@ export function encodeThemeState(theme: ThemeState): string {
         s: compactHSL(theme.darkColors.secondary),
         a: compactHSL(theme.darkColors.accent),
         // Only include destructive if it's not the default
-        ...(theme.darkColors.destructive !== "0 70% 45%" && {
+        ...(theme.darkColors.destructive !== "22 90% 60%" && {
           d: compactHSL(theme.darkColors.destructive),
         }),
       },
@@ -114,7 +114,7 @@ export function decodeThemeState(encoded: string): Partial<ThemeState> | null {
       accent: expandHSL(minimalTheme.l.a),
       destructive: minimalTheme.l.d
         ? expandHSL(minimalTheme.l.d)
-        : "14 100% 50%",
+        : "27 100% 50%",
     };
 
     // Derive complete light mode colors
@@ -141,7 +141,7 @@ export function decodeThemeState(encoded: string): Partial<ThemeState> | null {
         accent: expandHSL(minimalTheme.d.a),
         destructive: minimalTheme.d.d
           ? expandHSL(minimalTheme.d.d)
-          : "0 70% 45%",
+          : "22 90% 60%",
       };
       themeState.darkColors = deriveCompleteColorSet(darkBaseColors, true);
     } else {
@@ -267,7 +267,6 @@ function deriveCompleteColorSet(
   const mutedForeground = isDarkMode
     ? `${secondary.split(" ")[0]} 15% 65%`
     : calculateContrastingColor(secondary, "mutedForeground");
-  const destructiveForeground = isDarkMode ? foreground : "0 0% 100%";
 
   return {
     background,
@@ -287,7 +286,6 @@ function deriveCompleteColorSet(
     accent,
     accentForeground,
     destructive,
-    destructiveForeground,
     border: borderColor,
     input: borderColor,
     ring: primary,

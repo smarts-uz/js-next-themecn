@@ -81,7 +81,7 @@ export function CardsReportIssue() {
           />
         </div>
       </CardContent>
-      <CardFooter className="justify-between space-x-2">
+      <CardFooter className="pt-8 justify-between space-x-2">
         <Button variant="ghost" size="sm">
           Cancel
         </Button>

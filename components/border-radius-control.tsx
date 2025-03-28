@@ -30,7 +30,7 @@ export function BorderRadiusControl() {
     }
   };
 
-  const presetValues = [0, 0.3, 0.5, 0.75, 1.0];
+  const presetValues = [0, 0.25, 0.5, 0.75, 1.0];
 
   return (
     <div className="space-y-4">
@@ -49,7 +49,7 @@ export function BorderRadiusControl() {
           min={0}
           max={1}
           step={0.01}
-          className="w-20"
+          className="w-25 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
           style={{
             backgroundColor: "white",
             border: "1px solid #d1d5db",
@@ -63,16 +63,25 @@ export function BorderRadiusControl() {
         {presetValues.map((preset) => (
           <button
             key={preset}
-            className="flex flex-col items-center gap-1"
+            className="flex flex-col items-center gap-1 cursor-pointer"
             onClick={() => {
               setValue(preset);
               updateBorderRadius(preset);
             }}
           >
             <div
-              className="w-8 h-8 border border-gray-300 bg-white"
-              style={{ borderRadius: `${preset}rem` }}
-            ></div>
+              className={`w-8 h-8 border border-gray-300 bg-white transition-all duration-200 ${
+                preset === 0
+                  ? "rounded-none"
+                  : preset === 0.25
+                  ? "rounded-[0.25rem]"
+                  : preset === 0.5
+                  ? "rounded-[0.5rem]"
+                  : preset === 0.75
+                  ? "rounded-[0.75rem]"
+                  : "rounded-[1rem]"
+              }`}
+            />
             <span className="text-xs text-gray-600">{preset}</span>
           </button>
         ))}

@@ -2,7 +2,7 @@
 
 import { useThemeStore } from "@/lib/store";
 import { Button, buttonVariants } from "@/components/ui/button";
-import { ArrowRight as ArrowIcon, CoffeeIcon, Github } from "lucide-react";
+import { ArrowRight as ArrowIcon, CoffeeIcon } from "lucide-react";
 
 import { CardsDemo } from "@/components/cards";
 import Link from "next/link";
@@ -11,6 +11,7 @@ import { NavigationCombobox } from "./navigation-combobox";
 
 export default function LandingPage() {
   const { fonts } = useThemeStore();
+  const { generateHarmonyColors } = useThemeStore();
 
   return (
     <div className="min-h-screen pb-24 bg-background">
@@ -18,15 +19,17 @@ export default function LandingPage() {
       <header className="bg-background border-b border-border">
         <div className="container mx-auto px-2 md:px-3 max-w-6xl">
           <div className="py-4 flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <div className="w-7 h-7 rounded-full bg-primary"></div>
-              <span
-                className="font-bold text-xl text-foreground"
-                style={{ fontFamily: fonts.heading }}
-              >
-                themecn
-              </span>
-            </div>
+            <Link href="/">
+              <div className="flex items-center gap-2">
+                <div className="w-7 h-7 rounded-full bg-primary"></div>
+                <span
+                  className="font-bold text-xl text-foreground"
+                  style={{ fontFamily: fonts.heading }}
+                >
+                  themecn
+                </span>
+              </div>
+            </Link>
 
             <div className="flex items-center gap-3">
               <NavigationCombobox />
@@ -34,7 +37,7 @@ export default function LandingPage() {
                 href="https://github.com/jordanliu/themecn"
                 className={buttonVariants()}
               >
-                <Github /> Star
+                <Icons.gitHub /> Star
               </Link>
             </div>
           </div>
@@ -51,34 +54,43 @@ export default function LandingPage() {
                 className="text-4xl md:text-5xl font-bold mb-6 tracking-tight text-foreground"
                 style={{ fontFamily: fonts.heading }}
               >
-                The Ultimate <span className="text-primary">Theme Builder</span>{" "}
-                for shadcn/ui
+                <span className="text-primary">Theme Builder</span> for
+                shadcn/ui
               </h1>
               <p
                 className="text-lg text-muted-foreground mb-8"
                 style={{ fontFamily: fonts.body }}
               >
-                themecn makes it easy to create, visualize, and export custom
-                themes for your shadcn/ui projects. Create your perfect theme in
-                real-time with our intuitive interface.
+                themecn streamlines your design workflow with powerful,
+                intuitive theme creation for shadcn/ui. Experiment with colors,
+                typography, and more—all with instant visual feedback. No more
+                guesswork.
               </p>
               <div className="flex flex-col sm:flex-row gap-4">
-                <Link href="/dashboard">
-                  <Button size="lg">
-                    Start Creating
-                    <ArrowIcon className="ml-2 h-4 w-4" />
-                  </Button>
-                </Link>
-                <a
+                <Button
+                  size="lg"
+                  onClick={generateHarmonyColors}
+                  className="cursor-pointer"
+                >
+                  Create Your Theme
+                  <ArrowIcon className="ml-2 h-4 w-4" />
+                </Button>
+
+                <Link
                   href="https://github.com/jordanliu/themecn"
                   target="_blank"
+                  className="w-full sm:w-auto cursor-pointer"
                   rel="noopener noreferrer"
                 >
-                  <Button variant="outline" size="lg">
-                    <Github className="mr-2 h-4 w-4" />
+                  <Button
+                    variant="outline"
+                    size="lg"
+                    className="w-full sm:w-auto"
+                  >
+                    <Icons.gitHub className="mr-2 h-4 w-4" />
                     View Source
                   </Button>
-                </a>
+                </Link>
               </div>
             </div>
 
@@ -88,7 +100,7 @@ export default function LandingPage() {
                 className="text-xl font-semibold mb-6 text-foreground"
                 style={{ fontFamily: fonts.heading }}
               >
-                How it works
+                Simple Three-Step Process
               </h2>
               <div className="space-y-8">
                 <div className="flex gap-4">
@@ -96,10 +108,10 @@ export default function LandingPage() {
                     1
                   </div>
                   <div>
-                    <h3 className="font-medium mb-1">Customize</h3>
+                    <h3 className="font-medium mb-1">Design & Customize</h3>
                     <p className="text-sm text-muted-foreground">
-                      Use the theme dock to adjust colors, fonts, and border
-                      radius
+                      Fine-tune colors, select fonts, and adjust radius values
+                      with our intuitive controls
                     </p>
                   </div>
                 </div>
@@ -109,9 +121,10 @@ export default function LandingPage() {
                     2
                   </div>
                   <div>
-                    <h3 className="font-medium mb-1">Preview</h3>
+                    <h3 className="font-medium mb-1">Live Preview</h3>
                     <p className="text-sm text-muted-foreground">
-                      See your changes instantly applied to shadcn/ui components
+                      Watch your theme come to life in real-time across all
+                      shadcn/ui components
                     </p>
                   </div>
                 </div>
@@ -121,9 +134,9 @@ export default function LandingPage() {
                     3
                   </div>
                   <div>
-                    <h3 className="font-medium mb-1">Export</h3>
+                    <h3 className="font-medium mb-1">Import</h3>
                     <p className="text-sm text-muted-foreground">
-                      Download your theme as CSS variables or Tailwind config
+                      Simply import into your existing shadcn/ui app
                     </p>
                   </div>
                 </div>
@@ -152,35 +165,61 @@ export default function LandingPage() {
               </span>
             </div>
             <p className="text-sm text-muted-foreground mb-4 md:mb-0">
-              Built by @jordanxliu, inspired by @shadcn from shadcn/ui and
-              @juxtopposed from realtimecolors
+              themecn is an open-source project built with ❤️ by{" "}
+              <a
+                href="https://x.com/jordanxliu"
+                target="_blank"
+                className="underline"
+                rel="noopener noreferrer"
+              >
+                @jordanxliu
+              </a>
+              . Inspired by the work of{" "}
+              <a
+                href="https://x.com/shadcn"
+                target="_blank"
+                className="underline"
+                rel="noopener noreferrer"
+              >
+                @shadcn
+              </a>{" "}
+              and{" "}
+              <a
+                href="https://x.com/juxtopposed"
+                target="_blank"
+                className="underline"
+                rel="noopener noreferrer"
+              >
+                @juxtopposed
+              </a>
+              . Contributions welcome!
             </p>
             <div className="flex items-center gap-2 mt-4">
-              <a
-                href="https://github.com/jordankimvt/themecn"
+              <Link
+                href="https://github.com/jordanliu/themecn"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-muted-foreground hover:text-foreground transition-colors"
               >
                 <Icons.gitHub className="h-5 w-5" />
-              </a>
+              </Link>
 
-              <a
+              <Link
                 href="https://ui.shadcn.com"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-muted-foreground hover:text-foreground transition-colors"
               >
                 <Icons.shadcnLogo className="h-5 w-5" />
-              </a>
-              <a
+              </Link>
+              <Link
                 href="https://buymeacoffee.com/jordanliu"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-muted-foreground hover:text-foreground transition-colors"
               >
                 <CoffeeIcon className="h-5 w-5" />
-              </a>
+              </Link>
             </div>
           </div>
         </div>

@@ -533,10 +533,6 @@ function applyCSSVariables(
     formatToOklch(colors.accentForeground)
   );
   root.style.setProperty("--destructive", formatToOklch(colors.destructive));
-  root.style.setProperty(
-    "--destructive-foreground",
-    formatToOklch(colors.destructiveForeground)
-  );
   root.style.setProperty("--border", formatToOklch(colors.border));
   root.style.setProperty("--input", formatToOklch(colors.input));
   root.style.setProperty("--ring", formatToOklch(colors.ring));
@@ -577,7 +573,7 @@ function applyCSSVariables(
   root.style.setProperty("--sidebar-ring", formatToOklch(colors.sidebarRing));
 
   // Set border radius
-  root.style.setProperty("--radius", `${borderRadius / 16}rem`);
+  root.style.setProperty("--radius", `${borderRadius}rem`);
 
   // Set font families
   root.style.setProperty("--font-heading", fonts.heading);
@@ -612,192 +608,100 @@ function formatToOklch(hslValue: string): string {
 // Updated default theme with a more vibrant primary color and neutral secondary/accent
 const defaultTheme: ThemeState = {
   colors: {
-    background: "0 0% 100%",
-    foreground: "240 10% 3.9%",
-    card: "0 0% 100%",
-    cardForeground: "240 10% 3.9%",
-    popover: "0 0% 100%",
-    popoverForeground: "240 10% 3.9%",
-    primary: "262.1 83.3% 57.8%",
-    primaryForeground: "0 0% 98%",
-    secondary: "240 4.8% 95.9%",
-    secondaryForeground: "240 5.9% 10%",
-    muted: "240 4.8% 95.9%",
-    mutedForeground: "240 3.8% 46.1%",
-    accent: "262.1 55% 88%", // Much lighter version of primary color
-    accentForeground: "240 5.9% 10%",
-    destructive: "0 84.2% 60.2%",
-    destructiveForeground: "0 0% 98%",
-    border: "240 5.9% 90%",
-    input: "240 5.9% 90%",
-    ring: "262.1 83.3% 57.8%",
-    chart1: "262.1 83.3% 57.8%", // Primary color
-    chart2: "173 58% 39%",
-    chart3: "197 37% 24%",
-    chart4: "43 74% 66%",
-    chart5: "27 87% 67%",
-    sidebar: "240 4.8% 95.9%",
-    sidebarForeground: "240 5.9% 10%",
-    sidebarPrimary: "262.1 83.3% 57.8%",
-    sidebarPrimaryForeground: "0 0% 98%",
-    sidebarAccent: "262.1 55% 88%", // Matching the updated accent
-    sidebarAccentForeground: "240 5.9% 10%",
-    sidebarBorder: "240 5.9% 90%",
-    sidebarRing: "262.1 83.3% 57.8%",
+    background: "0 0% 100%", // oklch(1.000 0.000 0)
+    foreground: "291 10% 4%", // oklch(0.040 0.030 291)
+    card: "0 0% 100%", // oklch(1.000 0.000 0)
+    cardForeground: "291 10% 4%", // oklch(0.040 0.030 291)
+    popover: "0 0% 100%", // oklch(1.000 0.000 0)
+    popoverForeground: "291 10% 4%", // oklch(0.040 0.030 291)
+    primary: "291 80% 45%", // oklch(0.450 0.255 291)
+    primaryForeground: "291 10% 95%", // oklch(0.950 0.030 291)
+    secondary: "291 30% 85%", // oklch(0.850 0.075 291)
+    secondaryForeground: "291 30% 10%", // oklch(0.100 0.075 291)
+    muted: "291 30% 85%", // oklch(0.850 0.075 291)
+    mutedForeground: "291 30% 45%", // oklch(0.450 0.075 291)
+    accent: "291 50% 75%", // oklch(0.750 0.165 291)
+    accentForeground: "291 50% 10%", // oklch(0.100 0.165 291)
+    destructive: "27 100% 50%", // oklch(0.577 0.245 27.325)
+    border: "291 30% 80%", // oklch(0.800 0.075 291)
+    input: "291 30% 80%", // oklch(0.800 0.075 291)
+    ring: "291 80% 45%", // oklch(0.450 0.255 291)
+    chart1: "291 80% 45%", // oklch(0.450 0.255 291)
+    chart2: "291 70% 60%", // oklch(0.600 0.210 291)
+    chart3: "291 60% 70%", // oklch(0.700 0.165 291)
+    chart4: "291 85% 30%", // oklch(0.300 0.270 291)
+    chart5: "291 85% 20%", // oklch(0.200 0.255 291)
+    sidebar: "291 30% 85%", // oklch(0.850 0.075 291)
+    sidebarForeground: "291 30% 10%", // oklch(0.100 0.075 291)
+    sidebarPrimary: "291 80% 45%", // oklch(0.450 0.255 291)
+    sidebarPrimaryForeground: "291 10% 95%", // oklch(0.950 0.030 291)
+    sidebarAccent: "291 50% 75%", // oklch(0.750 0.165 291)
+    sidebarAccentForeground: "291 50% 10%", // oklch(0.100 0.165 291)
+    sidebarBorder: "291 30% 80%", // oklch(0.800 0.075 291)
+    sidebarRing: "291 80% 45%", // oklch(0.450 0.255 291)
   },
 
   darkColors: {
-    background: "220 30% 10%", // Dark blue-gray
-    foreground: "220 15% 95%", // Light gray with slight blue tint
-    card: "220 30% 13%", // Slightly lighter than background
-    cardForeground: "220 15% 95%", // Same as foreground
-    popover: "220 30% 13%", // Same as card
-    popoverForeground: "220 15% 95%", // Same as foreground
-    primary: "262.1 83.3% 58%", // Keep primary vibrant (purple)
-    primaryForeground: "0 0% 100%", // White text on primary
-    secondary: "220 25% 20%", // Dark muted blue-gray
-    secondaryForeground: "220 15% 95%", // Light text
-    muted: "220 25% 20%", // Same as secondary
-    mutedForeground: "220 15% 65%", // Medium gray for muted text
-    accent: "262.1 83.3% 58%", // Same as primary for consistency
-    accentForeground: "0 0% 100%", // White text on accent
-    destructive: "0 70% 45%", // Dark red
-    destructiveForeground: "0 0% 100%", // White text on destructive
-    border: "220 25% 18%", // Slightly lighter than background
-    input: "220 25% 18%", // Same as border
-    ring: "262.1 83.3% 58%", // Same as primary
-    chart1: "262.1 83.3% 58%", // Primary (purple)
-    chart2: "330 80% 60%", // Pink
-    chart3: "180 80% 50%", // Teal
-    chart4: "40 80% 60%", // Gold
-    chart5: "120 70% 50%", // Green
-    sidebar: "220 30% 10%", // Same as background
-    sidebarForeground: "220 15% 95%", // Same as foreground
-    sidebarPrimary: "262.1 83.3% 58%", // Same as primary
-    sidebarPrimaryForeground: "0 0% 100%", // White text
-    sidebarAccent: "262.1 83.3% 58%", // Same as accent
-    sidebarAccentForeground: "0 0% 100%", // White text
-    sidebarBorder: "220 25% 18%", // Same as border
-    sidebarRing: "262.1 83.3% 58%", // Same as ring
+    background: "291 40% 8%", // oklch(0.080 0.090 291)
+    foreground: "291 10% 95%", // oklch(0.950 0.030 291)
+    card: "291 40% 12%", // oklch(0.120 0.090 291)
+    cardForeground: "291 10% 95%", // oklch(0.950 0.030 291)
+    popover: "291 40% 12%", // oklch(0.120 0.090 291)
+    popoverForeground: "291 10% 95%", // oklch(0.950 0.030 291)
+    primary: "291 75% 50%", // oklch(0.500 0.225 291)
+    primaryForeground: "291 10% 95%", // oklch(0.950 0.030 291)
+    secondary: "291 30% 15%", // oklch(0.150 0.075 291)
+    secondaryForeground: "291 30% 95%", // oklch(0.950 0.075 291)
+    muted: "291 30% 15%", // oklch(0.150 0.075 291)
+    mutedForeground: "291 15% 65%", // oklch(0.650 0.045 291)
+    accent: "291 50% 25%", // oklch(0.250 0.165 291)
+    accentForeground: "291 50% 95%", // oklch(0.950 0.165 291)
+    destructive: "22 90% 60%", // oklch(0.704 0.191 22.216)
+    border: "291 40% 25%", // oklch(0.250 0.090 291)
+    input: "291 40% 25%", // oklch(0.250 0.090 291)
+    ring: "291 75% 50%", // oklch(0.500 0.225 291)
+    chart1: "291 75% 50%", // oklch(0.500 0.225 291)
+    chart2: "291 80% 65%", // oklch(0.650 0.240 291)
+    chart3: "291 85% 75%", // oklch(0.750 0.255 291)
+    chart4: "291 65% 35%", // oklch(0.350 0.195 291)
+    chart5: "291 50% 25%", // oklch(0.250 0.165 291)
+    sidebar: "291 40% 8%", // oklch(0.080 0.090 291)
+    sidebarForeground: "291 10% 95%", // oklch(0.950 0.030 291)
+    sidebarPrimary: "291 75% 50%", // oklch(0.500 0.225 291)
+    sidebarPrimaryForeground: "291 10% 95%", // oklch(0.950 0.030 291)
+    sidebarAccent: "291 50% 25%", // oklch(0.250 0.165 291)
+    sidebarAccentForeground: "291 50% 95%", // oklch(0.950 0.165 291)
+    sidebarBorder: "291 40% 25%", // oklch(0.250 0.090 291)
+    sidebarRing: "291 75% 50%", // oklch(0.500 0.225 291)
   },
   fonts: {
     heading: "Geist",
     body: "Geist",
   },
-  borderRadius: 8,
+  borderRadius: 0.5,
   isDarkMode: false,
   selectedHarmony: "monochromatic",
   exportMenuOpen: false,
   shareMenuOpen: false,
-  // Update the first predefined theme to match our new default
+  // Keep only the Default predefined theme
   predefinedThemes: [
     {
       name: "Default",
       colors: {
-        background: "#ffffff",
-        foreground: "#0f0f0f",
-        primary: "#8b5cf6",
-        secondary: "#f5f5f5",
-        accent: "#ddd6fe", // Very light purple to match our updated HSL accent color
-        chart1: "#8b5cf6", // Same as primary
-        chart2: "#1ea896", // Complementary-ish
-        chart3: "#0f3c4c", // Triadic-ish
-        chart4: "#e6b422", // Analogous
-        chart5: "#f97316", // Analogous
+        background: "#ffffff", // oklch(1.000 0.000 0)
+        foreground: "#0a090f", // oklch(0.040 0.030 291)
+        primary: "#7a3be0", // oklch(0.450 0.255 291)
+        secondary: "#dbd2f5", // oklch(0.850 0.075 291)
+        accent: "#c48bea", // oklch(0.750 0.165 291)
+        chart1: "#7a3be0", // oklch(0.450 0.255 291)
+        chart2: "#9a50e5", // oklch(0.600 0.210 291)
+        chart3: "#b972e8", // oklch(0.700 0.165 291)
+        chart4: "#5524da", // oklch(0.300 0.270 291)
+        chart5: "#300cbe", // oklch(0.200 0.255 291)
       },
       fonts: {
         heading: "Geist",
         body: "Geist",
-      },
-    },
-    {
-      name: "Midnight",
-      colors: {
-        background: "#0f172a",
-        foreground: "#f8fafc",
-        primary: "#3b82f6",
-        secondary: "#1e40af",
-        accent: "#60a5fa",
-        chart1: "#3b82f6", // Same as primary
-        chart2: "#2a61d2", // Blend between primary and secondary
-        chart3: "#1e40af", // Same as secondary
-        chart4: "#3f73d4", // Blend between secondary and accent
-        chart5: "#60a5fa", // Same as accent
-      },
-    },
-    {
-      name: "Forest",
-      colors: {
-        background: "#f8fafc",
-        foreground: "#0f172a",
-        primary: "#16a34a",
-        secondary: "#f1f5f1",
-        accent: "#22c55e",
-        chart1: "#16a34a", // Same as primary
-        chart2: "#4ec77b", // Blend between primary and secondary
-        chart3: "#86efac", // Same as secondary
-        chart4: "#54da85", // Blend between secondary and accent
-        chart5: "#22c55e", // Same as accent
-      },
-    },
-    {
-      name: "Sunset",
-      colors: {
-        background: "#fffbeb",
-        foreground: "#1e293b",
-        primary: "#f59e0b",
-        secondary: "#fef9ed",
-        accent: "#d97706",
-        chart1: "#f59e0b", // Same as primary
-        chart2: "#f8b82c", // Blend between primary and secondary
-        chart3: "#fcd34d", // Same as secondary
-        chart4: "#eba529", // Blend between secondary and accent
-        chart5: "#d97706", // Same as accent
-      },
-    },
-    {
-      name: "Monochrome",
-      colors: {
-        background: "#ffffff",
-        foreground: "#0f0f0f",
-        primary: "#404040",
-        secondary: "#f5f5f5",
-        accent: "#737373",
-        chart1: "#404040", // Same as primary
-        chart2: "#8a8a8a", // Blend between primary and secondary
-        chart3: "#d4d4d4", // Same as secondary
-        chart4: "#a4a4a4", // Blend between secondary and accent
-        chart5: "#737373", // Same as accent
-      },
-    },
-    {
-      name: "Gold",
-      colors: {
-        background: "#ffffff",
-        foreground: "#1a1a1a",
-        primary: "#eab308",
-        secondary: "#f5f5f5",
-        accent: "#eab308",
-        chart1: "#eab308", // Primary
-        chart2: "#ca8a04", // Darker gold
-        chart3: "#facc15", // Lighter gold
-        chart4: "#fde047", // Very light gold
-        chart5: "#a16207", // Dark gold/brown
-      },
-    },
-    {
-      name: "Red",
-      colors: {
-        background: "#ffffff",
-        foreground: "#0f0f0f",
-        primary: "#ef4444",
-        secondary: "#f5f5f5",
-        accent: "#ef4444",
-        chart1: "#ef4444", // Primary red
-        chart2: "#b91c1c", // Darker red
-        chart3: "#f87171", // Lighter red
-        chart4: "#fca5a5", // Very light red
-        chart5: "#7f1d1d", // Dark red
       },
     },
   ],
@@ -845,8 +749,6 @@ export type ThemeStore = ThemeState & {
   setShareMenuOpen: (isOpen: boolean) => void;
   getHexColor: (colorKey: ThemeColorKey) => string;
   generateCSSVariables: () => string;
-  generateTailwindConfig: () => string;
-  generateJSONConfig: () => string;
   getShareableUrl: () => string;
   applyThemeState: (themeState: Partial<ThemeState>) => void;
   setCurrentTheme: (themeName: string) => void;
@@ -1158,10 +1060,7 @@ export const useThemeStore = create<ThemeStore>()(
       updateBorderRadius: (value: number) => {
         set((state) => {
           // Update CSS variable
-          document.documentElement.style.setProperty(
-            "--radius",
-            `${value / 16}rem`
-          );
+          document.documentElement.style.setProperty("--radius", `${value}rem`);
 
           const newState = {
             ...state,
@@ -1201,82 +1100,28 @@ export const useThemeStore = create<ThemeStore>()(
       // Find the resetTheme function and update it to include this logic
 
       resetTheme: () => {
-        // Create a new default theme with proper contrasting colors
-        const enhancedDefaultTheme = { ...defaultTheme };
-
-        // Ensure foreground colors contrast with their backgrounds
-        // Update the resetTheme function to ensure all foreground colors have proper contrast:
-        // Ensure foreground colors contrast with their backgrounds
-        enhancedDefaultTheme.colors.primaryForeground =
-          calculateContrastingColor(enhancedDefaultTheme.colors.primary);
-        enhancedDefaultTheme.colors.secondaryForeground =
-          calculateContrastingColor(enhancedDefaultTheme.colors.secondary);
-        enhancedDefaultTheme.colors.accentForeground =
-          calculateContrastingColor(enhancedDefaultTheme.colors.accent);
-        enhancedDefaultTheme.colors.mutedForeground = calculateContrastingColor(
-          enhancedDefaultTheme.colors.muted,
-          "mutedForeground"
-        );
-        enhancedDefaultTheme.colors.cardForeground = calculateContrastingColor(
-          enhancedDefaultTheme.colors.card
-        );
-        enhancedDefaultTheme.colors.popoverForeground =
-          calculateContrastingColor(enhancedDefaultTheme.colors.popover);
-        enhancedDefaultTheme.colors.sidebarForeground =
-          calculateContrastingColor(enhancedDefaultTheme.colors.sidebar);
-        enhancedDefaultTheme.colors.sidebarPrimaryForeground =
-          calculateContrastingColor(enhancedDefaultTheme.colors.sidebarPrimary);
-        enhancedDefaultTheme.colors.sidebarAccentForeground =
-          calculateContrastingColor(enhancedDefaultTheme.colors.sidebarAccent);
-
-        // Do the same for dark mode
-        enhancedDefaultTheme.darkColors.primaryForeground =
-          calculateContrastingColor(enhancedDefaultTheme.darkColors.primary);
-        enhancedDefaultTheme.darkColors.secondaryForeground =
-          calculateContrastingColor(enhancedDefaultTheme.darkColors.secondary);
-        enhancedDefaultTheme.darkColors.accentForeground =
-          calculateContrastingColor(enhancedDefaultTheme.darkColors.accent);
-        enhancedDefaultTheme.darkColors.mutedForeground =
-          calculateContrastingColor(
-            enhancedDefaultTheme.darkColors.muted,
-            "mutedForeground"
-          );
-        enhancedDefaultTheme.darkColors.cardForeground =
-          calculateContrastingColor(enhancedDefaultTheme.darkColors.card);
-        enhancedDefaultTheme.darkColors.popoverForeground =
-          calculateContrastingColor(enhancedDefaultTheme.darkColors.popover);
-        enhancedDefaultTheme.darkColors.sidebarForeground =
-          calculateContrastingColor(enhancedDefaultTheme.darkColors.sidebar);
-        enhancedDefaultTheme.darkColors.sidebarPrimaryForeground =
-          calculateContrastingColor(
-            enhancedDefaultTheme.darkColors.sidebarPrimary
-          );
-        enhancedDefaultTheme.darkColors.sidebarAccentForeground =
-          calculateContrastingColor(
-            enhancedDefaultTheme.darkColors.sidebarAccent
-          );
-
-        set(enhancedDefaultTheme);
+        // Simply use the default theme without modifications
+        set(defaultTheme);
 
         // Apply default theme to CSS variables
-        const colors = enhancedDefaultTheme.isDarkMode
-          ? enhancedDefaultTheme.darkColors
-          : enhancedDefaultTheme.colors;
+        const colors = defaultTheme.isDarkMode
+          ? defaultTheme.darkColors
+          : defaultTheme.colors;
         applyCSSVariables(
           colors,
-          enhancedDefaultTheme.borderRadius,
-          enhancedDefaultTheme.fonts
+          defaultTheme.borderRadius,
+          defaultTheme.fonts
         );
 
         // Toggle dark class
-        if (enhancedDefaultTheme.isDarkMode) {
+        if (defaultTheme.isDarkMode) {
           document.documentElement.classList.add("dark");
         } else {
           document.documentElement.classList.remove("dark");
         }
 
         // Update URL with default theme
-        updateThemeUrl(enhancedDefaultTheme);
+        updateThemeUrl(defaultTheme);
 
         // Set current theme to "Default"
         set((state) => ({
@@ -1335,6 +1180,13 @@ export const useThemeStore = create<ThemeStore>()(
         const h = Number.parseInt(hStr, 10);
         const s = Number.parseInt(sStr.replace("%", ""), 10);
         const l = Number.parseInt(lStr.replace("%", ""), 10);
+
+        // Randomize border radius - select one from the specified values
+        const borderRadiusOptions = [0, 0.25, 0.5, 0.75, 1.0];
+        const randomBorderRadius =
+          borderRadiusOptions[
+            Math.floor(Math.random() * borderRadiusOptions.length)
+          ];
 
         // LIGHT MODE COLORS
         // -----------------
@@ -1516,12 +1368,13 @@ export const useThemeStore = create<ThemeStore>()(
 
           // Apply the appropriate CSS variables based on current mode
           const colors = isDarkMode ? darkColors : lightColors;
-          applyCSSVariables(colors, state.borderRadius, state.fonts);
+          applyCSSVariables(colors, randomBorderRadius, state.fonts);
 
           const newState = {
             ...state,
             colors: lightColors,
             darkColors: darkColors,
+            borderRadius: randomBorderRadius,
           };
 
           // Update URL with new theme
@@ -1574,184 +1427,134 @@ export const useThemeStore = create<ThemeStore>()(
         const state = get();
         const { colors, darkColors, borderRadius } = state;
 
-        return `
+        return `@import "tailwindcss";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+  --color-sidebar-ring: var(--sidebar-ring);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar: var(--sidebar);
+  --color-chart-5: var(--chart-5);
+  --color-chart-4: var(--chart-4);
+  --color-chart-3: var(--chart-3);
+  --color-chart-2: var(--chart-2);
+  --color-chart-1: var(--chart-1);
+  --color-ring: var(--ring);
+  --color-input: var(--input);
+  --color-border: var(--border);
+  --color-destructive: var(--destructive);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-accent: var(--accent);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-muted: var(--muted);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-secondary: var(--secondary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary: var(--primary);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-popover: var(--popover);
+  --color-card-foreground: var(--card-foreground);
+  --color-card: var(--card);
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+}
+
 :root {
---background: ${formatToOklch(colors.background)};
---foreground: ${formatToOklch(colors.foreground)};
---card: ${formatToOklch(colors.card)};
---card-foreground: ${formatToOklch(colors.cardForeground)};
---popover: ${formatToOklch(colors.popover)};
---popover-foreground: ${formatToOklch(colors.popoverForeground)};
---primary: ${formatToOklch(colors.primary)};
---primary-foreground: ${formatToOklch(colors.primaryForeground)};
---secondary: ${formatToOklch(colors.secondary)};
---secondary-foreground: ${formatToOklch(colors.secondaryForeground)};
---muted: ${formatToOklch(colors.muted)};
---muted-foreground: ${formatToOklch(colors.mutedForeground)};
---accent: ${formatToOklch(colors.accent)};
---accent-foreground: ${formatToOklch(colors.accentForeground)};
---destructive: ${formatToOklch(colors.destructive)};
---destructive-foreground: ${formatToOklch(colors.destructiveForeground)};
---border: ${formatToOklch(colors.border)};
---input: ${formatToOklch(colors.input)};
---ring: ${formatToOklch(colors.ring)};
---chart-1: ${formatToOklch(colors.chart1)};
---chart-2: ${formatToOklch(colors.chart2)};
---chart-3: ${formatToOklch(colors.chart3)};
---chart-4: ${formatToOklch(colors.chart4)};
---chart-5: ${formatToOklch(colors.chart5)};
---radius: ${borderRadius / 16}rem;
---sidebar: ${formatToOklch(colors.sidebar)};
---sidebar-foreground: ${formatToOklch(colors.sidebarForeground)};
---sidebar-primary: ${formatToOklch(colors.sidebarPrimary)};
---sidebar-primary-foreground: ${formatToOklch(colors.sidebarPrimaryForeground)};
---sidebar-accent: ${formatToOklch(colors.sidebarAccent)};
---sidebar-accent-foreground: ${formatToOklch(colors.sidebarAccentForeground)};
---sidebar-border: ${formatToOklch(colors.sidebarBorder)};
---sidebar-ring: ${formatToOklch(colors.sidebarRing)};
+  --radius: ${borderRadius}rem;
+  --background: ${formatToOklch(colors.background)};
+  --foreground: ${formatToOklch(colors.foreground)};
+  --card: ${formatToOklch(colors.card)};
+  --card-foreground: ${formatToOklch(colors.cardForeground)};
+  --popover: ${formatToOklch(colors.popover)};
+  --popover-foreground: ${formatToOklch(colors.popoverForeground)};
+  --primary: ${formatToOklch(colors.primary)};
+  --primary-foreground: ${formatToOklch(colors.primaryForeground)};
+  --secondary: ${formatToOklch(colors.secondary)};
+  --secondary-foreground: ${formatToOklch(colors.secondaryForeground)};
+  --muted: ${formatToOklch(colors.muted)};
+  --muted-foreground: ${formatToOklch(colors.mutedForeground)};
+  --accent: ${formatToOklch(colors.accent)};
+  --accent-foreground: ${formatToOklch(colors.accentForeground)};
+  --destructive: ${formatToOklch(colors.destructive)};
+  --border: ${formatToOklch(colors.border)};
+  --input: ${formatToOklch(colors.input)};
+  --ring: ${formatToOklch(colors.ring)};
+  --chart-1: ${formatToOklch(colors.chart1)};
+  --chart-2: ${formatToOklch(colors.chart2)};
+  --chart-3: ${formatToOklch(colors.chart3)};
+  --chart-4: ${formatToOklch(colors.chart4)};
+  --chart-5: ${formatToOklch(colors.chart5)};
+  --sidebar: ${formatToOklch(colors.sidebar)};
+  --sidebar-foreground: ${formatToOklch(colors.sidebarForeground)};
+  --sidebar-primary: ${formatToOklch(colors.sidebarPrimary)};
+  --sidebar-primary-foreground: ${formatToOklch(
+    colors.sidebarPrimaryForeground
+  )};
+  --sidebar-accent: ${formatToOklch(colors.sidebarAccent)};
+  --sidebar-accent-foreground: ${formatToOklch(colors.sidebarAccentForeground)};
+  --sidebar-border: ${formatToOklch(colors.sidebarBorder)};
+  --sidebar-ring: ${formatToOklch(colors.sidebarRing)};
 }
 
 .dark {
---background: ${formatToOklch(darkColors.background)};
---foreground: ${formatToOklch(darkColors.foreground)};
---card: ${formatToOklch(darkColors.card)};
---card-foreground: ${formatToOklch(darkColors.cardForeground)};
---popover: ${formatToOklch(darkColors.popover)};
---popover-foreground: ${formatToOklch(darkColors.popoverForeground)};
---primary: ${formatToOklch(darkColors.primary)};
---primary-foreground: ${formatToOklch(darkColors.primaryForeground)};
---secondary: ${formatToOklch(darkColors.secondary)};
---secondary-foreground: ${formatToOklch(darkColors.secondaryForeground)};
---muted: ${formatToOklch(darkColors.muted)};
---muted-foreground: ${formatToOklch(darkColors.mutedForeground)};
---accent: ${formatToOklch(darkColors.accent)};
---accent-foreground: ${formatToOklch(darkColors.accentForeground)};
---destructive: ${formatToOklch(darkColors.destructive)};
---destructive-foreground: ${formatToOklch(darkColors.destructiveForeground)};
---border: ${formatToOklch(darkColors.border)};
---input: ${formatToOklch(darkColors.input)};
---ring: ${formatToOklch(darkColors.ring)};
---chart-1: ${formatToOklch(darkColors.chart1)};
---chart-2: ${formatToOklch(darkColors.chart2)};
---chart-3: ${formatToOklch(darkColors.chart3)};
---chart-4: ${formatToOklch(darkColors.chart4)};
---chart-5: ${formatToOklch(darkColors.chart5)};
---radius: ${borderRadius / 16}rem;
---sidebar: ${formatToOklch(darkColors.sidebar)};
---sidebar-foreground: ${formatToOklch(darkColors.sidebarForeground)};
---sidebar-primary: ${formatToOklch(darkColors.sidebarPrimary)};
---sidebar-primary-foreground: ${formatToOklch(
-          darkColors.sidebarPrimaryForeground
-        )};
---sidebar-accent: ${formatToOklch(darkColors.sidebarAccent)};
---sidebar-accent-foreground: ${formatToOklch(
-          darkColors.sidebarAccentForeground
-        )};
---sidebar-border: ${formatToOklch(darkColors.sidebarBorder)};
---sidebar-ring: ${formatToOklch(darkColors.sidebarRing)};
+  --background: ${formatToOklch(darkColors.background)};
+  --foreground: ${formatToOklch(darkColors.foreground)};
+  --card: ${formatToOklch(darkColors.card)};
+  --card-foreground: ${formatToOklch(darkColors.cardForeground)};
+  --popover: ${formatToOklch(darkColors.popover)};
+  --popover-foreground: ${formatToOklch(darkColors.popoverForeground)};
+  --primary: ${formatToOklch(darkColors.primary)};
+  --primary-foreground: ${formatToOklch(darkColors.primaryForeground)};
+  --secondary: ${formatToOklch(darkColors.secondary)};
+  --secondary-foreground: ${formatToOklch(darkColors.secondaryForeground)};
+  --muted: ${formatToOklch(darkColors.muted)};
+  --muted-foreground: ${formatToOklch(darkColors.mutedForeground)};
+  --accent: ${formatToOklch(darkColors.accent)};
+  --accent-foreground: ${formatToOklch(darkColors.accentForeground)};
+  --destructive: ${formatToOklch(darkColors.destructive)};
+  --border: ${formatToOklch(darkColors.border)};
+  --input: ${formatToOklch(darkColors.input)};
+  --ring: ${formatToOklch(darkColors.ring)};
+  --chart-1: ${formatToOklch(darkColors.chart1)};
+  --chart-2: ${formatToOklch(darkColors.chart2)};
+  --chart-3: ${formatToOklch(darkColors.chart3)};
+  --chart-4: ${formatToOklch(darkColors.chart4)};
+  --chart-5: ${formatToOklch(darkColors.chart5)};
+  --sidebar: ${formatToOklch(darkColors.sidebar)};
+  --sidebar-foreground: ${formatToOklch(darkColors.sidebarForeground)};
+  --sidebar-primary: ${formatToOklch(darkColors.sidebarPrimary)};
+  --sidebar-primary-foreground: ${formatToOklch(
+    darkColors.sidebarPrimaryForeground
+  )};
+  --sidebar-accent: ${formatToOklch(darkColors.sidebarAccent)};
+  --sidebar-accent-foreground: ${formatToOklch(
+    darkColors.sidebarAccentForeground
+  )};
+  --sidebar-border: ${formatToOklch(darkColors.sidebarBorder)};
+  --sidebar-ring: ${formatToOklch(darkColors.sidebarRing)};
 }
-`.trim();
-      },
 
-      generateTailwindConfig: () => {
-        return `
-module.exports = {
-  darkMode: ["class"],
-  theme: {
-    extend: {
-      colors: {
-        border: "oklch(var(--border))",
-        input: "oklch(var(--input))",
-        ring: "oklch(var(--ring))",
-        background: "oklch(var(--background))",
-        foreground: "oklch(var(--foreground))",
-        primary: {
-          DEFAULT: "oklch(var(--primary))",
-          foreground: "oklch(var(--primary-foreground))",
-        },
-        secondary: {
-          DEFAULT: "oklch(var(--secondary))",
-          foreground: "oklch(var(--secondary-foreground))",
-        },
-        destructive: {
-          DEFAULT: "oklch(var(--destructive))",
-          foreground: "oklch(var(--destructive-foreground))",
-        },
-        muted: {
-          DEFAULT: "oklch(var(--muted))",
-          foreground: "oklch(var(--muted-foreground))",
-        },
-        accent: {
-          DEFAULT: "oklch(var(--accent))",
-          foreground: "oklch(var(--accent-foreground))",
-        },
-        popover: {
-          DEFAULT: "oklch(var(--popover))",
-          foreground: "oklch(var(--popover-foreground))",
-        },
-        card: {
-          DEFAULT: "oklch(var(--card))",
-          foreground: "oklch(var(--card-foreground))",
-        },
-        sidebar: {
-          DEFAULT: "oklch(var(--sidebar))",
-          foreground: "oklch(var(--sidebar-foreground))",
-          primary: "oklch(var(--sidebar-primary))",
-          "primary-foreground": "oklch(var(--sidebar-primary-foreground))",
-          accent: "oklch(var(--sidebar-accent))",
-          "accent-foreground": "oklch(var(--sidebar-accent-foreground))",
-          border: "oklch(var(--sidebar-border))",
-          ring: "oklch(var(--sidebar-ring))",
-        },
-        chart: {
-          1: "oklch(var(--chart-1))",
-          2: "oklch(var(--chart-2))",
-          3: "oklch(var(--chart-3))",
-          4: "oklch(var(--chart-4))",
-          5: "oklch(var(--chart-5))",
-        },
-      },
-      borderRadius: {
-        lg: "var(--radius)",
-        md: "calc(var(--radius) - 2px)",
-        sm: "calc(var(--radius) - 4px)",
-      },
-    },
-  },
-}
-`.trim();
-      },
-
-      generateJSONConfig: () => {
-        const state = get();
-        const { colors, darkColors, borderRadius, fonts } = state;
-
-        const config = {
-          theme: {
-            light: {
-              colors: Object.entries(colors).reduce((acc, [key, value]) => {
-                // Convert HSL value to OKLCH
-                acc[key.replace(/([A-Z])/g, "-$1").toLowerCase()] =
-                  formatToOklch(value);
-                return acc;
-              }, {} as Record<string, string>),
-              borderRadius,
-              fonts,
-            },
-            dark: {
-              colors: Object.entries(darkColors).reduce((acc, [key, value]) => {
-                // Convert HSL value to OKLCH
-                acc[key.replace(/([A-Z])/g, "-$1").toLowerCase()] =
-                  formatToOklch(value);
-                return acc;
-              }, {} as Record<string, string>),
-              borderRadius,
-              fonts,
-            },
-          },
-        };
-
-        return JSON.stringify(config, null, 2);
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+}`.trim();
       },
 
       applyThemeState: (themeState: Partial<ThemeState>) => {
@@ -2090,10 +1893,7 @@ function encodeThemeState(theme: ThemeState): string {
       p: compactHSL(theme.colors.primary),
       s: compactHSL(theme.colors.secondary),
       a: compactHSL(theme.colors.accent),
-      // Only include destructive if it's not the default
-      ...(theme.colors.destructive !== "14 100% 50%" && {
-        d: compactHSL(theme.colors.destructive),
-      }),
+      d: compactHSL(theme.colors.destructive),
     },
     // Dark mode essential colors (only if custom dark mode colors are used)
     ...(theme.isDarkMode && {
@@ -2103,10 +1903,7 @@ function encodeThemeState(theme: ThemeState): string {
         p: compactHSL(theme.darkColors.primary),
         s: compactHSL(theme.darkColors.secondary),
         a: compactHSL(theme.darkColors.accent),
-        // Only include destructive if it's not the default
-        ...(theme.darkColors.destructive !== "0 70% 45%" && {
-          d: compactHSL(theme.darkColors.destructive),
-        }),
+        d: compactHSL(theme.darkColors.destructive),
       },
     }),
     // Fonts (only if not default)

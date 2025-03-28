@@ -2,7 +2,7 @@
 
 import * as React from "react";
 import { Check, ChevronsUpDown } from "lucide-react";
-import { useRouter, usePathname } from "next/navigation";
+import { useRouter, usePathname, useSearchParams } from "next/navigation";
 
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -31,6 +31,9 @@ const navigationOptions = [
 
 export function NavigationCombobox() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+
+  const theme = searchParams.get("theme");
   const pathname = usePathname();
   const [open, setOpen] = React.useState(false);
   const [value, setValue] = React.useState(pathname);
@@ -40,9 +43,11 @@ export function NavigationCombobox() {
   }, [pathname]);
 
   const handleSelect = (currentValue: string) => {
-    setValue(currentValue);
+    const newUrl =
+      theme !== null ? `${currentValue}?theme=${theme}` : currentValue;
+    setValue(newUrl);
     setOpen(false);
-    router.push(currentValue);
+    router.push(newUrl);
   };
 
   return (

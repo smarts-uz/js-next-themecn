@@ -69,7 +69,6 @@ export function CardsThemeVariables() {
         "--accent",
         "--accent-foreground",
         "--destructive",
-        "--destructive-foreground",
         "--border",
         "--input",
         "--ring",

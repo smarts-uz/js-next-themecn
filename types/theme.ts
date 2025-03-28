@@ -48,7 +48,6 @@ export interface ThemeColors {
   accent: string;
   accentForeground: string;
   destructive: string;
-  destructiveForeground: string;
   border: string;
   input: string;
   ring: string;
