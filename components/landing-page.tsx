@@ -7,6 +7,7 @@ import { ArrowRight as ArrowIcon, CoffeeIcon, Github } from "lucide-react";
 import { CardsDemo } from "@/components/cards";
 import Link from "next/link";
 import { Icons } from "./icons";
+import { NavigationCombobox } from "./navigation-combobox";
 
 export default function LandingPage() {
   const { fonts } = useThemeStore();
@@ -27,7 +28,8 @@ export default function LandingPage() {
               </span>
             </div>
 
-            <div className="flex items-center">
+            <div className="flex items-center gap-3">
+              <NavigationCombobox />
               <Link
                 href="https://github.com/jordanliu/themecn"
                 className={buttonVariants()}
@@ -61,14 +63,22 @@ export default function LandingPage() {
                 real-time with our intuitive interface.
               </p>
               <div className="flex flex-col sm:flex-row gap-4">
-                <Button size="lg">
-                  Start Creating
-                  <ArrowIcon className="ml-2 h-4 w-4" />
-                </Button>
-                <Button variant="outline" size="lg">
-                  <Github className="mr-2 h-4 w-4" />
-                  View Source
-                </Button>
+                <Link href="/dashboard">
+                  <Button size="lg">
+                    Start Creating
+                    <ArrowIcon className="ml-2 h-4 w-4" />
+                  </Button>
+                </Link>
+                <a
+                  href="https://github.com/jordanliu/themecn"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <Button variant="outline" size="lg">
+                    <Github className="mr-2 h-4 w-4" />
+                    View Source
+                  </Button>
+                </a>
               </div>
             </div>
 

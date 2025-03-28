@@ -624,7 +624,7 @@ const defaultTheme: ThemeState = {
     secondaryForeground: "240 5.9% 10%",
     muted: "240 4.8% 95.9%",
     mutedForeground: "240 3.8% 46.1%",
-    accent: "240 4.8% 95.9%",
+    accent: "262.1 55% 88%", // Much lighter version of primary color
     accentForeground: "240 5.9% 10%",
     destructive: "0 84.2% 60.2%",
     destructiveForeground: "0 0% 98%",
@@ -640,7 +640,7 @@ const defaultTheme: ThemeState = {
     sidebarForeground: "240 5.9% 10%",
     sidebarPrimary: "262.1 83.3% 57.8%",
     sidebarPrimaryForeground: "0 0% 98%",
-    sidebarAccent: "240 4.8% 95.9%",
+    sidebarAccent: "262.1 55% 88%", // Matching the updated accent
     sidebarAccentForeground: "240 5.9% 10%",
     sidebarBorder: "240 5.9% 90%",
     sidebarRing: "262.1 83.3% 57.8%",
@@ -698,7 +698,7 @@ const defaultTheme: ThemeState = {
         foreground: "#0f0f0f",
         primary: "#8b5cf6",
         secondary: "#f5f5f5",
-        accent: "#f5f5f5",
+        accent: "#ddd6fe", // Very light purple to match our updated HSL accent color
         chart1: "#8b5cf6", // Same as primary
         chart2: "#1ea896", // Complementary-ish
         chart3: "#0f3c4c", // Triadic-ish
@@ -1351,10 +1351,10 @@ export const useThemeStore = create<ThemeStore>()(
         const secondaryL = Math.min(primaryL + 40, 96); // Much lighter
         const secondaryHSLValue = `${secondaryH} ${secondaryS}% ${secondaryL}%`;
 
-        // Accent: Slightly different hue, medium saturation
-        const accentH = (primaryH + 15) % 360; // Slight hue shift
-        const accentS = Math.max(Math.min(primaryS - 30, 50), 20); // Medium saturation
-        const accentL = Math.min(primaryL + 20, 90); // Lighter than primary
+        // Accent: Lighter version of primary, medium-high saturation
+        const accentH = primaryH; // Same hue as primary for better coordination
+        const accentS = Math.max(Math.min(primaryS - 30, 55), 30); // Medium-low saturation
+        const accentL = Math.min(primaryL + 30, 88); // Much lighter than primary
         const accentHSLValue = `${accentH} ${accentS}% ${accentL}%`;
 
         // Background: Pure white

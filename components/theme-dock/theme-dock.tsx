@@ -20,7 +20,7 @@ import {
 import { BorderRadiusControl } from "@/components/border-radius-control";
 import { ExportMenu } from "@/components/export-menu";
 import { ShareMenu } from "@/components/share-menu";
-import { useMobile } from "@/hooks/use-mobile";
+import { useIsMobile } from "@/hooks/use-mobile";
 import { useRouter, usePathname } from "next/navigation";
 import dynamic from "next/dynamic";
 import {
@@ -60,7 +60,7 @@ const ThemeDock = () => {
 
   const router = useRouter();
   const pathname = usePathname();
-  const isMobile = useMobile();
+  const isMobile = useIsMobile();
   const [dockVisible, setDockVisible] = useState(true);
   const [saveThemeDialogOpen, setSaveThemeDialogOpen] = useState(false);
   const dockRef = useRef<HTMLDivElement>(null);
