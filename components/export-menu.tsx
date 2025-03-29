@@ -1,18 +1,19 @@
 "use client";
 
-import { useState } from "react";
-import { useThemeStore } from "@/lib/store";
+import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
   DialogHeader,
   DialogTitle,
-  DialogDescription,
 } from "@/components/ui/dialog";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Button } from "@/components/ui/button";
-import { Copy, Download, Check } from "lucide-react";
+import { useThemeStore } from "@/lib/store";
+import { Check, Copy, Download } from "lucide-react";
+import { useState } from "react";
 import { toast } from "sonner";
+import { Separator } from "./ui/separator";
 
 export function ExportMenu() {
   const {
@@ -24,9 +25,12 @@ export function ExportMenu() {
   const [copied, setCopied] = useState(false);
   const [registryCopied, setRegistryCopied] = useState(false);
   const [selectedPackageManager, setSelectedPackageManager] = useState("pnpm");
+  const [selectedTailwindVersion, setSelectedTailwindVersion] = useState("v4");
 
   const handleCopy = () => {
-    navigator.clipboard.writeText(generateCSSVariables());
+    navigator.clipboard.writeText(
+      generateCSSVariables(selectedTailwindVersion === "v3")
+    );
     setCopied(true);
     toast("Copied to clipboard!");
     setTimeout(() => setCopied(false), 2000);
@@ -42,7 +46,7 @@ export function ExportMenu() {
   };
 
   const handleDownload = () => {
-    const code = generateCSSVariables();
+    const code = generateCSSVariables(selectedTailwindVersion === "v3");
     const blob = new Blob([code], { type: "text/css" });
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
@@ -74,6 +78,8 @@ export function ExportMenu() {
     selectedPackageManager,
     registryUrl
   );
+
+  const tailwindVersions = ["v4", "v3"];
 
   return (
     <Dialog open={exportMenuOpen} onOpenChange={setExportMenuOpen}>
@@ -131,9 +137,38 @@ export function ExportMenu() {
           <p className="mt-2 text-xs text-gray-600">
             Import your theme directly with the shadcn registry endpoint.
           </p>
+          <Separator className="bg-gray-200 my-4" />
+          <div className="flex flex-col gap-2">
+            <p className="font-medium mb-1">Tailwind CSS Version:</p>
+
+            <div className="flex flex-wrap gap-2 mt-1">
+              {tailwindVersions.map((version) => (
+                <Button
+                  key={version}
+                  size="sm"
+                  variant={
+                    selectedTailwindVersion === version ? "default" : "outline"
+                  }
+                  onClick={() => setSelectedTailwindVersion(version)}
+                  className={`h-7 px-2 text-xs ${
+                    selectedTailwindVersion === version
+                      ? "bg-gray-800 text-white hover:bg-gray-900"
+                      : "bg-white text-gray-600 border border-gray-300 hover:bg-gray-50"
+                  }`}
+                >
+                  {version}
+                </Button>
+              ))}
+            </div>
+
+            <p className="mt-2 text-xs text-gray-600">
+              Select your Tailwind CSS version. v3 uses hsl colors, v4 uses
+              oklch colors.
+            </p>
+          </div>
         </div>
 
-        <Tabs defaultValue="globals" className="mt-4">
+        <Tabs defaultValue="globals" className="">
           <TabsList className="grid w-full grid-cols-1 bg-gray-100 rounded-md">
             <TabsTrigger value="globals" className="text-gray-700 rounded">
               globals.css
@@ -143,7 +178,9 @@ export function ExportMenu() {
           <TabsContent value="globals">
             <div className="relative">
               <pre className="p-4 rounded-md bg-gray-50 border border-gray-200 overflow-auto max-h-[400px] text-sm text-gray-800 scrollbar-thin scrollbar-thumb-gray-300">
-                <code>{generateCSSVariables()}</code>
+                <code>
+                  {generateCSSVariables(selectedTailwindVersion === "v3")}
+                </code>
               </pre>
               <div className="absolute top-2 right-2 flex gap-2 mr-2">
                 <Button
@@ -174,7 +211,7 @@ export function ExportMenu() {
         <div className="mt-4 p-4 bg-gray-50 border border-gray-200 rounded-md text-gray-700 text-sm">
           <p className="font-medium mb-1">Requirements:</p>
           <ul className="list-disc list-inside space-y-1">
-            <li>Tailwind CSS v4 or later</li>
+            <li>Tailwind CSS {selectedTailwindVersion} or later</li>
             <li>shadcn/ui</li>
           </ul>
         </div>

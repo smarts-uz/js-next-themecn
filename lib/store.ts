@@ -1,13 +1,13 @@
-import { create } from "zustand";
-import { persist } from "zustand/middleware";
 import type {
+  ColorHarmony,
+  FontKey,
   ThemeColorKey,
   ThemeColors,
-  ThemeState,
-  FontKey,
-  ColorHarmony,
   ThemePreset,
+  ThemeState,
 } from "@/types/theme";
+import { create } from "zustand";
+import { persist } from "zustand/middleware";
 import { formatToOklch } from "./color-utils";
 import { getRegistryUrl } from "./theme-url";
 
@@ -729,7 +729,7 @@ export type ThemeStore = ThemeState & {
   setExportMenuOpen: (isOpen: boolean) => void;
   setShareMenuOpen: (isOpen: boolean) => void;
   getHexColor: (colorKey: ThemeColorKey) => string;
-  generateCSSVariables: () => string;
+  generateCSSVariables: (useV3?: boolean) => string;
   getShareableUrl: () => string;
   getRegistryUrl: () => string;
   applyThemeState: (themeState: Partial<ThemeState>) => void;
@@ -1403,10 +1403,96 @@ export const useThemeStore = create<ThemeStore>()(
         return getRegistryUrl(state);
       },
 
-      generateCSSVariables: () => {
+      generateCSSVariables: (useV3 = false) => {
         const state = get();
         const { colors, darkColors, borderRadius } = state;
 
+        // For Tailwind v3 format, use HSL values directly without conversion
+        if (useV3) {
+          return `@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: ${colors.background};
+    --foreground: ${colors.foreground};
+    --card: ${colors.card};
+    --card-foreground: ${colors.cardForeground};
+    --popover: ${colors.popover};
+    --popover-foreground: ${colors.popoverForeground};
+    --primary: ${colors.primary};
+    --primary-foreground: ${colors.primaryForeground};
+    --secondary: ${colors.secondary};
+    --secondary-foreground: ${colors.secondaryForeground};
+    --muted: ${colors.muted};
+    --muted-foreground: ${colors.mutedForeground};
+    --accent: ${colors.accent};
+    --accent-foreground: ${colors.accentForeground};
+    --destructive: ${colors.destructive};
+    --destructive-foreground: ${colors.primaryForeground};
+    --border: ${colors.border};
+    --input: ${colors.input};
+    --ring: ${colors.ring};
+    --radius: ${borderRadius}rem;
+    --chart-1: ${colors.chart1};
+    --chart-2: ${colors.chart2};
+    --chart-3: ${colors.chart3};
+    --chart-4: ${colors.chart4};
+    --chart-5: ${colors.chart5};
+    --sidebar-background: ${colors.sidebar};
+    --sidebar-foreground: ${colors.sidebarForeground};
+    --sidebar-primary: ${colors.sidebarPrimary};
+    --sidebar-primary-foreground: ${colors.sidebarPrimaryForeground};
+    --sidebar-accent: ${colors.sidebarAccent};
+    --sidebar-accent-foreground: ${colors.sidebarAccentForeground};
+    --sidebar-border: ${colors.sidebarBorder};
+    --sidebar-ring: ${colors.sidebarRing};
+  }
+
+  .dark {
+    --background: ${darkColors.background};
+    --foreground: ${darkColors.foreground};
+    --card: ${darkColors.card};
+    --card-foreground: ${darkColors.cardForeground};
+    --popover: ${darkColors.popover};
+    --popover-foreground: ${darkColors.popoverForeground};
+    --primary: ${darkColors.primary};
+    --primary-foreground: ${darkColors.primaryForeground};
+    --secondary: ${darkColors.secondary};
+    --secondary-foreground: ${darkColors.secondaryForeground};
+    --muted: ${darkColors.muted};
+    --muted-foreground: ${darkColors.mutedForeground};
+    --accent: ${darkColors.accent};
+    --accent-foreground: ${darkColors.accentForeground};
+    --destructive: ${darkColors.destructive};
+    --destructive-foreground: ${darkColors.primaryForeground};
+    --border: ${darkColors.border};
+    --input: ${darkColors.input};
+    --ring: ${darkColors.ring};
+    --sidebar-background: ${darkColors.sidebar};
+    --sidebar-foreground: ${darkColors.sidebarForeground};
+    --sidebar-primary: ${darkColors.sidebarPrimary};
+    --sidebar-primary-foreground: ${darkColors.sidebarPrimaryForeground};
+    --sidebar-accent: ${darkColors.sidebarAccent};
+    --sidebar-accent-foreground: ${darkColors.sidebarAccentForeground};
+    --sidebar-border: ${darkColors.sidebarBorder};
+    --sidebar-ring: ${darkColors.sidebarRing};
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+    font-feature-settings: "rlig" 1, "calt" 1;
+  }
+}`.trim();
+        }
+
+        // For Tailwind v4 format with OKLCH colors (existing format)
         return `@import "tailwindcss";
 @import "tw-animate-css";
 
