@@ -293,7 +293,7 @@ const defaultTheme: ThemeState = {
     mutedForeground: "291 30% 45%", // oklch(0.450 0.075 291)
     accent: "291 50% 75%", // oklch(0.750 0.165 291)
     accentForeground: "291 50% 10%", // oklch(0.100 0.165 291)
-    destructive: "27 100% 50%", // oklch(0.577 0.245 27.325)
+    destructive: "357.18 100% 45%", // oklch(0.577 0.245 27.325)
     border: "291 30% 80%", // oklch(0.800 0.075 291)
     input: "291 30% 80%", // oklch(0.800 0.075 291)
     ring: "291 80% 45%", // oklch(0.450 0.255 291)
@@ -327,7 +327,7 @@ const defaultTheme: ThemeState = {
     mutedForeground: "291 15% 65%", // oklch(0.650 0.045 291)
     accent: "291 50% 25%", // oklch(0.250 0.165 291)
     accentForeground: "291 50% 95%", // oklch(0.950 0.165 291)
-    destructive: "22 90% 60%", // oklch(0.704 0.191 22.216)
+    destructive: "357.18 100% 45%", // oklch(0.577 0.245 27.325)
     border: "291 40% 25%", // oklch(0.250 0.090 291)
     input: "291 40% 25%", // oklch(0.250 0.090 291)
     ring: "291 75% 50%", // oklch(0.500 0.225 291)
@@ -410,6 +410,7 @@ const getShareableUrl = (themeState: ThemeState) => {
 
 export type ThemeStore = ThemeState & {
   updateThemeColor: (key: ThemeColorKey, value: string) => void;
+  updateMultipleThemeColors: (colors: Partial<ThemeColors>) => void;
   updateBorderRadius: (value: number) => void;
   updateFont: (key: FontKey, value: string) => void;
   resetTheme: () => void;
@@ -721,6 +722,26 @@ export const useThemeStore = create<ThemeStore>()(
               darkColors.chart5
             );
           }
+
+          // Update URL with new theme
+          updateThemeUrl(newState);
+
+          return newState;
+        });
+      },
+
+      updateMultipleThemeColors: (colors: Partial<ThemeColors>) => {
+        set((state) => {
+          const newState = {
+            ...state,
+            colors: { ...state.colors, ...colors },
+            darkColors: { ...state.darkColors, ...colors },
+          };
+
+          // Apply CSS variables based on current mode
+          const isDarkMode = state.isDarkMode;
+          const currentColors = isDarkMode ? state.darkColors : state.colors;
+          applyCSSVariables(currentColors, state.borderRadius, state.fonts);
 
           // Update URL with new theme
           updateThemeUrl(newState);

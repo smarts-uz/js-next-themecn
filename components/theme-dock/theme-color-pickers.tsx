@@ -11,6 +11,7 @@ import {
 } from "@/components/ui/tooltip";
 import { ColorPicker } from "@/components/color-picker";
 import { useThemeStore } from "@/lib/store";
+import { parse, converter } from "culori";
 
 interface ThemeColorPickersProps {
   showPrimaryOnly?: boolean;
@@ -45,11 +46,220 @@ export const ThemeColorPickers = ({
         console.log(
           `Updating ${colorKey} from ${currentColor} to ${normalizedColor}`
         );
-        updateThemeColor(colorKey, normalizedColor);
+
+        // If changing primary color, generate and update the entire palette
+        if (colorKey === "primary") {
+          generateAndUpdateColorPalette(normalizedColor);
+        } else {
+          // Just update the single color
+          updateThemeColor(colorKey, normalizedColor);
+        }
       }
     } else {
       console.warn(`Invalid color format: ${color}`);
     }
+  };
+
+  // Generate a complete color palette based on the primary color
+  const generateAndUpdateColorPalette = (primaryColor: string) => {
+    // Parse the hex color using culori
+    const parsedColor = parse(primaryColor);
+    if (!parsedColor) {
+      console.error("Invalid color format:", primaryColor);
+      return;
+    }
+
+    // Convert directly to HSL for easier manipulation
+    const hslColor = converter("hsl")(parsedColor);
+    if (!hslColor) {
+      console.error("Failed to convert color to HSL:", primaryColor);
+      return;
+    }
+
+    // Get HSL components with proper handling of null values
+    const h = Math.round(hslColor.h || 0);
+    const s = Math.round((hslColor.s || 0) * 100);
+    const l = Math.round((hslColor.l || 0) * 100);
+
+    // Format HSL string properly
+    const primaryHSLValue = `${h} ${s}% ${l}%`;
+
+    // LIGHT MODE COLORS
+    // -----------------
+
+    // Secondary: Lighter, less saturated version of primary
+    const secondaryH = h; // Same hue as primary
+    const secondaryS = Math.max(Math.min(s - 60, 25), 5); // Much less saturated
+    const secondaryL = Math.min(l + 40, 96); // Much lighter
+    const secondaryHSLValue = `${secondaryH} ${secondaryS}% ${secondaryL}%`;
+
+    // Accent: Slight hue shift, medium-high saturation
+    const accentH = (h + 30) % 360; // Slight hue shift for interest
+    const accentS = Math.max(Math.min(s - 20, 70), 50); // Medium-high saturation
+    const accentL = Math.min(l + 25, 80); // Lighter than primary
+    const accentHSLValue = `${accentH} ${accentS}% ${accentL}%`;
+
+    // Background: Pure white
+    const bgHSLValue = "0 0% 100%";
+
+    // Foreground: Near black with hint of primary hue
+    const fgHSLValue = `${h} 10% 4%`;
+
+    // DARK MODE COLORS
+    // ---------------
+
+    // Dark Primary: Same hue, slightly less saturated, slightly lighter
+    const darkPrimaryH = h;
+    const darkPrimaryS = Math.max(s - 10, 60); // Maintain good saturation
+    const darkPrimaryL = Math.min(l + 5, 60); // Slightly lighter if needed
+    const darkPrimaryHSLValue = `${darkPrimaryH} ${darkPrimaryS}% ${darkPrimaryL}%`;
+
+    // Dark Secondary: Same hue, low saturation, dark
+    const darkSecondaryH = secondaryH;
+    const darkSecondaryS = Math.max(secondaryS, 10); // Ensure some saturation
+    const darkSecondaryL = Math.max(Math.min(secondaryL - 75, 25), 15); // Much darker
+    const darkSecondaryHSLValue = `${darkSecondaryH} ${darkSecondaryS}% ${darkSecondaryL}%`;
+
+    // Dark Accent: Same as light accent but LIGHTER for dark mode
+    const darkAccentH = accentH;
+    const darkAccentS = Math.min(accentS + 10, 85); // Slightly more saturated
+    const darkAccentL = Math.max(Math.min(accentL - 10, 60), 45); // Lighter than before
+    const darkAccentHSLValue = `${darkAccentH} ${darkAccentS}% ${darkAccentL}%`;
+
+    // Dark Background: Very dark, slight hue from primary
+    const darkBgHSLValue = `${h} 30% 8%`;
+
+    // Dark Foreground: Near white
+    const darkFgHSLValue = `${h} 10% 95%`;
+
+    // Get current state
+    const store = useThemeStore.getState();
+    const { colors: lightColors, darkColors } = store;
+
+    // Create fresh copies of the current colors
+    const newLightColors = { ...lightColors };
+    const newDarkColors = { ...darkColors };
+
+    // CHART COLORS
+    // --------------------------
+    // Create monochromatic chart colors based on the primary color
+    const lightChartColors = {
+      chart1: primaryHSLValue, // Primary color
+      chart2: `${h} 70% 60%`, // Variations of the primary hue
+      chart3: `${h} 60% 70%`,
+      chart4: `${h} 85% 30%`,
+      chart5: `${h} 85% 20%`,
+    };
+
+    // Create monochromatic chart colors for dark mode
+    const darkChartColors = {
+      chart1: darkPrimaryHSLValue, // Dark mode variations
+      chart2: `${h} 80% 65%`,
+      chart3: `${h} 85% 75%`,
+      chart4: `${h} 65% 35%`,
+      chart5: `${h} 50% 25%`,
+    };
+
+    // Update light mode colors
+    newLightColors.background = bgHSLValue;
+    newLightColors.foreground = fgHSLValue;
+    newLightColors.primary = primaryHSLValue;
+    newLightColors.secondary = secondaryHSLValue;
+    newLightColors.accent = accentHSLValue;
+    newLightColors.card = bgHSLValue;
+    newLightColors.popover = bgHSLValue;
+    newLightColors.muted = secondaryHSLValue;
+    newLightColors.border = `${secondaryH} ${secondaryS}% ${Math.max(
+      secondaryL - 10,
+      80
+    )}%`;
+    newLightColors.input = newLightColors.border;
+    newLightColors.ring = primaryHSLValue;
+    newLightColors.destructive = "357.18 100% 45%"; // Updated destructive color
+
+    // Calculate contrasting foreground colors for light mode
+    // Determine if primary color is dark (below threshold)
+    const isPrimaryDark = l < 40;
+
+    // Adjust foreground colors based on primary brightness
+    newLightColors.primaryForeground = isPrimaryDark
+      ? "0 0% 100%" // White for dark primary colors
+      : `${h} 10% 95%`; // Default light foreground for light primary colors
+
+    newLightColors.secondaryForeground = `${secondaryH} 30% 10%`; // Contrast with secondary
+    newLightColors.accentForeground = `${accentH} 50% 10%`; // Contrast with accent
+    newLightColors.cardForeground = fgHSLValue;
+    newLightColors.popoverForeground = fgHSLValue;
+    newLightColors.mutedForeground = `${secondaryH} 30% 45%`; // Medium contrast for muted text
+
+    // Update sidebar colors for light mode
+    newLightColors.sidebar = secondaryHSLValue;
+    newLightColors.sidebarForeground = `${secondaryH} 30% 10%`;
+    newLightColors.sidebarPrimary = primaryHSLValue;
+    newLightColors.sidebarPrimaryForeground = isPrimaryDark
+      ? "0 0% 100%" // White for dark primary colors
+      : `${h} 10% 95%`;
+    newLightColors.sidebarAccent = accentHSLValue;
+    newLightColors.sidebarAccentForeground = `${accentH} 50% 10%`;
+    newLightColors.sidebarBorder = newLightColors.border;
+    newLightColors.sidebarRing = primaryHSLValue;
+
+    // Update chart colors for light mode
+    newLightColors.chart1 = lightChartColors.chart1;
+    newLightColors.chart2 = lightChartColors.chart2;
+    newLightColors.chart3 = lightChartColors.chart3;
+    newLightColors.chart4 = lightChartColors.chart4;
+    newLightColors.chart5 = lightChartColors.chart5;
+
+    // Update dark mode colors
+    newDarkColors.background = darkBgHSLValue;
+    newDarkColors.foreground = darkFgHSLValue;
+    newDarkColors.primary = darkPrimaryHSLValue;
+    newDarkColors.secondary = darkSecondaryHSLValue;
+    newDarkColors.accent = darkAccentHSLValue;
+    newDarkColors.card = `${h} 30% 12%`; // Slightly lighter than background
+    newDarkColors.popover = newDarkColors.card;
+    newDarkColors.muted = darkSecondaryHSLValue;
+    newDarkColors.destructive = "357.18 100% 45%"; // Updated destructive color for dark mode
+
+    // Calculate contrasting foreground colors for dark mode
+    newDarkColors.primaryForeground = `${darkPrimaryH} 10% 95%`;
+    newDarkColors.secondaryForeground = `${darkSecondaryH} 30% 95%`;
+    newDarkColors.accentForeground = `${darkAccentH} 50% 95%`;
+    newDarkColors.cardForeground = darkFgHSLValue;
+    newDarkColors.popoverForeground = darkFgHSLValue;
+    newDarkColors.mutedForeground = `${darkSecondaryH} 15% 65%`;
+
+    // Border and input colors for dark mode
+    newDarkColors.border = `${darkSecondaryH} ${darkSecondaryS + 5}% ${Math.min(
+      darkSecondaryL + 10,
+      30
+    )}%`;
+    newDarkColors.input = newDarkColors.border;
+    newDarkColors.ring = darkPrimaryHSLValue;
+
+    // Sidebar colors for dark mode
+    newDarkColors.sidebar = darkBgHSLValue;
+    newDarkColors.sidebarForeground = darkFgHSLValue;
+    newDarkColors.sidebarPrimary = darkPrimaryHSLValue;
+    newDarkColors.sidebarPrimaryForeground = `${darkPrimaryH} 10% 95%`;
+    newDarkColors.sidebarAccent = darkAccentHSLValue;
+    newDarkColors.sidebarAccentForeground = `${darkAccentH} 50% 95%`;
+    newDarkColors.sidebarBorder = newDarkColors.border;
+    newDarkColors.sidebarRing = darkPrimaryHSLValue;
+
+    // Chart colors for dark mode
+    newDarkColors.chart1 = darkChartColors.chart1;
+    newDarkColors.chart2 = darkChartColors.chart2;
+    newDarkColors.chart3 = darkChartColors.chart3;
+    newDarkColors.chart4 = darkChartColors.chart4;
+    newDarkColors.chart5 = darkChartColors.chart5;
+
+    // Apply the theme state changes
+    store.applyThemeState({
+      colors: newLightColors,
+      darkColors: newDarkColors,
+    });
   };
 
   // Helper function to check if colors are different enough to warrant an update
