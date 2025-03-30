@@ -21,6 +21,66 @@ export const ThemeColorPickers = ({
 }: ThemeColorPickersProps) => {
   const { updateThemeColor, getHexColor } = useThemeStore();
 
+  // Handle color change and update theme
+  const handleColorChange = (
+    colorKey: "primary" | "secondary" | "background" | "foreground",
+    color: string
+  ) => {
+    // Normalize color format (ensure lowercase hex)
+    const normalizedColor = color.toLowerCase();
+
+    // Ensure the color is a valid hex format
+    if (/^#[0-9a-f]{6}$/i.test(normalizedColor)) {
+      // Get current color for comparison
+      const currentColor = getHexColor(colorKey).toLowerCase();
+
+      // Calculate color difference to prevent insignificant updates
+      const isDifferentEnough = isColorDifferentEnough(
+        normalizedColor,
+        currentColor
+      );
+
+      // Only update if the color actually changed and the difference is significant
+      if (normalizedColor !== currentColor && isDifferentEnough) {
+        console.log(
+          `Updating ${colorKey} from ${currentColor} to ${normalizedColor}`
+        );
+        updateThemeColor(colorKey, normalizedColor);
+      }
+    } else {
+      console.warn(`Invalid color format: ${color}`);
+    }
+  };
+
+  // Helper function to check if colors are different enough to warrant an update
+  // This prevents minor rounding issues from causing unnecessary updates
+  const isColorDifferentEnough = (color1: string, color2: string): boolean => {
+    // If they're exactly the same, no need to update
+    if (color1 === color2) return false;
+
+    // Parse hex colors to RGB
+    const parseHex = (hex: string) => {
+      const r = parseInt(hex.slice(1, 3), 16);
+      const g = parseInt(hex.slice(3, 5), 16);
+      const b = parseInt(hex.slice(5, 7), 16);
+      return { r, g, b };
+    };
+
+    const rgb1 = parseHex(color1);
+    const rgb2 = parseHex(color2);
+
+    // Calculate squared difference for each channel
+    const rDiff = Math.pow(rgb1.r - rgb2.r, 2);
+    const gDiff = Math.pow(rgb1.g - rgb2.g, 2);
+    const bDiff = Math.pow(rgb1.b - rgb2.b, 2);
+
+    // Calculate Euclidean distance in RGB space
+    const distance = Math.sqrt(rDiff + gDiff + bDiff);
+
+    // Return true if distance exceeds threshold (values below 2 are barely perceptible)
+    return distance > 1.5;
+  };
+
   // If showPrimaryOnly is true, only render the Primary Color picker
   if (showPrimaryOnly) {
     return (
@@ -62,7 +122,7 @@ export const ThemeColorPickers = ({
                 </div>
                 <ColorPicker
                   color={getHexColor("primary")}
-                  onChange={(color) => updateThemeColor("primary", color)}
+                  onChange={(color) => handleColorChange("primary", color)}
                 />
               </PopoverContent>
             </Popover>
@@ -124,7 +184,7 @@ export const ThemeColorPickers = ({
                 </div>
                 <ColorPicker
                   color={getHexColor("foreground")}
-                  onChange={(color) => updateThemeColor("foreground", color)}
+                  onChange={(color) => handleColorChange("foreground", color)}
                 />
               </PopoverContent>
             </Popover>
@@ -182,7 +242,7 @@ export const ThemeColorPickers = ({
                 </div>
                 <ColorPicker
                   color={getHexColor("background")}
-                  onChange={(color) => updateThemeColor("background", color)}
+                  onChange={(color) => handleColorChange("background", color)}
                 />
               </PopoverContent>
             </Popover>
@@ -235,7 +295,7 @@ export const ThemeColorPickers = ({
                 </div>
                 <ColorPicker
                   color={getHexColor("primary")}
-                  onChange={(color) => updateThemeColor("primary", color)}
+                  onChange={(color) => handleColorChange("primary", color)}
                 />
               </PopoverContent>
             </Popover>
@@ -250,7 +310,7 @@ export const ThemeColorPickers = ({
       </Tooltip>
 
       {/* Secondary Color */}
-      <Tooltip>
+      {/* <Tooltip>
         <TooltipTrigger asChild>
           <div>
             <Popover>
@@ -300,10 +360,10 @@ export const ThemeColorPickers = ({
         >
           Secondary Color
         </TooltipContent>
-      </Tooltip>
+      </Tooltip> */}
 
       {/* Accent Color */}
-      <Tooltip>
+      {/* <Tooltip>
         <TooltipTrigger asChild>
           <div>
             <Popover>
@@ -353,7 +413,7 @@ export const ThemeColorPickers = ({
         >
           Accent Color
         </TooltipContent>
-      </Tooltip>
+      </Tooltip> */}
     </>
   );
 };

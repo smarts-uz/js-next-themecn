@@ -30,7 +30,7 @@ import {
 } from "@/components/ui/light-drawer";
 import { ThemeColorPickers } from "@/components/theme-dock/theme-color-pickers";
 import { ThemeTypography } from "@/components/theme-dock/theme-typography";
-import { ThemeHarmonies } from "@/components/theme-dock/theme-harmonies";
+
 import { ThemeBorderRadius } from "@/components/theme-dock/theme-border-radius";
 import { ThemeUtilityControls } from "@/components/theme-dock/theme-utility-controls";
 import { ThemeMobileMore } from "@/components/theme-dock/theme-mobile-controls";
@@ -426,7 +426,7 @@ const ThemeDock = () => {
                   <div className="h-5 w-px bg-gray-200"></div>
 
                   {/* Color Harmony Selector */}
-                  <ThemeHarmonies />
+                  {/* <ThemeHarmonies /> */}
 
                   {/* Border Radius */}
                   <ThemeBorderRadius />
