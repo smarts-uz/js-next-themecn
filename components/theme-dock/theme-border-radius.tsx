@@ -21,7 +21,7 @@ export const ThemeBorderRadius = () => {
             <PopoverTrigger asChild>
               <Button
                 variant="ghost"
-                className="flex items-center justify-center h-10 w-10 p-0 rounded-full hover:bg-gray-100 hover:text-gray-900 text-gray-700 transition-all duration-200"
+                className="flex items-center justify-center h-10 w-10 p-0 rounded-full hover:bg-gray-100 hover:text-gray-900 text-gray-700 transition-all duration-200 cursor-pointer"
                 data-border-radius-button="true"
               >
                 <Square size={18} />

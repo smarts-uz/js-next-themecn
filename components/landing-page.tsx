@@ -81,13 +81,13 @@ export default function LandingPage() {
                 <Link
                   href="https://github.com/jordanliu/themecn"
                   target="_blank"
-                  className="w-full sm:w-auto cursor-pointer"
+                  className="w-full sm:w-auto"
                   rel="noopener noreferrer"
                 >
                   <Button
                     variant="outline"
                     size="lg"
-                    className="w-full sm:w-auto"
+                    className="w-full sm:w-auto cursor-pointer"
                   >
                     <Icons.gitHub className="mr-2 h-4 w-4" />
                     View Source

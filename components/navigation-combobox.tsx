@@ -50,6 +50,24 @@ export function NavigationCombobox() {
     router.push(newUrl);
   };
 
+  // Find the matching route by checking if the pathname starts with the route's value
+  const findMatchingRoute = () => {
+    const route = navigationOptions.find(
+      (option) =>
+        pathname === option.value || // Exact match
+        (pathname.startsWith(option.value) && option.value !== "/") // Starts with but not homepage
+    );
+
+    // Special case for homepage
+    if (!route && pathname === "/") {
+      return navigationOptions.find((option) => option.value === "/");
+    }
+
+    return route;
+  };
+
+  const matchingRoute = findMatchingRoute();
+
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
@@ -57,10 +75,9 @@ export function NavigationCombobox() {
           variant="outline"
           role="combobox"
           aria-expanded={open}
-          className="w-[160px] justify-between"
+          className="w-[160px] justify-between cursor-pointer"
         >
-          {navigationOptions.find((option) => option.value === value)?.label ||
-            "Navigate"}
+          {matchingRoute?.label || "Navigate"}
           <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
         </Button>
       </PopoverTrigger>

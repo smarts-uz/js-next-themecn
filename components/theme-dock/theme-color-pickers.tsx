@@ -12,6 +12,7 @@ import {
 import { ColorPicker } from "@/components/color-picker";
 import { useThemeStore } from "@/lib/store";
 import { parse, converter } from "culori";
+import { hexToHSL } from "@/lib/color-utils";
 
 interface ThemeColorPickersProps {
   showPrimaryOnly?: boolean;
@@ -20,11 +21,11 @@ interface ThemeColorPickersProps {
 export const ThemeColorPickers = ({
   showPrimaryOnly = false,
 }: ThemeColorPickersProps) => {
-  const { updateThemeColor, getHexColor } = useThemeStore();
+  const { updateThemeColor, getHexColor, isDarkMode } = useThemeStore();
 
   // Handle color change and update theme
   const handleColorChange = (
-    colorKey: "primary" | "secondary" | "background" | "foreground",
+    colorKey: "primary" | "secondary" | "background" | "foreground" | "accent",
     color: string
   ) => {
     // Normalize color format (ensure lowercase hex)
@@ -44,15 +45,79 @@ export const ThemeColorPickers = ({
       // Only update if the color actually changed and the difference is significant
       if (normalizedColor !== currentColor && isDifferentEnough) {
         console.log(
-          `Updating ${colorKey} from ${currentColor} to ${normalizedColor}`
+          `Updating ${colorKey} from ${currentColor} to ${normalizedColor} in ${
+            isDarkMode ? "dark" : "light"
+          } mode`
         );
 
         // If changing primary color, generate and update the entire palette
         if (colorKey === "primary") {
-          generateAndUpdateColorPalette(normalizedColor);
+          if (isDarkMode) {
+            // In dark mode, just directly update dark mode primary without affecting light mode
+            updateDarkModePrimaryColor(normalizedColor);
+          } else {
+            // In light mode, update both light and dark mode colors
+            generateAndUpdateColorPalette(normalizedColor);
+          }
+        } else if (colorKey === "secondary") {
+          if (isDarkMode) {
+            // In dark mode, just directly update dark mode secondary
+            updateDarkModeSecondaryColor(normalizedColor);
+          } else {
+            // In light mode, update both
+            updateSecondaryColorSet(normalizedColor);
+          }
+        } else if (colorKey === "accent") {
+          if (isDarkMode) {
+            // In dark mode, just directly update dark mode accent
+            updateDarkModeAccentColor(normalizedColor);
+          } else {
+            // In light mode, update both
+            updateAccentColorSet(normalizedColor);
+          }
         } else {
-          // Just update the single color
-          updateThemeColor(colorKey, normalizedColor);
+          // For background and foreground
+          if (isDarkMode) {
+            // In dark mode, only update the dark mode color
+            const store = useThemeStore.getState();
+            const hslValue = hexToHSL(normalizedColor);
+            const darkColors = { ...store.darkColors };
+
+            if (colorKey === "background") {
+              // Update dark mode background and related colors
+              darkColors.background = hslValue;
+              darkColors.card = `${hslValue.split(" ")[0]} 30% 12%`; // Slightly lighter than background
+              darkColors.popover = darkColors.card;
+              darkColors.sidebar = hslValue;
+
+              // Update border based on background
+              const [h, s, l] = hslValue
+                .split(" ")
+                .map((part: string) =>
+                  Number.parseFloat(part.replace("%", ""))
+                );
+              darkColors.border = `${h} ${Math.min(s + 10, 40)}% ${Math.min(
+                l + 10,
+                30
+              )}%`;
+              darkColors.input = darkColors.border;
+              darkColors.sidebarBorder = darkColors.border;
+            } else if (colorKey === "foreground") {
+              // Update dark mode foreground and related colors
+              darkColors.foreground = hslValue;
+              darkColors.cardForeground = hslValue;
+              darkColors.popoverForeground = hslValue;
+              darkColors.sidebarForeground = hslValue;
+            }
+
+            // Apply dark mode colors only
+            store.applyThemeState({
+              darkColors: darkColors,
+            });
+          } else {
+            // In light mode, update both (using existing logic)
+            updateThemeColor(colorKey, normalizedColor);
+          }
         }
       }
     } else {
@@ -262,6 +327,128 @@ export const ThemeColorPickers = ({
     });
   };
 
+  // Update only the secondary color set
+  const updateSecondaryColorSet = (secondaryColor: string) => {
+    // Parse the hex color using culori
+    const parsedColor = parse(secondaryColor);
+    if (!parsedColor) {
+      console.error("Invalid color format:", secondaryColor);
+      return;
+    }
+
+    // Convert directly to HSL for easier manipulation
+    const hslColor = converter("hsl")(parsedColor);
+    if (!hslColor) {
+      console.error("Failed to convert color to HSL:", secondaryColor);
+      return;
+    }
+
+    // Get HSL components with proper handling of null values
+    const h = Math.round(hslColor.h || 0);
+    const s = Math.round((hslColor.s || 0) * 100);
+    const l = Math.round((hslColor.l || 0) * 100);
+
+    // Format HSL string properly
+    const secondaryHSLValue = `${h} ${s}% ${l}%`;
+
+    // Get current state
+    const store = useThemeStore.getState();
+    const { colors: lightColors, darkColors } = store;
+
+    // Create fresh copies of the current colors
+    const newLightColors = { ...lightColors };
+    const newDarkColors = { ...darkColors };
+
+    // Update light mode secondary colors
+    newLightColors.secondary = secondaryHSLValue;
+    newLightColors.muted = secondaryHSLValue;
+    newLightColors.secondaryForeground = `${h} 30% 10%`; // Contrast with secondary
+    newLightColors.border = `${h} ${s}% ${Math.max(l - 10, 80)}%`;
+    newLightColors.input = newLightColors.border;
+    newLightColors.mutedForeground = `${h} 30% 45%`; // Medium contrast for muted text
+
+    // Update sidebar colors using secondary
+    newLightColors.sidebar = secondaryHSLValue;
+    newLightColors.sidebarForeground = `${h} 30% 10%`;
+    newLightColors.sidebarBorder = newLightColors.border;
+
+    // Dark mode secondary colors
+    const darkSecondaryS = Math.max(s, 10); // Ensure some saturation
+    const darkSecondaryL = Math.max(Math.min(l - 75, 25), 15); // Much darker
+    const darkSecondaryHSLValue = `${h} ${darkSecondaryS}% ${darkSecondaryL}%`;
+
+    newDarkColors.secondary = darkSecondaryHSLValue;
+    newDarkColors.muted = darkSecondaryHSLValue;
+    newDarkColors.secondaryForeground = `${h} 30% 95%`;
+    newDarkColors.border = `${h} ${darkSecondaryS + 5}% ${Math.min(
+      darkSecondaryL + 10,
+      30
+    )}%`;
+    newDarkColors.input = newDarkColors.border;
+    newDarkColors.mutedForeground = `${h} 15% 65%`;
+
+    // Apply the theme state changes
+    store.applyThemeState({
+      colors: newLightColors,
+      darkColors: newDarkColors,
+    });
+  };
+
+  // Update only the accent color set
+  const updateAccentColorSet = (accentColor: string) => {
+    // Parse the hex color using culori
+    const parsedColor = parse(accentColor);
+    if (!parsedColor) {
+      console.error("Invalid color format:", accentColor);
+      return;
+    }
+
+    // Convert directly to HSL for easier manipulation
+    const hslColor = converter("hsl")(parsedColor);
+    if (!hslColor) {
+      console.error("Failed to convert color to HSL:", accentColor);
+      return;
+    }
+
+    // Get HSL components with proper handling of null values
+    const h = Math.round(hslColor.h || 0);
+    const s = Math.round((hslColor.s || 0) * 100);
+    const l = Math.round((hslColor.l || 0) * 100);
+
+    // Format HSL string properly
+    const accentHSLValue = `${h} ${s}% ${l}%`;
+
+    // Get current state
+    const store = useThemeStore.getState();
+    const { colors: lightColors, darkColors } = store;
+
+    // Create fresh copies of the current colors
+    const newLightColors = { ...lightColors };
+    const newDarkColors = { ...darkColors };
+
+    // Update light mode accent colors
+    newLightColors.accent = accentHSLValue;
+    newLightColors.accentForeground = `${h} 50% 10%`; // Contrast with accent
+    newLightColors.sidebarAccent = accentHSLValue;
+    newLightColors.sidebarAccentForeground = `${h} 50% 10%`;
+
+    // Dark mode accent colors
+    const darkAccentS = Math.min(s + 10, 85); // Slightly more saturated
+    const darkAccentL = Math.max(Math.min(l - 10, 60), 45); // Adjusted for dark mode
+    const darkAccentHSLValue = `${h} ${darkAccentS}% ${darkAccentL}%`;
+
+    newDarkColors.accent = darkAccentHSLValue;
+    newDarkColors.accentForeground = `${h} 50% 95%`;
+    newDarkColors.sidebarAccent = darkAccentHSLValue;
+    newDarkColors.sidebarAccentForeground = `${h} 50% 95%`;
+
+    // Apply the theme state changes
+    store.applyThemeState({
+      colors: newLightColors,
+      darkColors: newDarkColors,
+    });
+  };
+
   // Helper function to check if colors are different enough to warrant an update
   // This prevents minor rounding issues from causing unnecessary updates
   const isColorDifferentEnough = (color1: string, color2: string): boolean => {
@@ -291,6 +478,150 @@ export const ThemeColorPickers = ({
     return distance > 1.5;
   };
 
+  // Direct update of dark mode primary color without affecting light mode
+  const updateDarkModePrimaryColor = (primaryColor: string) => {
+    // Parse the hex color using culori
+    const parsedColor = parse(primaryColor);
+    if (!parsedColor) {
+      console.error("Invalid color format:", primaryColor);
+      return;
+    }
+
+    // Convert directly to HSL
+    const hslColor = converter("hsl")(parsedColor);
+    if (!hslColor) {
+      console.error("Failed to convert color to HSL:", primaryColor);
+      return;
+    }
+
+    // Get HSL components
+    const h = Math.round(hslColor.h || 0);
+    const s = Math.round((hslColor.s || 0) * 100);
+    const l = Math.round((hslColor.l || 0) * 100);
+
+    // Format HSL string
+    const primaryHSLValue = `${h} ${s}% ${l}%`;
+
+    // Get current state
+    const store = useThemeStore.getState();
+    const darkColors = { ...store.darkColors };
+
+    // Update primary color
+    darkColors.primary = primaryHSLValue;
+    darkColors.ring = primaryHSLValue;
+    darkColors.sidebarPrimary = primaryHSLValue;
+
+    // Calculate contrasting foreground
+    const isPrimaryDark = l < 40;
+    darkColors.primaryForeground = isPrimaryDark ? "0 0% 100%" : `${h} 10% 95%`;
+    darkColors.sidebarPrimaryForeground = darkColors.primaryForeground;
+    darkColors.sidebarRing = primaryHSLValue;
+
+    // Update chart colors
+    const darkChartColors = {
+      chart1: primaryHSLValue,
+      chart2: `${h} ${Math.min(s + 5, 90)}% ${Math.min(l + 15, 75)}%`,
+      chart3: `${h} ${Math.min(s + 10, 95)}% ${Math.min(l + 25, 85)}%`,
+      chart4: `${h} ${Math.max(s - 10, 30)}% ${Math.max(l - 15, 25)}%`,
+      chart5: `${h} ${Math.max(s - 20, 20)}% ${Math.max(l - 25, 15)}%`,
+    };
+
+    darkColors.chart1 = darkChartColors.chart1;
+    darkColors.chart2 = darkChartColors.chart2;
+    darkColors.chart3 = darkChartColors.chart3;
+    darkColors.chart4 = darkChartColors.chart4;
+    darkColors.chart5 = darkChartColors.chart5;
+
+    // Apply dark mode colors only
+    store.applyThemeState({
+      darkColors: darkColors,
+    });
+  };
+
+  // Direct update of dark mode secondary color without affecting light mode
+  const updateDarkModeSecondaryColor = (secondaryColor: string) => {
+    // Parse the hex color using culori
+    const parsedColor = parse(secondaryColor);
+    if (!parsedColor) {
+      console.error("Invalid color format:", secondaryColor);
+      return;
+    }
+
+    // Convert directly to HSL
+    const hslColor = converter("hsl")(parsedColor);
+    if (!hslColor) {
+      console.error("Failed to convert color to HSL:", secondaryColor);
+      return;
+    }
+
+    // Get HSL components
+    const h = Math.round(hslColor.h || 0);
+    const s = Math.round((hslColor.s || 0) * 100);
+    const l = Math.round((hslColor.l || 0) * 100);
+
+    // Format HSL string
+    const secondaryHSLValue = `${h} ${s}% ${l}%`;
+
+    // Get current state
+    const store = useThemeStore.getState();
+    const darkColors = { ...store.darkColors };
+
+    // Update secondary and related colors
+    darkColors.secondary = secondaryHSLValue;
+    darkColors.muted = secondaryHSLValue;
+
+    // Calculate contrasting foregrounds
+    darkColors.secondaryForeground = l < 50 ? `${h} 10% 90%` : `${h} 30% 10%`;
+    darkColors.mutedForeground = `${h} 15% 65%`;
+
+    // Apply dark mode colors only
+    store.applyThemeState({
+      darkColors: darkColors,
+    });
+  };
+
+  // Direct update of dark mode accent color without affecting light mode
+  const updateDarkModeAccentColor = (accentColor: string) => {
+    // Parse the hex color using culori
+    const parsedColor = parse(accentColor);
+    if (!parsedColor) {
+      console.error("Invalid color format:", accentColor);
+      return;
+    }
+
+    // Convert directly to HSL
+    const hslColor = converter("hsl")(parsedColor);
+    if (!hslColor) {
+      console.error("Failed to convert color to HSL:", accentColor);
+      return;
+    }
+
+    // Get HSL components
+    const h = Math.round(hslColor.h || 0);
+    const s = Math.round((hslColor.s || 0) * 100);
+    const l = Math.round((hslColor.l || 0) * 100);
+
+    // Format HSL string
+    const accentHSLValue = `${h} ${s}% ${l}%`;
+
+    // Get current state
+    const store = useThemeStore.getState();
+    const darkColors = { ...store.darkColors };
+
+    // Update accent and related colors
+    darkColors.accent = accentHSLValue;
+    darkColors.sidebarAccent = accentHSLValue;
+
+    // Calculate contrasting foregrounds
+    darkColors.accentForeground = l < 50 ? `${h} 10% 90%` : `${h} 30% 10%`;
+    darkColors.sidebarAccentForeground = darkColors.accentForeground;
+
+    // Apply dark mode colors only
+    store.applyThemeState({
+      darkColors: darkColors,
+    });
+  };
+
   // If showPrimaryOnly is true, only render the Primary Color picker
   if (showPrimaryOnly) {
     return (
@@ -301,9 +632,9 @@ export const ThemeColorPickers = ({
               <PopoverTrigger asChild>
                 <Button
                   variant="ghost"
-                  className="flex items-center justify-center h-10 w-10 p-0 rounded-full hover:bg-gray-100 hover:text-gray-900 text-gray-700 transition-all duration-200"
+                  className="flex items-center justify-center h-10 w-10 p-0 rounded-full hover:bg-gray-100 hover:text-gray-900 text-gray-700 transition-all duration-200 cursor-pointer"
                 >
-                  <div className="w-7 h-7 rounded-full bg-primary" />
+                  <div className="w-7 h-7 rounded-full bg-primary cursor-pointer" />
                   <span className="sr-only">Primary</span>
                 </Button>
               </PopoverTrigger>
@@ -358,10 +689,10 @@ export const ThemeColorPickers = ({
               <PopoverTrigger asChild>
                 <Button
                   variant="ghost"
-                  className="flex items-center justify-center h-10 w-10 p-0 rounded-full hover:bg-gray-100 hover:text-gray-900 text-gray-700 transition-all duration-200"
+                  className="flex items-center justify-center h-10 w-10 p-0 rounded-full hover:bg-gray-100 hover:text-gray-900 text-gray-700 transition-all duration-200 cursor-pointer"
                 >
                   <div
-                    className="w-7 h-7 rounded-full border border-border/50"
+                    className="w-7 h-7 rounded-full border border-border/50 cursor-pointer"
                     style={{
                       backgroundColor: getHexColor("foreground"),
                     }}
@@ -416,10 +747,10 @@ export const ThemeColorPickers = ({
               <PopoverTrigger asChild>
                 <Button
                   variant="ghost"
-                  className="flex items-center justify-center h-10 w-10 p-0 rounded-full hover:bg-gray-100 hover:text-gray-900 text-gray-700 transition-all duration-200"
+                  className="flex items-center justify-center h-10 w-10 p-0 rounded-full hover:bg-gray-100 hover:text-gray-900 text-gray-700 transition-all duration-200 cursor-pointer"
                 >
                   <div
-                    className="w-7 h-7 rounded-full border border-border/50"
+                    className="w-7 h-7 rounded-full border border-border/50 cursor-pointer"
                     style={{
                       backgroundColor: getHexColor("background"),
                     }}
@@ -474,9 +805,9 @@ export const ThemeColorPickers = ({
               <PopoverTrigger asChild>
                 <Button
                   variant="ghost"
-                  className="flex items-center justify-center h-10 w-10 p-0 rounded-full hover:bg-gray-100 hover:text-gray-900 text-gray-700 transition-all duration-200"
+                  className="flex items-center justify-center h-10 w-10 p-0 rounded-full hover:bg-gray-100 hover:text-gray-900 text-gray-700 transition-all duration-200 cursor-pointer"
                 >
-                  <div className="w-7 h-7 rounded-full bg-primary" />
+                  <div className="w-7 h-7 rounded-full bg-primary cursor-pointer" />
                   <span className="sr-only">Primary</span>
                 </Button>
               </PopoverTrigger>
@@ -520,16 +851,16 @@ export const ThemeColorPickers = ({
       </Tooltip>
 
       {/* Secondary Color */}
-      {/* <Tooltip>
+      <Tooltip>
         <TooltipTrigger asChild>
           <div>
             <Popover>
               <PopoverTrigger asChild>
                 <Button
                   variant="ghost"
-                  className="flex items-center justify-center h-10 w-10 p-0 rounded-full hover:bg-gray-100 hover:text-gray-900 text-gray-700 transition-all duration-200"
+                  className="flex items-center justify-center h-10 w-10 p-0 rounded-full hover:bg-gray-100 hover:text-gray-900 text-gray-700 transition-all duration-200 cursor-pointer"
                 >
-                  <div className="w-7 h-7 rounded-full bg-secondary" />
+                  <div className="w-7 h-7 rounded-full bg-secondary cursor-pointer" />
                   <span className="sr-only">Secondary</span>
                 </Button>
               </PopoverTrigger>
@@ -558,7 +889,7 @@ export const ThemeColorPickers = ({
                 </div>
                 <ColorPicker
                   color={getHexColor("secondary")}
-                  onChange={(color) => updateThemeColor("secondary", color)}
+                  onChange={(color) => handleColorChange("secondary", color)}
                 />
               </PopoverContent>
             </Popover>
@@ -570,19 +901,19 @@ export const ThemeColorPickers = ({
         >
           Secondary Color
         </TooltipContent>
-      </Tooltip> */}
+      </Tooltip>
 
       {/* Accent Color */}
-      {/* <Tooltip>
+      <Tooltip>
         <TooltipTrigger asChild>
           <div>
             <Popover>
               <PopoverTrigger asChild>
                 <Button
                   variant="ghost"
-                  className="flex items-center justify-center h-10 w-10 p-0 rounded-full hover:bg-gray-100 hover:text-gray-900 text-gray-700 transition-all duration-200"
+                  className="flex items-center justify-center h-10 w-10 p-0 rounded-full hover:bg-gray-100 hover:text-gray-900 text-gray-700 transition-all duration-200 cursor-pointer"
                 >
-                  <div className="w-7 h-7 rounded-full bg-accent" />
+                  <div className="w-7 h-7 rounded-full bg-accent cursor-pointer" />
                   <span className="sr-only">Accent</span>
                 </Button>
               </PopoverTrigger>
@@ -611,7 +942,7 @@ export const ThemeColorPickers = ({
                 </div>
                 <ColorPicker
                   color={getHexColor("accent")}
-                  onChange={(color) => updateThemeColor("accent", color)}
+                  onChange={(color) => handleColorChange("accent", color)}
                 />
               </PopoverContent>
             </Popover>
@@ -623,7 +954,7 @@ export const ThemeColorPickers = ({
         >
           Accent Color
         </TooltipContent>
-      </Tooltip> */}
+      </Tooltip>
     </>
   );
 };

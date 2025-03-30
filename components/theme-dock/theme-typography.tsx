@@ -48,7 +48,7 @@ export const ThemeTypography = ({ fontOptions }: { fontOptions: string[] }) => {
             <PopoverTrigger asChild>
               <Button
                 variant="ghost"
-                className="flex items-center justify-center h-10 w-10 p-0 rounded-full hover:bg-gray-100 hover:text-gray-900 text-gray-700 transition-all duration-200"
+                className="flex items-center justify-center h-10 w-10 p-0 rounded-full hover:bg-gray-100 hover:text-gray-900 text-gray-700 transition-all duration-200 cursor-pointer"
               >
                 <Type size={18} />
                 <span className="sr-only">Fonts</span>
@@ -76,7 +76,7 @@ export const ThemeTypography = ({ fontOptions }: { fontOptions: string[] }) => {
                   variant="outline"
                   size="sm"
                   onClick={() => setFontsLocked(!fontsLocked)}
-                  className={`h-8 px-2 flex items-center gap-1 ${
+                  className={`h-8 px-2 flex items-center gap-1 cursor-pointer ${
                     fontsLocked ? "bg-primary/10" : ""
                   }`}
                   style={{

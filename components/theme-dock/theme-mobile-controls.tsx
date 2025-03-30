@@ -26,7 +26,7 @@ export const ThemeMobileMore = ({
       <PopoverTrigger asChild>
         <Button
           variant="ghost"
-          className="flex items-center justify-center h-10 w-10 p-0 rounded-full hover:bg-gray-100 hover:text-gray-900 text-gray-700 transition-all duration-200"
+          className="flex items-center justify-center h-10 w-10 p-0 rounded-full hover:bg-gray-100 hover:text-gray-900 text-gray-700 transition-all duration-200 cursor-pointer"
         >
           <MoreVertical size={18} />
           <span className="sr-only">More options</span>
@@ -58,7 +58,7 @@ export const ThemeMobileMore = ({
         <div className="py-1">
           <Button
             variant="ghost"
-            className="w-full justify-start text-left h-9 px-2 relative hover:bg-gray-100 hover:text-gray-900"
+            className="w-full justify-start text-left h-9 px-2 relative hover:bg-gray-100 hover:text-gray-900 cursor-pointer"
             onClick={() => {
               onBorderRadiusClick();
               onOpenChange(false);
@@ -75,7 +75,7 @@ export const ThemeMobileMore = ({
           </Button>
           <Button
             variant="ghost"
-            className="w-full justify-start text-left h-9 px-2 relative hover:bg-gray-100 hover:text-gray-900"
+            className="w-full justify-start text-left h-9 px-2 relative hover:bg-gray-100 hover:text-gray-900 cursor-pointer"
             onClick={() => {
               onHarmonyClick();
               onOpenChange(false);
@@ -92,7 +92,7 @@ export const ThemeMobileMore = ({
           </Button>
           <Button
             variant="ghost"
-            className="w-full justify-start text-left h-9 px-2 relative hover:bg-gray-100 hover:text-gray-900"
+            className="w-full justify-start text-left h-9 px-2 relative hover:bg-gray-100 hover:text-gray-900 cursor-pointer"
             onClick={() => {
               onTypographyClick();
               onOpenChange(false);

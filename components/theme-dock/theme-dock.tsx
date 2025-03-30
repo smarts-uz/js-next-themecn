@@ -140,7 +140,7 @@ const ThemeDock = () => {
   if (!dockVisible) {
     return (
       <Button
-        className="fixed bottom-6 right-6 z-50 rounded-full w-10 h-10 p-0 shadow-lg bg-background/80 backdrop-blur-xl border border-border/30 hover:scale-110 transition-transform duration-200"
+        className="fixed bottom-6 right-6 z-50 rounded-full w-10 h-10 p-0 shadow-lg bg-background/80 backdrop-blur-xl border border-border/30 hover:scale-110 transition-transform duration-200 cursor-pointer"
         onClick={() => setDockVisible(true)}
       >
         <PaintBucket size={18} />
@@ -152,7 +152,7 @@ const ThemeDock = () => {
   const MobileCloseButton = ({ onClick }: { onClick: () => void }) => (
     <Button
       variant="ghost"
-      className="flex items-center justify-center h-10 w-10 p-0 rounded-full hover:bg-gray-100 hover:text-gray-900 text-gray-700 transition-all duration-200"
+      className="flex items-center justify-center h-10 w-10 p-0 rounded-full hover:bg-gray-100 hover:text-gray-900 text-gray-700 transition-all duration-200 cursor-pointer"
       onClick={onClick}
     >
       <svg
