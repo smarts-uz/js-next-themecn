@@ -19,9 +19,6 @@ import {
 } from "./color-utils";
 import { getRegistryUrl } from "./theme-url";
 
-// Let's add a helper function to ensure consistent dark mode colors
-// Add this function after the calculateContrastingColor function (around line 200):
-
 // Ensure consistent dark mode colors derived from light mode colors
 function deriveDarkModeColors(lightColors: ThemeColors): ThemeColors {
   const darkColors = { ...lightColors }; // Start with a copy
