@@ -8,318 +8,16 @@ import type {
 } from "@/types/theme";
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
-import { formatToOklch } from "./color-utils";
+import {
+  formatToOklch,
+  hexToOklchString,
+  hexToHSL,
+  hslToHex,
+  getContrastHSL,
+  calculateContrastingColor,
+  getRandomHexColor,
+} from "./color-utils";
 import { getRegistryUrl } from "./theme-url";
-
-// Convert RGB to OKLCH
-function rgbToOklch(
-  r: number,
-  g: number,
-  b: number
-): { l: number; c: number; h: number } {
-  // Convert RGB to linear RGB
-  r = r / 255;
-  g = g / 255;
-  b = b / 255;
-
-  // Apply gamma correction
-  r = r <= 0.04045 ? r / 12.92 : Math.pow((r + 0.055) / 1.055, 2.4);
-  g = g <= 0.04045 ? g / 12.92 : Math.pow((g + 0.055) / 1.055, 2.4);
-  b = b <= 0.04045 ? b / 12.92 : Math.pow((b + 0.055) / 1.055, 2.4);
-
-  // Convert to XYZ
-  const x = 0.4124 * r + 0.3576 * g + 0.1805 * b;
-  const y = 0.2126 * r + 0.7152 * g + 0.0722 * b;
-  const z = 0.0193 * r + 0.1192 * g + 0.9505 * b;
-
-  // Convert XYZ to Lab
-  const lab = xyzToLab(x, y, z);
-
-  // Convert Lab to LCH
-  const c = Math.sqrt(lab.a * lab.a + lab.b * lab.b);
-  let h = (Math.atan2(lab.b, lab.a) * 180) / Math.PI;
-  if (h < 0) h += 360;
-
-  return { l: lab.l, c, h };
-}
-
-// Convert XYZ to Lab
-function xyzToLab(
-  x: number,
-  y: number,
-  z: number
-): { l: number; a: number; b: number } {
-  // D65 reference white
-  const xn = 0.95047;
-  const yn = 1.0;
-  const zn = 1.08883;
-
-  // Convert XYZ to Lab
-  const fx =
-    x > 0.008856 ? Math.pow(x / xn, 1 / 3) : (7.787 * x) / xn + 16 / 116;
-  const fy =
-    y > 0.008856 ? Math.pow(y / yn, 1 / 3) : (7.787 * y) / yn + 16 / 116;
-  const fz =
-    z > 0.008856 ? Math.pow(z / zn, 1 / 3) : (7.787 * z) / zn + 16 / 116;
-
-  const l = 116 * fy - 16;
-  const a = 500 * (fx - fy);
-  const b = 200 * (fy - fz);
-
-  return { l, a, b };
-}
-
-// Convert OKLCH to RGB
-function oklchToRgb(
-  l: number,
-  c: number,
-  h: number
-): { r: number; g: number; b: number } {
-  // Convert LCH to Lab
-  const a = c * Math.cos((h * Math.PI) / 180);
-  const bValue = c * Math.sin((h * Math.PI) / 180);
-
-  // Convert Lab to XYZ
-  const xyz = labToXyz(l, a, bValue);
-
-  // Convert XYZ to RGB
-  return xyzToRgb(xyz.x, xyz.y, xyz.z);
-}
-
-// Convert Lab to XYZ
-function labToXyz(
-  l: number,
-  a: number,
-  b: number
-): { x: number; y: number; z: number } {
-  // D65 reference white
-  const xn = 0.95047;
-  const yn = 1.0;
-  const zn = 1.08883;
-
-  const fy = (l + 16) / 116;
-  const fx = a / 500 + fy;
-  const fz = fy - b / 200;
-
-  const x =
-    fx > 0.206893 ? xn * Math.pow(fx, 3) : ((fx - 16 / 116) / 7.787) * xn;
-  const y =
-    fy > 0.206893 ? yn * Math.pow(fy, 3) : ((fy - 16 / 116) / 7.787) * yn;
-  const z =
-    fz > 0.206893 ? zn * Math.pow(fz, 3) : ((fz - 16 / 116) / 7.787) * zn;
-
-  return { x, y, z };
-}
-
-// Convert XYZ to RGB
-function xyzToRgb(
-  x: number,
-  y: number,
-  z: number
-): { r: number; g: number; b: number } {
-  // Convert XYZ to linear RGB
-  let r = 3.2406 * x - 1.5372 * y - 0.4986 * z;
-  let g = -0.9689 * x + 1.8758 * y + 0.0415 * z;
-  let b = 0.0557 * x - 0.204 * y + 1.057 * z;
-
-  // Apply gamma correction
-  r = r <= 0.0031308 ? 12.92 * r : 1.055 * Math.pow(r, 1 / 2.4) - 0.055;
-  g = g <= 0.0031308 ? 12.92 * g : 1.055 * Math.pow(g, 1 / 2.4) - 0.055;
-  b = b <= 0.0031308 ? 12.92 * b : 1.055 * Math.pow(b, 1 / 2.4) - 0.055;
-
-  // Clamp and convert to 0-255
-  r = Math.max(0, Math.min(1, r)) * 255;
-  g = Math.max(0, Math.min(1, g)) * 255;
-  b = Math.max(0, Math.min(1, b)) * 255;
-
-  return { r: Math.round(r), g: Math.round(g), b: Math.round(b) };
-}
-
-// Convert hex to OKLCH string for URL
-export function hexToOklchString(hex: string): string {
-  // Remove the # if present
-  hex = hex.replace(/^#/, "");
-
-  // Parse the hex values
-  const r = Number.parseInt(hex.substring(0, 2), 16);
-  const g = Number.parseInt(hex.substring(2, 4), 16);
-  const b = Number.parseInt(hex.substring(4, 6), 16);
-
-  // Convert to OKLCH
-  const oklch = rgbToOklch(r, g, b);
-
-  // Format for URL (compact representation)
-  return `${Math.round(oklch.l)}.${Math.round(oklch.c)}.${Math.round(oklch.h)}`;
-}
-
-// Convert OKLCH string from URL to hex
-export function oklchStringToHex(oklch: string): string {
-  // Parse the OKLCH values
-  const [l, c, h] = oklch.split(".").map(Number);
-
-  // Convert to RGB
-  const rgb = oklchToRgb(l, c, h);
-
-  // Convert to hex
-  const toHex = (value: number) => {
-    const hex = value.toString(16);
-    return hex.length === 1 ? "0" + hex : hex;
-  };
-
-  return `#${toHex(rgb.r)}${toHex(rgb.g)}${toHex(rgb.b)}`;
-}
-
-// Convert hex to HSL string format for shadcn
-function hexToHSL(hex: string): string {
-  // Remove the # if present
-  hex = hex.replace(/^#/, "");
-
-  // Parse the hex values
-  let r = 0,
-    g = 0,
-    b = 0;
-  if (hex.length === 3) {
-    r = Number.parseInt(hex[0] + hex[0], 16);
-    g = Number.parseInt(hex[1] + hex[1], 16);
-    b = Number.parseInt(hex[2] + hex[2], 16);
-  } else if (hex.length === 6) {
-    r = Number.parseInt(hex.substring(0, 2), 16);
-    g = Number.parseInt(hex.substring(2, 4), 16);
-    b = Number.parseInt(hex.substring(4, 6), 16);
-  }
-
-  // Convert RGB to HSL
-  r /= 255;
-  g /= 255;
-  b /= 255;
-
-  const max = Math.max(r, g, b);
-  const min = Math.min(r, g, b);
-  let h = 0,
-    s = 0,
-    l = (max + min) / 2;
-
-  if (max !== min) {
-    const d = max - min;
-    s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
-
-    switch (max) {
-      case r:
-        h = (g - b) / d + (g < b ? 6 : 0);
-        break;
-      case g:
-        h = (b - r) / d + 2;
-        break;
-      case b:
-        h = (r - g) / d + 4;
-        break;
-    }
-
-    h /= 6;
-  }
-
-  // Convert to degrees, percentage, percentage
-  h = Math.round(h * 360);
-  s = Math.round(s * 100);
-  l = Math.round(l * 100);
-
-  return `${h} ${s}% ${l}%`;
-}
-
-// Convert HSL to hex
-function hslToHex(hsl: string): string {
-  try {
-    const [h, s, l] = hsl
-      .split(" ")
-      .map((part) => Number.parseFloat(part.replace("%", "")));
-
-    const hDecimal = h / 360;
-    const sDecimal = s / 100;
-    const lDecimal = l / 100;
-
-    let r, g, b;
-
-    if (sDecimal === 0) {
-      r = g = b = lDecimal;
-    } else {
-      const q =
-        lDecimal < 0.5
-          ? lDecimal * (1 + sDecimal)
-          : lDecimal + sDecimal - lDecimal * sDecimal;
-      const p = 2 * lDecimal - q;
-
-      r = hueToRgb(p, q, hDecimal + 1 / 3);
-      g = hueToRgb(p, q, hDecimal);
-      b = hueToRgb(p, q, hDecimal - 1 / 3);
-    }
-
-    const toHex = (x: number) => {
-      const hex = Math.round(x * 255).toString(16);
-      return hex.length === 1 ? "0" + hex : hex;
-    };
-
-    return `#${toHex(r)}${toHex(g)}${toHex(b)}`;
-  } catch (e) {
-    console.error("Error converting HSL to hex:", e);
-    return "#000000";
-  }
-}
-
-const hueToRgb = (p: number, q: number, t: number): number => {
-  if (t < 0) t += 1;
-  if (t > 1) t -= 1;
-  if (t < 1 / 6) return p + (q - p) * 6 * t;
-  if (t < 1 / 2) return q;
-  if (t < 2 / 3) return p + (q - p) * (2 / 3 - t) * 6;
-  return p;
-};
-
-// Generate a contrasting color in HSL format
-function getContrastHSL(hsl: string): string {
-  const [h, s, l] = hsl
-    .split(" ")
-    .map((part) => Number.parseFloat(part.replace("%", "")));
-
-  // For simplicity, we'll just adjust the lightness for contrast
-  const newL = l > 50 ? 10 : 98;
-
-  return `${h} ${s}% ${newL}%`;
-}
-
-// Add this new function to calculate a contrasting color based on the background color
-// Add this after the existing getContrastHSL function
-
-// Calculate a contrasting color that ensures good readability
-function calculateContrastingColor(
-  hsl: string,
-  colorKey?: ThemeColorKey
-): string {
-  try {
-    const [h, s, l] = hsl
-      .split(" ")
-      .map((part) => Number.parseFloat(part.replace("%", "")));
-
-    let newL: number;
-
-    // Adjust lightness specifically for muted-foreground
-    if (colorKey === "mutedForeground") {
-      newL = l > 60 ? Math.max(l - 40, 10) : Math.min(l + 40, 50); // Ensure it's always a bit darker
-    } else {
-      // For very light colors (high lightness), use a dark foreground
-      // For dark colors (low lightness), use a light foreground
-      // The threshold of 60% is a common accessibility guideline
-      newL = l > 60 ? 10 : 95;
-    }
-
-    // For very saturated colors, we might want todesaturate the foreground slightly
-    const newS = s > 70 ? 10 : s;
-
-    return `${h} ${newS}% ${newL}%`;
-  } catch (e) {
-    console.error("Error calculating contrasting color:", e);
-    return "0 0% 100%"; // Default to white as a fallback
-  }
-}
 
 // Let's add a helper function to ensure consistent dark mode colors
 // Add this function after the calculateContrastingColor function (around line 200):
@@ -480,14 +178,6 @@ function generateChartColors(
   }
 }
 
-// Generate a random hex color
-function getRandomHexColor(): string {
-  const hex = Math.floor(Math.random() * 16777215)
-    .toString(16)
-    .padStart(6, "0");
-  return `#${hex}`;
-}
-
 // Apply CSS variables to the document
 function applyCSSVariables(
   colors: ThemeColors,
@@ -603,7 +293,7 @@ const defaultTheme: ThemeState = {
     mutedForeground: "291 30% 45%", // oklch(0.450 0.075 291)
     accent: "291 50% 75%", // oklch(0.750 0.165 291)
     accentForeground: "291 50% 10%", // oklch(0.100 0.165 291)
-    destructive: "27 100% 50%", // oklch(0.577 0.245 27.325)
+    destructive: "357.18 100% 45%", // oklch(0.577 0.245 27.325)
     border: "291 30% 80%", // oklch(0.800 0.075 291)
     input: "291 30% 80%", // oklch(0.800 0.075 291)
     ring: "291 80% 45%", // oklch(0.450 0.255 291)
@@ -637,7 +327,7 @@ const defaultTheme: ThemeState = {
     mutedForeground: "291 15% 65%", // oklch(0.650 0.045 291)
     accent: "291 50% 25%", // oklch(0.250 0.165 291)
     accentForeground: "291 50% 95%", // oklch(0.950 0.165 291)
-    destructive: "22 90% 60%", // oklch(0.704 0.191 22.216)
+    destructive: "357.18 100% 45%", // oklch(0.577 0.245 27.325)
     border: "291 40% 25%", // oklch(0.250 0.090 291)
     input: "291 40% 25%", // oklch(0.250 0.090 291)
     ring: "291 75% 50%", // oklch(0.500 0.225 291)
@@ -720,6 +410,7 @@ const getShareableUrl = (themeState: ThemeState) => {
 
 export type ThemeStore = ThemeState & {
   updateThemeColor: (key: ThemeColorKey, value: string) => void;
+  updateMultipleThemeColors: (colors: Partial<ThemeColors>) => void;
   updateBorderRadius: (value: number) => void;
   updateFont: (key: FontKey, value: string) => void;
   resetTheme: () => void;
@@ -753,8 +444,120 @@ export const useThemeStore = create<ThemeStore>()(
           const darkColors = { ...state.darkColors };
           const isDarkMode = state.isDarkMode;
 
-          // Update the main color
-          if (key === "foreground") {
+          // If it's primary color and dark mode, generate a complete dark theme
+          if (key === "primary" && isDarkMode) {
+            // Get primary HSL components
+            const [hStr, sStr, lStr] = hslValue.split(" ");
+            const h = Number.parseInt(hStr, 10);
+            const s = Number.parseInt(sStr.replace("%", ""), 10);
+            const l = Number.parseInt(lStr.replace("%", ""), 10);
+
+            // Update primary and related colors
+            darkColors.primary = hslValue;
+            darkColors.ring = hslValue;
+            darkColors.sidebarPrimary = hslValue;
+            darkColors.chart1 = hslValue;
+
+            // Calculate a contrasting foreground color
+            const isPrimaryDark = l < 40;
+            darkColors.primaryForeground = isPrimaryDark
+              ? "0 0% 100%"
+              : `${h} 10% 95%`;
+            darkColors.sidebarPrimaryForeground = darkColors.primaryForeground;
+
+            // Generate secondary color based on primary
+            const darkSecondaryH = h;
+            const darkSecondaryS = Math.max(Math.min(s - 40, 30), 7);
+            const darkSecondaryL = Math.max(Math.min(l - 20, 30), 15);
+            const darkSecondaryHSLValue = `${darkSecondaryH} ${darkSecondaryS}% ${darkSecondaryL}%`;
+
+            darkColors.secondary = darkSecondaryHSLValue;
+            darkColors.muted = darkSecondaryHSLValue;
+            darkColors.secondaryForeground = `${darkSecondaryH} 10% 95%`;
+            darkColors.mutedForeground = `${darkSecondaryH} 15% 65%`;
+
+            // Generate accent color based on primary with a hue shift
+            const darkAccentH = (h + 30) % 360;
+            const darkAccentS = Math.min(s + 5, 80);
+            const darkAccentL = Math.min(l + 15, 65);
+            const darkAccentHSLValue = `${darkAccentH} ${darkAccentS}% ${darkAccentL}%`;
+
+            darkColors.accent = darkAccentHSLValue;
+            darkColors.accentForeground = `${darkAccentH} 50% 10%`;
+            darkColors.sidebarAccent = darkAccentHSLValue;
+            darkColors.sidebarAccentForeground = `${darkAccentH} 50% 10%`;
+
+            // Update border colors
+            darkColors.border = `${darkSecondaryH} ${
+              darkSecondaryS + 5
+            }% ${Math.min(darkSecondaryL + 10, 30)}%`;
+            darkColors.input = darkColors.border;
+            darkColors.sidebarBorder = darkColors.border;
+
+            // Update chart colors for dark mode
+            const darkChartColors = {
+              chart1: hslValue, // Primary color as is
+              chart2: `${h} ${Math.min(s + 5, 90)}% ${Math.min(l + 15, 75)}%`,
+              chart3: `${h} ${Math.min(s + 10, 95)}% ${Math.min(l + 25, 85)}%`,
+              chart4: `${h} ${Math.max(s - 10, 40)}% ${Math.max(l - 15, 25)}%`,
+              chart5: `${h} ${Math.max(s - 20, 30)}% ${Math.max(l - 25, 15)}%`,
+            };
+
+            darkColors.chart1 = darkChartColors.chart1;
+            darkColors.chart2 = darkChartColors.chart2;
+            darkColors.chart3 = darkChartColors.chart3;
+            darkColors.chart4 = darkChartColors.chart4;
+            darkColors.chart5 = darkChartColors.chart5;
+
+            // Create the new state
+            const newState = {
+              ...state,
+              colors: lightColors,
+              darkColors: darkColors,
+            };
+
+            // Apply CSS variables based on current mode
+            applyCSSVariables(darkColors, state.borderRadius, state.fonts);
+
+            // Apply chart colors directly to ensure they're visible in dark mode
+            document.documentElement.style.setProperty(
+              "--chart-1",
+              darkColors.chart1
+            );
+            document.documentElement.style.setProperty(
+              "--chart-2",
+              darkColors.chart2
+            );
+            document.documentElement.style.setProperty(
+              "--chart-3",
+              darkColors.chart3
+            );
+            document.documentElement.style.setProperty(
+              "--chart-4",
+              darkColors.chart4
+            );
+            document.documentElement.style.setProperty(
+              "--chart-5",
+              darkColors.chart5
+            );
+
+            // Update URL with new theme
+            updateThemeUrl(newState);
+
+            return newState;
+          } else if (key === "background") {
+            lightColors.background = hslValue;
+            lightColors.card = hslValue;
+            lightColors.popover = hslValue;
+
+            // If in dark mode, update the dark background
+            if (isDarkMode) {
+              darkColors.background = hslValue;
+              darkColors.card = hslValue;
+              darkColors.popover = hslValue;
+              darkColors.sidebar = hslValue;
+            }
+          } else if (key === "foreground") {
             // Update all foreground colors to be derivatives of the main foreground
             lightColors.foreground = hslValue;
             lightColors.cardForeground = hslValue;
@@ -767,9 +570,7 @@ export const useThemeStore = create<ThemeStore>()(
             darkColors.foreground = getContrastHSL(hslValue);
             darkColors.cardForeground = darkColors.foreground;
             darkColors.popoverForeground = darkColors.foreground;
-          }
-          // For the "primary" key handling:
-          else if (key === "primary") {
+          } else if (key === "primary") {
             lightColors.primary = hslValue;
 
             // Calculate a contrasting foreground color for primary
@@ -796,32 +597,35 @@ export const useThemeStore = create<ThemeStore>()(
             lightColors.chart4 = lightChartColors.chart4;
             lightColors.chart5 = lightChartColors.chart5;
 
-            // Generate monochromatic chart colors for dark mode
-            const darkChartColors = generateChartColors(
-              darkColors.primary,
-              darkColors.secondary,
-              darkColors.accent,
-              true
-            );
+            // Only update dark mode colors if not in dark mode
+            // (when in dark mode, the dedicated dark mode handler above takes care of it)
+            if (!isDarkMode) {
+              // Generate monochromatic chart colors for dark mode
+              const darkChartColors = generateChartColors(
+                darkColors.primary,
+                darkColors.secondary,
+                darkColors.accent,
+                true
+              );
 
-            // Update dark mode chart colors
-            darkColors.chart1 = darkChartColors.chart1;
-            darkColors.chart2 = darkChartColors.chart2;
-            darkColors.chart3 = darkChartColors.chart3;
-            darkColors.chart4 = darkChartColors.chart4;
-            darkColors.chart5 = darkChartColors.chart5;
+              // Update dark mode chart colors
+              darkColors.chart1 = darkChartColors.chart1;
+              darkColors.chart2 = darkChartColors.chart2;
+              darkColors.chart3 = darkChartColors.chart3;
+              darkColors.chart4 = darkChartColors.chart4;
+              darkColors.chart5 = darkChartColors.chart5;
 
-            // Update dark mode primary
-            darkColors.primary = hslValue;
-            darkColors.primaryForeground = calculateContrastingColor(hslValue);
-            darkColors.ring = hslValue;
-            darkColors.sidebarPrimary = hslValue;
-            darkColors.sidebarPrimaryForeground =
-              calculateContrastingColor(hslValue);
-            darkColors.sidebarRing = hslValue;
-          }
-          // For the "secondary" key handling:
-          else if (key === "secondary") {
+              // Update dark mode primary
+              darkColors.primary = hslValue;
+              darkColors.primaryForeground =
+                calculateContrastingColor(hslValue);
+              darkColors.ring = hslValue;
+              darkColors.sidebarPrimary = hslValue;
+              darkColors.sidebarPrimaryForeground =
+                calculateContrastingColor(hslValue);
+              darkColors.sidebarRing = hslValue;
+            }
+          } else if (key === "secondary") {
             lightColors.secondary = hslValue;
 
             // Calculate a contrasting foreground color for secondary
@@ -851,41 +655,42 @@ export const useThemeStore = create<ThemeStore>()(
             lightColors.chart4 = lightChartColors.chart4;
             lightColors.chart5 = lightChartColors.chart5;
 
-            // Generate monochromatic chart colors for dark mode
-            const darkChartColors = generateChartColors(
-              darkColors.primary,
-              darkColors.secondary,
-              darkColors.accent,
-              true
-            );
+            // If not in dark mode, update dark mode colors
+            if (!isDarkMode) {
+              // Generate monochromatic chart colors for dark mode
+              const darkChartColors = generateChartColors(
+                darkColors.primary,
+                darkColors.secondary,
+                darkColors.accent,
+                true
+              );
 
-            // Update dark mode chart colors
-            darkColors.chart1 = darkChartColors.chart1;
-            darkColors.chart2 = darkChartColors.chart2;
-            darkColors.chart3 = darkChartColors.chart3;
-            darkColors.chart4 = darkChartColors.chart4;
-            darkColors.chart5 = darkChartColors.chart5;
+              // Update dark mode chart colors
+              darkColors.chart1 = darkChartColors.chart1;
+              darkColors.chart2 = darkChartColors.chart2;
+              darkColors.chart3 = darkChartColors.chart3;
+              darkColors.chart4 = darkChartColors.chart4;
+              darkColors.chart5 = darkChartColors.chart5;
 
-            // Update dark mode secondary
-            const [h, s, l] = hslValue
-              .split(" ")
-              .map((part) => Number.parseFloat(part.replace("%", "")));
-            const secondaryL = l;
-            darkColors.secondary = `${h} ${Math.max(s - 20, 10)}% ${Math.max(
-              15,
-              Math.min(25, secondaryL - 70)
-            )}%`;
-            darkColors.secondaryForeground = calculateContrastingColor(
-              darkColors.secondary
-            );
-            darkColors.muted = darkColors.secondary;
-            darkColors.mutedForeground = calculateContrastingColor(
-              darkColors.secondary,
-              "mutedForeground"
-            );
-          }
-          // For the "accent" key handling:
-          else if (key === "accent") {
+              // Update dark mode secondary
+              const [h, s, l] = hslValue
+                .split(" ")
+                .map((part) => Number.parseFloat(part.replace("%", "")));
+              const secondaryL = l;
+              darkColors.secondary = `${h} ${Math.max(s - 20, 10)}% ${Math.max(
+                15,
+                Math.min(25, secondaryL - 70)
+              )}%`;
+              darkColors.secondaryForeground = calculateContrastingColor(
+                darkColors.secondary
+              );
+              darkColors.muted = darkColors.secondary;
+              darkColors.mutedForeground = calculateContrastingColor(
+                darkColors.secondary,
+                "mutedForeground"
+              );
+            }
+          } else if (key === "accent") {
             lightColors.accent = hslValue;
             lightColors.accentForeground = calculateContrastingColor(hslValue);
             lightColors.sidebarAccent = hslValue;
@@ -907,93 +712,33 @@ export const useThemeStore = create<ThemeStore>()(
             lightColors.chart4 = lightChartColors.chart4;
             lightColors.chart5 = lightChartColors.chart5;
 
-            // Generate monochromatic chart colors for dark mode
-            const darkChartColors = generateChartColors(
-              darkColors.primary,
-              darkColors.secondary,
-              darkColors.accent,
-              true
-            );
+            // If not in dark mode, update dark mode colors
+            if (!isDarkMode) {
+              // Generate monochromatic chart colors for dark mode
+              const darkChartColors = generateChartColors(
+                darkColors.primary,
+                darkColors.secondary,
+                darkColors.accent,
+                true
+              );
 
-            // Update dark mode chart colors
-            darkColors.chart1 = darkChartColors.chart1;
-            darkColors.chart2 = darkChartColors.chart2;
-            darkColors.chart3 = darkChartColors.chart3;
-            darkColors.chart4 = darkChartColors.chart4;
-            darkColors.chart5 = darkChartColors.chart5;
+              // Update dark mode chart colors
+              darkColors.chart1 = darkChartColors.chart1;
+              darkColors.chart2 = darkChartColors.chart2;
+              darkColors.chart3 = darkChartColors.chart3;
+              darkColors.chart4 = darkChartColors.chart4;
+              darkColors.chart5 = darkChartColors.chart5;
 
-            // Update dark mode accent
-            darkColors.accent = hslValue;
-            darkColors.accentForeground = calculateContrastingColor(hslValue);
-            darkColors.sidebarAccent = hslValue;
-            darkColors.sidebarAccentForeground =
-              calculateContrastingColor(hslValue);
-          }
-          // For the "background" key handling:
-          // In the updateThemeColor function, find the "background" key handling section and update it:
-          else if (key === "background") {
-            lightColors.background = hslValue;
-            lightColors.card = hslValue;
-            lightColors.popover = hslValue;
-
-            // Update card and popover foregrounds to match main foreground
-            lightColors.cardForeground = lightColors.foreground;
-            lightColors.popoverForeground = lightColors.foreground;
-
-            // Update related colors
-            const [h, s, l] = hslValue
-              .split(" ")
-              .map((part) => Number.parseFloat(part.replace("%", "")));
-            lightColors.border = `${h} ${Math.max(s + 5, 0)}% ${Math.max(
-              l - 10,
-              0
-            )}%`;
-            lightColors.input = lightColors.border;
-
-            // Update dark mode background
-            const darkH = h;
-            const darkS = Math.min(s + 10, 100);
-            const darkL = Math.max(l - 70, 5);
-            darkColors.background = `${darkH} ${darkS}% ${darkL}%`;
-            darkColors.card = `${darkH} ${darkS}% ${Math.min(darkL + 10, 30)}%`;
-            darkColors.popover = darkColors.card;
-            darkColors.border = `${darkH} ${darkS}% ${Math.min(
-              darkL + 20,
-              40
-            )}%`;
-            darkColors.input = darkColors.border;
-
-            // Update dark mode card and popover foregrounds
-            darkColors.cardForeground = darkColors.foreground;
-            darkColors.popoverForeground = darkColors.foreground;
-
-            // Update sidebar colors
-            lightColors.sidebar = lightColors.secondary;
-            darkColors.sidebar = darkColors.background;
-            darkColors.sidebarBorder = darkColors.border;
+              // Update dark mode accent
+              darkColors.accent = hslValue;
+              darkColors.accentForeground = calculateContrastingColor(hslValue);
+              darkColors.sidebarAccent = hslValue;
+              darkColors.sidebarAccentForeground =
+                calculateContrastingColor(hslValue);
+            }
           } else {
-            lightColors.foreground = hslValue;
-            lightColors.cardForeground = hslValue;
-            lightColors.popoverForeground = hslValue;
-            lightColors.primaryForeground = hslValue;
-            lightColors.secondaryForeground = hslValue;
-            lightColors.accentForeground = hslValue;
-            lightColors.mutedForeground = hslValue;
-            lightColors.sidebarForeground = hslValue;
-            lightColors.sidebarPrimaryForeground = hslValue;
-            lightColors.sidebarAccentForeground = hslValue;
-
-            // Update dark mode foreground colors
-            darkColors.foreground = getContrastHSL(hslValue);
-            darkColors.cardForeground = darkColors.foreground;
-            darkColors.popoverForeground = darkColors.foreground;
-            darkColors.primaryForeground = darkColors.foreground;
-            darkColors.secondaryForeground = darkColors.foreground;
-            darkColors.accentForeground = darkColors.foreground;
-            darkColors.mutedForeground = darkColors.foreground;
-            darkColors.sidebarForeground = darkColors.foreground;
-            darkColors.sidebarPrimaryForeground = darkColors.foreground;
-            darkColors.sidebarAccentForeground = darkColors.foreground;
+            lightColors[key] = hslValue;
+            darkColors[key] = hslValue;
           }
 
           // Create the new state
@@ -1031,6 +776,26 @@ export const useThemeStore = create<ThemeStore>()(
               darkColors.chart5
             );
           }
+
+          // Update URL with new theme
+          updateThemeUrl(newState);
+
+          return newState;
+        });
+      },
+
+      updateMultipleThemeColors: (colors: Partial<ThemeColors>) => {
+        set((state) => {
+          const newState = {
+            ...state,
+            colors: { ...state.colors, ...colors },
+            darkColors: { ...state.darkColors, ...colors },
+          };
+
+          // Apply CSS variables based on current mode
+          const isDarkMode = state.isDarkMode;
+          const currentColors = isDarkMode ? state.darkColors : state.colors;
+          applyCSSVariables(currentColors, state.borderRadius, state.fonts);
 
           // Update URL with new theme
           updateThemeUrl(newState);
@@ -1212,7 +977,10 @@ export const useThemeStore = create<ThemeStore>()(
         const darkAccentHSLValue = `${darkAccentH} ${darkAccentS}% ${darkAccentL}%`;
 
         // Dark Background: Very dark, slight hue from primary
-        const darkBgHSLValue = `${primaryH} 30% 8%`;
+        const darkBgH = primaryH;
+        const darkBgS = Math.max(Math.min(primaryS - 60, 40), 30);
+        const darkBgL = Math.max(Math.min(primaryL - 35, 10), 8);
+        const darkBgHSLValue = `${darkBgH} ${darkBgS}% ${darkBgL}%`;
 
         // Dark Foreground: Near white
         const darkFgHSLValue = `${primaryH} 10% 95%`;
@@ -1248,12 +1016,6 @@ export const useThemeStore = create<ThemeStore>()(
         lightColors.card = bgHSLValue;
         lightColors.popover = bgHSLValue;
         lightColors.muted = secondaryHSLValue;
-        lightColors.border = `${secondaryH} ${secondaryS}% ${Math.max(
-          secondaryL - 10,
-          80
-        )}%`;
-        lightColors.input = lightColors.border;
-        lightColors.ring = primaryHSLValue;
 
         // Calculate contrasting foreground colors for light mode
         lightColors.primaryForeground =
@@ -1264,12 +1026,17 @@ export const useThemeStore = create<ThemeStore>()(
           calculateContrastingColor(accentHSLValue);
         lightColors.cardForeground = fgHSLValue;
         lightColors.popoverForeground = fgHSLValue;
-        lightColors.mutedForeground = calculateContrastingColor(
-          secondaryHSLValue,
-          "mutedForeground"
-        );
+        lightColors.mutedForeground = `${secondaryH} 30% 45%`; // Medium contrast for muted text
 
-        // Update sidebar colors for light mode
+        // Border and input colors for light mode
+        lightColors.border = `${secondaryH} ${secondaryS}% ${Math.max(
+          secondaryL - 10,
+          80
+        )}%`;
+        lightColors.input = lightColors.border;
+        lightColors.ring = primaryHSLValue;
+
+        // Sidebar colors for light mode
         lightColors.sidebar = secondaryHSLValue;
         lightColors.sidebarForeground =
           calculateContrastingColor(secondaryHSLValue);
@@ -1295,7 +1062,10 @@ export const useThemeStore = create<ThemeStore>()(
         darkColors.primary = darkPrimaryHSLValue;
         darkColors.secondary = darkSecondaryHSLValue;
         darkColors.accent = darkAccentHSLValue;
-        darkColors.card = `${primaryH} 30% 12%`; // Slightly lighter than background
+        darkColors.card = `${darkBgH} ${darkBgS}% ${Math.min(
+          darkBgL + 4,
+          20
+        )}%`; // Slightly lighter than background
         darkColors.popover = darkColors.card;
         darkColors.muted = darkSecondaryHSLValue;
 
@@ -1319,7 +1089,14 @@ export const useThemeStore = create<ThemeStore>()(
         darkColors.ring = darkPrimaryHSLValue;
 
         // Sidebar colors for dark mode
-        darkColors.sidebar = darkBgHSLValue;
+        // Get the dark background HSL components
+        const darkBgParts = darkBgHSLValue.split(" ");
+        const darkBgSaturation = parseInt(darkBgParts[1]);
+        const darkBgLightness = parseInt(darkBgParts[2]);
+        darkColors.sidebar = `${darkBgH} ${darkBgSaturation}% ${Math.min(
+          darkBgLightness + 12,
+          25
+        )}%`;
         darkColors.sidebarForeground = darkFgHSLValue;
         darkColors.sidebarPrimary = darkPrimaryHSLValue;
         darkColors.sidebarPrimaryForeground =
@@ -1330,31 +1107,24 @@ export const useThemeStore = create<ThemeStore>()(
         darkColors.sidebarBorder = darkColors.border;
         darkColors.sidebarRing = darkPrimaryHSLValue;
 
-        // Chart colors for dark mode - use dedicated dark mode chart colors
+        // Update chart colors for dark mode
         darkColors.chart1 = darkChartColors.chart1;
         darkColors.chart2 = darkChartColors.chart2;
         darkColors.chart3 = darkChartColors.chart3;
         darkColors.chart4 = darkChartColors.chart4;
         darkColors.chart5 = darkChartColors.chart5;
 
-        // Update the store with all new colors at once
+        // Apply the new color scheme and update CSS variables
         set((state) => {
-          const isDarkMode = state.isDarkMode;
-
-          // Apply the appropriate CSS variables based on current mode
-          const colors = isDarkMode ? darkColors : lightColors;
-          applyCSSVariables(colors, currentBorderRadius, state.fonts);
-
           const newState = {
             ...state,
             colors: lightColors,
             darkColors: darkColors,
             borderRadius: currentBorderRadius,
           };
-
-          // Update URL with new theme
+          const colors = state.isDarkMode ? darkColors : lightColors;
+          applyCSSVariables(colors, currentBorderRadius, state.fonts);
           updateThemeUrl(newState);
-
           return newState;
         });
       },

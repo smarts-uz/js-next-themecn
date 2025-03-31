@@ -4,7 +4,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { Palette, Type, MoreVertical, Ruler } from "lucide-react";
+import { Palette, Type, MoreVertical, Ruler, Upload } from "lucide-react";
 
 export interface MobileMoreProps {
   isOpen: boolean;
@@ -12,6 +12,7 @@ export interface MobileMoreProps {
   onBorderRadiusClick: () => void;
   onHarmonyClick: () => void;
   onTypographyClick: () => void;
+  onImportClick?: () => void;
 }
 
 export const ThemeMobileMore = ({
@@ -20,45 +21,51 @@ export const ThemeMobileMore = ({
   onBorderRadiusClick,
   onHarmonyClick,
   onTypographyClick,
+  onImportClick,
 }: MobileMoreProps) => {
   return (
     <Popover open={isOpen} onOpenChange={onOpenChange}>
       <PopoverTrigger asChild>
         <Button
           variant="ghost"
-          className="flex items-center justify-center h-10 w-10 p-0 rounded-full hover:bg-gray-100 hover:text-gray-900 text-gray-700 transition-all duration-200"
+          className="flex items-center justify-center h-10 w-10 p-0 rounded-full hover:bg-gray-100 hover:text-gray-900 text-gray-700 transition-all duration-200 cursor-pointer"
         >
           <MoreVertical size={18} />
-          <span className="sr-only">More options</span>
+          <span className="sr-only">More Options</span>
         </Button>
       </PopoverTrigger>
       <PopoverContent
-        className="w-56 p-0"
+        className="w-50 rounded-md p-0 border border-gray-200"
         side="top"
-        align="center"
-        sideOffset={16}
+        align="end"
         style={{
           backgroundColor: "white",
-          border: "1px solid #e5e7eb",
-          borderRadius: "0.5rem",
-          boxShadow:
-            "0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)",
-          color: "#1a1a1a",
+          boxShadow: "0 2px 8px rgba(0, 0, 0, 0.1)",
         }}
       >
-        <div
-          className="p-2 flex items-center justify-between"
-          style={{
-            borderBottom: "1px solid #e5e7eb",
-            color: "#1a1a1a",
-          }}
-        >
-          <span className="font-medium">More Options</span>
-        </div>
         <div className="py-1">
+          {onImportClick && (
+            <Button
+              variant="ghost"
+              className="w-full justify-start text-left h-9 px-2 relative hover:bg-gray-100 hover:text-gray-900 cursor-pointer"
+              onClick={() => {
+                onImportClick();
+                onOpenChange(false);
+              }}
+              style={{
+                color: "#374151",
+                borderRadius: "0",
+              }}
+            >
+              <div className="flex items-center gap-2">
+                <Upload size={16} />
+                <span>Import Theme</span>
+              </div>
+            </Button>
+          )}
           <Button
             variant="ghost"
-            className="w-full justify-start text-left h-9 px-2 relative hover:bg-gray-100 hover:text-gray-900"
+            className="w-full justify-start text-left h-9 px-2 relative hover:bg-gray-100 hover:text-gray-900 cursor-pointer"
             onClick={() => {
               onBorderRadiusClick();
               onOpenChange(false);
@@ -75,7 +82,7 @@ export const ThemeMobileMore = ({
           </Button>
           <Button
             variant="ghost"
-            className="w-full justify-start text-left h-9 px-2 relative hover:bg-gray-100 hover:text-gray-900"
+            className="w-full justify-start text-left h-9 px-2 relative hover:bg-gray-100 hover:text-gray-900 cursor-pointer"
             onClick={() => {
               onHarmonyClick();
               onOpenChange(false);
@@ -92,7 +99,7 @@ export const ThemeMobileMore = ({
           </Button>
           <Button
             variant="ghost"
-            className="w-full justify-start text-left h-9 px-2 relative hover:bg-gray-100 hover:text-gray-900"
+            className="w-full justify-start text-left h-9 px-2 relative hover:bg-gray-100 hover:text-gray-900 cursor-pointer"
             onClick={() => {
               onTypographyClick();
               onOpenChange(false);

@@ -19,6 +19,7 @@ import {
 } from "lucide-react";
 import { BorderRadiusControl } from "@/components/border-radius-control";
 import { ExportMenu } from "@/components/export-menu";
+import { ImportMenu } from "@/components/import-menu";
 import { ShareMenu } from "@/components/share-menu";
 import { useIsMobile } from "@/hooks/use-mobile";
 import dynamic from "next/dynamic";
@@ -30,7 +31,7 @@ import {
 } from "@/components/ui/light-drawer";
 import { ThemeColorPickers } from "@/components/theme-dock/theme-color-pickers";
 import { ThemeTypography } from "@/components/theme-dock/theme-typography";
-import { ThemeHarmonies } from "@/components/theme-dock/theme-harmonies";
+
 import { ThemeBorderRadius } from "@/components/theme-dock/theme-border-radius";
 import { ThemeUtilityControls } from "@/components/theme-dock/theme-utility-controls";
 import { ThemeMobileMore } from "@/components/theme-dock/theme-mobile-controls";
@@ -58,6 +59,7 @@ const ThemeDock = () => {
   const [mobileBorderRadiusOpen, setMobileBorderRadiusOpen] = useState(false);
   const [mobileHarmonyOpen, setMobileHarmonyOpen] = useState(false);
   const [mobileTypographyOpen, setMobileTypographyOpen] = useState(false);
+  const [mobileImportOpen, setMobileImportOpen] = useState(false);
 
   // Toggle dock visibility with keyboard shortcut (Shift + D)
   useEffect(() => {
@@ -140,7 +142,7 @@ const ThemeDock = () => {
   if (!dockVisible) {
     return (
       <Button
-        className="fixed bottom-6 right-6 z-50 rounded-full w-10 h-10 p-0 shadow-lg bg-background/80 backdrop-blur-xl border border-border/30 hover:scale-110 transition-transform duration-200"
+        className="fixed bottom-6 right-6 z-50 rounded-full w-10 h-10 p-0 shadow-lg bg-background/80 backdrop-blur-xl border border-border/30 hover:scale-110 transition-transform duration-200 cursor-pointer"
         onClick={() => setDockVisible(true)}
       >
         <PaintBucket size={18} />
@@ -152,7 +154,7 @@ const ThemeDock = () => {
   const MobileCloseButton = ({ onClick }: { onClick: () => void }) => (
     <Button
       variant="ghost"
-      className="flex items-center justify-center h-10 w-10 p-0 rounded-full hover:bg-gray-100 hover:text-gray-900 text-gray-700 transition-all duration-200"
+      className="flex items-center justify-center h-10 w-10 p-0 rounded-full hover:bg-gray-100 hover:text-gray-900 text-gray-700 transition-all duration-200 cursor-pointer"
       onClick={onClick}
     >
       <svg
@@ -178,6 +180,7 @@ const ThemeDock = () => {
     <>
       <ExportMenu />
       <ShareMenu open={shareMenuOpen} onOpenChange={setShareMenuOpen} />
+      <ImportMenu open={mobileImportOpen} onOpenChange={setMobileImportOpen} />
 
       {/* Mobile drawers */}
       {isMobile && (
@@ -405,6 +408,7 @@ const ThemeDock = () => {
                       }
                       onHarmonyClick={() => setMobileHarmonyOpen(true)}
                       onTypographyClick={() => setMobileTypographyOpen(true)}
+                      onImportClick={() => setMobileImportOpen(true)}
                     />
                   ) : (
                     <MobileCloseButton
@@ -426,7 +430,7 @@ const ThemeDock = () => {
                   <div className="h-5 w-px bg-gray-200"></div>
 
                   {/* Color Harmony Selector */}
-                  <ThemeHarmonies />
+                  {/* <ThemeHarmonies /> */}
 
                   {/* Border Radius */}
                   <ThemeBorderRadius />
