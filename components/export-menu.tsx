@@ -135,7 +135,8 @@ export function ExportMenu() {
           </div>
 
           <p className="mt-2 text-xs text-gray-600">
-            Import your theme directly with the shadcn registry endpoint.
+            Import your theme directly with the shadcn registry endpoint. Only
+            Tailwind v4 is supported.
           </p>
           <Separator className="bg-gray-200 my-4" />
           <div className="flex flex-col gap-2">
