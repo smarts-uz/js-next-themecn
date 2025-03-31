@@ -4,8 +4,10 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { Shuffle, Sun, Moon, Download } from "lucide-react";
+import { Shuffle, Sun, Moon, Download, Upload } from "lucide-react";
 import { useThemeStore } from "@/lib/store";
+import { useState } from "react";
+import { ImportMenu } from "@/components/import-menu";
 
 interface Props {
   onExportClick: () => void;
@@ -17,6 +19,7 @@ export const ThemeUtilityControls = ({
   showRandomizeOnly = false,
 }: Props) => {
   const { isDarkMode, toggleDarkMode, generateHarmonyColors } = useThemeStore();
+  const [importMenuOpen, setImportMenuOpen] = useState(false);
 
   // If showRandomizeOnly is true, only render the Randomize button
   if (showRandomizeOnly) {
@@ -44,6 +47,9 @@ export const ThemeUtilityControls = ({
 
   return (
     <>
+      {/* Import Menu Component */}
+      <ImportMenu open={importMenuOpen} onOpenChange={setImportMenuOpen} />
+
       {/* Randomize Colors */}
       <Tooltip>
         <TooltipTrigger asChild>
@@ -84,6 +90,26 @@ export const ThemeUtilityControls = ({
           className="bg-gray-900 text-white border-none"
         >
           {isDarkMode ? "Light Mode" : "Dark Mode"}
+        </TooltipContent>
+      </Tooltip>
+
+      {/* Import Theme Button */}
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <Button
+            variant="ghost"
+            className="flex items-center justify-center h-10 w-10 p-0 rounded-full hover:bg-gray-100 hover:text-gray-900 text-gray-700 transition-all duration-200 cursor-pointer"
+            onClick={() => setImportMenuOpen(true)}
+          >
+            <Upload size={18} />
+            <span className="sr-only">Import Theme</span>
+          </Button>
+        </TooltipTrigger>
+        <TooltipContent
+          side="top"
+          className="bg-gray-900 text-white border-none"
+        >
+          Import Theme
         </TooltipContent>
       </Tooltip>
 

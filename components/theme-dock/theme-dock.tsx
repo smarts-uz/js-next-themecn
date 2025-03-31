@@ -19,6 +19,7 @@ import {
 } from "lucide-react";
 import { BorderRadiusControl } from "@/components/border-radius-control";
 import { ExportMenu } from "@/components/export-menu";
+import { ImportMenu } from "@/components/import-menu";
 import { ShareMenu } from "@/components/share-menu";
 import { useIsMobile } from "@/hooks/use-mobile";
 import dynamic from "next/dynamic";
@@ -58,6 +59,7 @@ const ThemeDock = () => {
   const [mobileBorderRadiusOpen, setMobileBorderRadiusOpen] = useState(false);
   const [mobileHarmonyOpen, setMobileHarmonyOpen] = useState(false);
   const [mobileTypographyOpen, setMobileTypographyOpen] = useState(false);
+  const [mobileImportOpen, setMobileImportOpen] = useState(false);
 
   // Toggle dock visibility with keyboard shortcut (Shift + D)
   useEffect(() => {
@@ -178,6 +180,7 @@ const ThemeDock = () => {
     <>
       <ExportMenu />
       <ShareMenu open={shareMenuOpen} onOpenChange={setShareMenuOpen} />
+      <ImportMenu open={mobileImportOpen} onOpenChange={setMobileImportOpen} />
 
       {/* Mobile drawers */}
       {isMobile && (
@@ -405,6 +408,7 @@ const ThemeDock = () => {
                       }
                       onHarmonyClick={() => setMobileHarmonyOpen(true)}
                       onTypographyClick={() => setMobileTypographyOpen(true)}
+                      onImportClick={() => setMobileImportOpen(true)}
                     />
                   ) : (
                     <MobileCloseButton

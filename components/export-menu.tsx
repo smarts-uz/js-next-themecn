@@ -9,7 +9,7 @@ import {
   DialogTitle,
   DialogDescription,
 } from "@/components/ui/dialog";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Tabs, TabsContent } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { Copy, Download, Check } from "lucide-react";
 import { toast } from "sonner";
@@ -77,9 +77,9 @@ export function ExportMenu() {
 
   return (
     <Dialog open={exportMenuOpen} onOpenChange={setExportMenuOpen}>
-      <DialogContent className="sm:max-w-[800px] max-h-[90vh] overflow-y-auto bg-white text-gray-900 rounded-lg border border-gray-200 shadow-lg">
+      <DialogContent className="sm:max-w-[800px] max-h-[90vh] overflow-y-auto bg-white text-black rounded-md border-0 shadow-lg p-6 light-mode-dialog">
         <DialogHeader>
-          <DialogTitle className="text-gray-900 font-semibold">
+          <DialogTitle className="text-xl text-black font-semibold">
             Export Theme Configuration
           </DialogTitle>
           <DialogDescription className="text-gray-500">
@@ -87,20 +87,20 @@ export function ExportMenu() {
           </DialogDescription>
         </DialogHeader>
 
-        <div className="w-full md:w-auto mb-6 p-4 bg-gray-50 border border-gray-200 rounded-md text-gray-700 text-sm">
-          <p className="font-medium mb-1">Use with shadcn/ui CLI:</p>
+        <div className="w-full mt-6 mb-6 p-4 bg-gray-50 border border-gray-200 rounded-md text-gray-700 text-sm">
+          <p className="font-medium mb-2">Use with shadcn/ui CLI:</p>
 
-          <div className="flex flex-wrap gap-2 mt-1">
+          <div className="flex flex-wrap gap-2 mt-2">
             {packageManagers.map((pm) => (
               <Button
                 key={pm}
                 size="sm"
-                variant={selectedPackageManager === pm ? "default" : "outline"}
+                variant="outline"
                 onClick={() => setSelectedPackageManager(pm)}
-                className={`h-7 px-2 text-xs ${
+                className={`h-8 px-3 rounded-full cursor-pointer ${
                   selectedPackageManager === pm
-                    ? "bg-gray-800 text-white hover:bg-gray-900"
-                    : "bg-white text-gray-600 border border-gray-300 hover:bg-gray-50"
+                    ? "bg-gray-900 text-white hover:bg-black dark:bg-gray-900 dark:text-white dark:hover:bg-black border-0"
+                    : "bg-gray-200 text-gray-700 border-0 hover:bg-gray-300 dark:bg-gray-200 dark:text-gray-700 dark:hover:bg-gray-300"
                 }`}
               >
                 {pm}
@@ -108,7 +108,7 @@ export function ExportMenu() {
             ))}
           </div>
 
-          <div className="mt-2 flex items-center justify-between bg-gray-100/80 rounded border border-gray-200 overflow-hidden">
+          <div className="mt-4 flex items-center justify-between bg-white rounded border border-gray-200 overflow-hidden">
             <div className="p-2 overflow-hidden whitespace-nowrap overflow-ellipsis flex-1">
               <code className="text-xs block overflow-hidden text-ellipsis max-w-screen-sm">
                 {registryCommand}
@@ -117,7 +117,7 @@ export function ExportMenu() {
             <Button
               size="sm"
               variant="ghost"
-              className="cursor-pointer h-full rounded-none border-l border-gray-200 bg-gray-100/80 text-gray-700 hover:bg-gray-200"
+              className="cursor-pointer h-full rounded-none border-l border-gray-200 bg-gray-50 text-gray-700 "
               onClick={handleRegistryCopy}
             >
               {registryCopied ? (
@@ -133,23 +133,17 @@ export function ExportMenu() {
           </p>
         </div>
 
-        <Tabs defaultValue="globals" className="mt-4">
-          <TabsList className="grid w-full grid-cols-1 bg-gray-100 rounded-md">
-            <TabsTrigger value="globals" className="text-gray-700 rounded">
-              globals.css
-            </TabsTrigger>
-          </TabsList>
-
+        <Tabs defaultValue="globals" className="mt-2">
+          <span className="text-sm">globals.css</span>
           <TabsContent value="globals">
             <div className="relative">
-              <pre className="p-4 rounded-md bg-gray-50 border border-gray-200 overflow-auto max-h-[400px] text-sm text-gray-800 scrollbar-thin scrollbar-thumb-gray-300">
+              <pre className="p-4 rounded-md bg-[#f5f7f9] border border-gray-200 overflow-auto max-h-[400px] text-sm text-gray-800 font-mono">
                 <code>{generateCSSVariables()}</code>
               </pre>
               <div className="absolute top-2 right-2 flex gap-2 mr-2">
                 <Button
                   size="sm"
-                  variant="outline"
-                  className="bg-white text-gray-600 border border-gray-300 hover:bg-gray-50 cursor-pointer"
+                  className="bg-[#f5f7f9] cursor-pointer text-gray-700 border border-gray-300 hover:bg-gray-200 rounded-full p-2 h-8 w-8"
                   onClick={handleCopy}
                 >
                   {copied ? (
@@ -160,8 +154,7 @@ export function ExportMenu() {
                 </Button>
                 <Button
                   size="sm"
-                  variant="outline"
-                  className="bg-white text-gray-600 border border-gray-300 hover:bg-gray-50 cursor-pointer"
+                  className="bg-[#f5f7f9] cursor-pointer text-gray-700 border border-gray-300 hover:bg-gray-200 rounded-full p-2 h-8 w-8"
                   onClick={handleDownload}
                 >
                   <Download className="h-4 w-4" />
@@ -171,7 +164,7 @@ export function ExportMenu() {
           </TabsContent>
         </Tabs>
 
-        <div className="mt-4 p-4 bg-gray-50 border border-gray-200 rounded-md text-gray-700 text-sm">
+        <div className="mt-6 p-4 bg-gray-50 border border-gray-200 rounded-md text-gray-700 text-sm">
           <p className="font-medium mb-1">Requirements:</p>
           <ul className="list-disc list-inside space-y-1">
             <li>Tailwind CSS v4 or later</li>
@@ -179,11 +172,11 @@ export function ExportMenu() {
           </ul>
         </div>
 
-        <div className="flex justify-end mt-4">
+        <div className="flex justify-end mt-6">
           <Button
             variant="outline"
             onClick={() => setExportMenuOpen(false)}
-            className="bg-white text-gray-600 border border-gray-300 hover:bg-gray-50 rounded-md"
+            className="bg-white dark:bg-white dark:hover:bg-gray-100 dark:hover:text-gray-800 cursor-pointer text-gray-800 border border-gray-200 hover:bg-gray-100 rounded-md"
           >
             Close
           </Button>

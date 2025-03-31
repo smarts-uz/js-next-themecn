@@ -319,7 +319,9 @@ function deriveCompleteColorSet(
     chart3: chartColors.chart3,
     chart4: chartColors.chart4,
     chart5: chartColors.chart5,
-    sidebar: isDarkMode ? background : secondary,
+    sidebar: isDarkMode
+      ? `${bgH} ${bgS}% ${Math.min(bgL + 12, 25)}%`
+      : secondary,
     sidebarForeground: isDarkMode ? foreground : secondaryForeground,
     sidebarPrimary: primary,
     sidebarPrimaryForeground: primaryForeground,

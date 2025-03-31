@@ -304,7 +304,14 @@ export const ThemeColorPickers = ({
     newDarkColors.ring = darkPrimaryHSLValue;
 
     // Sidebar colors for dark mode
-    newDarkColors.sidebar = darkBgHSLValue;
+    const darkBgHSLParts = darkBgHSLValue.split(" ");
+    const darkBgH = parseInt(darkBgHSLParts[0]);
+    const darkBgS = parseInt(darkBgHSLParts[1]);
+    const darkBgL = parseInt(darkBgHSLParts[2]);
+    newDarkColors.sidebar = `${darkBgH} ${darkBgS}% ${Math.min(
+      darkBgL + 12,
+      25
+    )}%`;
     newDarkColors.sidebarForeground = darkFgHSLValue;
     newDarkColors.sidebarPrimary = darkPrimaryHSLValue;
     newDarkColors.sidebarPrimaryForeground = `${darkPrimaryH} 10% 95%`;
@@ -506,15 +513,70 @@ export const ThemeColorPickers = ({
     const store = useThemeStore.getState();
     const darkColors = { ...store.darkColors };
 
-    // Update primary color
+    // Update primary color and related colors
     darkColors.primary = primaryHSLValue;
     darkColors.ring = primaryHSLValue;
     darkColors.sidebarPrimary = primaryHSLValue;
 
-    // Calculate contrasting foreground
+    // Generate appropriate background based on primary color
+    // Dark background with primary hue but low saturation and lightness
+    const darkBgH = h;
+    const darkBgS = Math.max(Math.min(s - 60, 40), 30);
+    const darkBgL = Math.max(Math.min(l - 35, 10), 8);
+    const darkBgHSLValue = `${darkBgH} ${darkBgS}% ${darkBgL}%`;
+
+    // Update background and related colors
+    darkColors.background = darkBgHSLValue;
+    darkColors.card = `${darkBgH} ${darkBgS}% ${Math.min(darkBgL + 4, 20)}%`;
+    darkColors.popover = darkColors.card;
+
+    // Generate sidebar color with better contrast against background
+    darkColors.sidebar = `${darkBgH} ${darkBgS}% ${Math.min(
+      darkBgL + 12,
+      25
+    )}%`;
+
+    // Generate foreground color based on primary
+    const darkFgHSLValue = `${h} 10% 95%`;
+    darkColors.foreground = darkFgHSLValue;
+    darkColors.cardForeground = darkFgHSLValue;
+    darkColors.popoverForeground = darkFgHSLValue;
+    darkColors.sidebarForeground = darkFgHSLValue;
+
+    // Generate secondary color based on primary
+    const darkSecondaryH = h;
+    const darkSecondaryS = Math.max(Math.min(s - 40, 30), 7);
+    const darkSecondaryL = Math.max(Math.min(l - 20, 30), 15);
+    const darkSecondaryHSLValue = `${darkSecondaryH} ${darkSecondaryS}% ${darkSecondaryL}%`;
+
+    darkColors.secondary = darkSecondaryHSLValue;
+    darkColors.muted = darkSecondaryHSLValue;
+    darkColors.secondaryForeground = `${darkSecondaryH} 10% 95%`;
+    darkColors.mutedForeground = `${darkSecondaryH} 15% 65%`;
+
+    // Generate accent color based on primary with a hue shift
+    const darkAccentH = (h + 30) % 360;
+    const darkAccentS = Math.min(s + 5, 80);
+    const darkAccentL = Math.min(l + 15, 65);
+    const darkAccentHSLValue = `${darkAccentH} ${darkAccentS}% ${darkAccentL}%`;
+
+    darkColors.accent = darkAccentHSLValue;
+    darkColors.accentForeground = `${darkAccentH} 50% 10%`;
+    darkColors.sidebarAccent = darkAccentHSLValue;
+    darkColors.sidebarAccentForeground = `${darkAccentH} 50% 10%`;
+
+    // Calculate contrasting foreground colors
     const isPrimaryDark = l < 40;
     darkColors.primaryForeground = isPrimaryDark ? "0 0% 100%" : `${h} 10% 95%`;
     darkColors.sidebarPrimaryForeground = darkColors.primaryForeground;
+
+    // Update border colors
+    darkColors.border = `${darkSecondaryH} ${darkSecondaryS + 5}% ${Math.min(
+      darkSecondaryL + 10,
+      30
+    )}%`;
+    darkColors.input = darkColors.border;
+    darkColors.sidebarBorder = darkColors.border;
     darkColors.sidebarRing = primaryHSLValue;
 
     // Update chart colors
