@@ -28,10 +28,6 @@ pnpm dev
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-## Contributing
-
-Contributions are welcome! Please feel free to submit a Pull Request.
-
 ## Acknowledgments
 
 - [shadcn](https://x.com/shadcn) for creating the amazing shadcn/ui component library
