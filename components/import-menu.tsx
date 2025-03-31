@@ -13,7 +13,7 @@ import { Button } from "@/components/ui/button";
 import { Upload, Clipboard } from "lucide-react";
 import { toast } from "sonner";
 import { converter } from "culori";
-import type { Oklch, Hsl } from "culori";
+import type { Hsl } from "culori";
 
 function parseGlobalsCss(cssText: string): {
   light: Record<string, string>;
@@ -186,36 +186,11 @@ export function ImportMenu({ open, onOpenChange }: ImportMenuProps) {
         }
       } else if (varType === "oklch") {
         try {
-          // Handle more formats of OKLCH values with a more flexible regex
-          // This will match patterns like:
-          // - oklch(0.9 0.1 270)
-          // - oklch(0.9, 0.1, 270)
-          // - oklch(0.9 0.1 270deg)
-          // - oklch(90% 0.1 270)
-          const oklchMatch = value.match(
-            /oklch\(\s*([0-9.]+%?)\s*[,\s]\s*([0-9.]+%?)\s*[,\s]\s*([0-9.]+)(?:deg)?\s*\)/
-          );
+          console.log(`Parsing OKLCH value: ${value}`);
 
-          if (oklchMatch) {
-            let l = parseFloat(oklchMatch[1]);
-            let c = parseFloat(oklchMatch[2]);
-            const h = parseFloat(oklchMatch[3]);
-
-            // Handle percentage values for lightness
-            if (oklchMatch[1].includes("%")) {
-              l = l / 100;
-            }
-
-            // Handle percentage values for chroma
-            if (oklchMatch[2].includes("%")) {
-              c = c / 100;
-            }
-
-            console.log(`Converting OKLCH: l=${l}, c=${c}, h=${h}`);
-
-            // Create an OKLCH color object with proper typing
-            const color: Oklch = { mode: "oklch", l, c, h };
-
+          // Use culori directly to parse the OKLCH value
+          const color = converter("oklch")(value);
+          if (color) {
             // Convert to HSL format
             const hsl = converter("hsl")(color) as Hsl | undefined;
             if (hsl) {
@@ -225,18 +200,18 @@ export function ImportMenu({ open, onOpenChange }: ImportMenuProps) {
               const hslValue = `${h} ${s}% ${l}%`;
               console.log(`Converted to HSL: ${hslValue}`);
               return hslValue;
-            } else {
-              console.log("HSL conversion failed");
             }
-          } else {
-            console.log(`OKLCH pattern not matched in value: ${value}`);
           }
+
+          // If conversion failed
+          console.warn(`Could not parse OKLCH value with culori: ${value}`);
         } catch (error) {
           console.error("Error converting OKLCH to HSL:", error);
         }
       }
 
       // Return a default value if parsing fails
+      console.warn(`Failed to parse color value: ${value}, using default`);
       return "0 0% 100%";
     };
 
@@ -284,6 +259,13 @@ export function ImportMenu({ open, onOpenChange }: ImportMenuProps) {
           `Light Variable: ${name} -> ${propName}, Original: ${value}, Converted: ${convertedValue}`
         );
         themeState.colors[propName] = convertedValue;
+
+        // Extra logging for chart colors
+        if (name.startsWith("chart-")) {
+          console.log(
+            `Light Chart Color: ${name}, Original: ${value}, Converted: ${convertedValue}`
+          );
+        }
       }
     });
 
@@ -296,6 +278,13 @@ export function ImportMenu({ open, onOpenChange }: ImportMenuProps) {
           `Dark Variable: ${name} -> ${propName}, Original: ${value}, Converted: ${convertedValue}`
         );
         themeState.darkColors[propName] = convertedValue;
+
+        // Extra logging for chart colors
+        if (name.startsWith("chart-")) {
+          console.log(
+            `Dark Chart Color: ${name}, Original: ${value}, Converted: ${convertedValue}`
+          );
+        }
       }
     });
 
@@ -306,6 +295,23 @@ export function ImportMenu({ open, onOpenChange }: ImportMenuProps) {
         themeState.borderRadius = parseFloat(radiusMatch[1]);
       }
     }
+
+    // Debug logs to verify chart colors
+    console.log("Chart Colors in Light:", {
+      chart1: themeState.colors.chart1,
+      chart2: themeState.colors.chart2,
+      chart3: themeState.colors.chart3,
+      chart4: themeState.colors.chart4,
+      chart5: themeState.colors.chart5,
+    });
+
+    console.log("Chart Colors in Dark:", {
+      chart1: themeState.darkColors.chart1,
+      chart2: themeState.darkColors.chart2,
+      chart3: themeState.darkColors.chart3,
+      chart4: themeState.darkColors.chart4,
+      chart5: themeState.darkColors.chart5,
+    });
 
     // Check what the final theme state looks like
     console.log("Final Theme State:", JSON.stringify(themeState, null, 2));
